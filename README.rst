@@ -32,3 +32,5 @@ Examples
 --------
 
 - `Large cells with green background and dark green living cells <https://craigahobbs.github.io/life/#width=20&height=10&size=50&fill=#1f5e18&bgFill=#75bd6d>`_
+
+- `Fast simulation <https://craigahobbs.github.io/life/#period=0.05>`_
