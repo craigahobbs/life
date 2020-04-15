@@ -64,9 +64,6 @@ p:first-child {
         </style>
     </head>
     <body>
-        <h1><a href="https://github.com/craigahobbs/life">Conway's Game of Life</a></h1>
-        <p id="life">
-        </p>
     </body>
     <script>
 
@@ -76,7 +73,7 @@ function lifePage(parent) {
         height = params.height ? parseInt(params.height) : 50,
         threshold = params.threshold ? parseFloat(params.threshold) : 0.25,
         period = params.period ? parseFloat(params.period) : 1,
-        play = params.play ? params.play === 'true' : true;
+        play = params.play ? params.play === 'true' || params.play === '1' : true;
 
     // Generate random cells, if necessary
     if (gCells === null) {
@@ -88,17 +85,37 @@ function lifePage(parent) {
         }
     }
 
-    // Render the SVG
-    render(parent, lifeSvg(params, gCells));
+    // Render
+    render(parent, [
+        // Title
+        elem('p', [
+            elem(
+                'span',
+                {'style': 'font-weight: bold;'},
+                text("Conway's Game of Life")
+            ),
+            text(nbsp + nbsp + nbsp),
+            elem('a', {'href': 'javascript:gReset = true'}, text('Reset')),
+            text(nbsp + nbsp + nbsp),
+            elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, text('Instructions'))
+        ]),
 
-    // Schedule next generation
+        // Life SVG
+        elem('div', {'id': 'lifeSvgDiv'}, lifeSvg(params, gCells))
+    ]);
+
+    // Set the generation interval
+    if (gInterval !== null) {
+        clearInterval(gInterval);
+        gInterval = null;
+    }
     if (play) {
-        if (gTimeout !== null) {
-            clearTimeout(gTimeout);
-        }
-        gTimeout = setTimeout(function() {
-            gCells = getNextCells(gCells, threshold);
-            lifePage(parent);
+        gInterval = setInterval(function() {
+            gCells = getNextCells(gCells, threshold, gReset);
+            if (gReset) {
+                gReset = false;
+            }
+            render(document.getElementById('lifeSvgDiv'), lifeSvg(params, gCells));
         }, period * 1000);
     }
 }
@@ -178,13 +195,13 @@ function cellsEqual(cells1, cells2) {
     return true;
 }
 
-function getNextCells(cells, threshold) {
+function getNextCells(cells, threshold, reset) {
     let nextCells = cells.map(function(row, iy) {
         return row.map(function(value, ix) {
             return getNextCell(cells, ix, iy);
         });
     });
-    if (cellsEqual(cells, nextCells)) {
+    if (reset || cellsEqual(cells, nextCells)) {
         let [width, height] = getCellsWidthHeight(cells);
         return randomCells(width, height, threshold);
     } else  {
@@ -229,6 +246,8 @@ function main(parent) {
 }
 
 // ======================================================================
+
+const nbsp = String.fromCharCode(160);
 
 function render(parent, elems, clear=true) {
     if (clear) {
@@ -275,6 +294,12 @@ function svgElem(tag, attrsOrElems, elems) {
     return elem(tag, attrsOrElems, elems, 'http://www.w3.org/2000/svg');
 }
 
+function text(text_) {
+    return {
+        text: text_,
+    };
+}
+
 function decodeParams(paramString) {
     let params = {},
         r = /([^&;=]+)=?([^&;]*)/g,
@@ -296,9 +321,10 @@ function isDict(obj) {
 // ======================================================================
 
 let gCells = null,
-    gTimeout = null;
+    gInterval = null,
+    gReset = false;
 
-main(document.getElementById('life'));
+main(document.body);
 
     </script>
 </html>
