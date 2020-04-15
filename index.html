@@ -106,7 +106,7 @@ function lifePage(parent) {
         ]),
 
         // Life SVG
-        elem('div', {'id': 'lifeSvgDiv'}, lifeSvg(params, gCells))
+        elem('p', {'id': 'lifeSvg'}, lifeSvg(params, gCells))
     ]);
 
     // Set the generation interval
@@ -120,7 +120,7 @@ function lifePage(parent) {
             if (gReset) {
                 gReset = false;
             }
-            render(document.getElementById('lifeSvgDiv'), lifeSvg(params, gCells));
+            render(document.getElementById('lifeSvg'), lifeSvg(params, gCells));
         }, period * 1000);
     }
 }
