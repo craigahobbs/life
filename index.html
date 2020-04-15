@@ -72,6 +72,7 @@ p:first-child {
 
 function lifePage(parent) {
     let params = decodeParams(),
+        size = params.size ? parseInt(params.size) : 7,
         width = params.width ? parseInt(params.width) : 50,
         height = params.height ? parseInt(params.height) : 50,
         threshold = params.threshold ? parseFloat(params.threshold) : 0.25,
@@ -102,7 +103,26 @@ function lifePage(parent) {
             text(nbsp + nbsp + nbsp),
             elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, text('Instructions')),
             text(nbsp + nbsp + nbsp),
-            elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia'))
+            elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia')),
+        ]),
+        elem('p', [
+            text('('),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'period': period * 2}))}, text('Slower')),
+            text(nbsp + endash + nbsp),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'period': period / 2}))}, text('Faster')),
+            text(')' + nbsp + nbsp + nbsp + '('),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'size': Math.max(3, size - 1)}))}, text('Size-')),
+            text(nbsp + endash + nbsp),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'size': size + 1}))}, text('Size+')),
+            text(')' + nbsp + nbsp + nbsp + '('),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'width': Math.max(10, width - 10)}))}, text('Width-')),
+            text(nbsp + endash + nbsp),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'width': width + 10}))}, text('Width+')),
+            text(')' + nbsp + nbsp + nbsp + '('),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'height': Math.max(10, height - 10)}))}, text('Height-')),
+            text(nbsp + endash + nbsp),
+            elem('a', {'href': href(Object.assign(Object.create(params), {'height': height + 10}))}, text('Height+')),
+            text(')'),
         ]),
 
         // Life SVG
@@ -253,6 +273,7 @@ function main(parent) {
 // ======================================================================
 
 const nbsp = String.fromCharCode(160);
+const endash = String.fromCharCode(8211);
 
 function render(parent, elems, clear=true) {
     if (clear) {
@@ -303,6 +324,38 @@ function text(text_) {
     return {
         text: text_,
     };
+}
+
+function href(hashParams, params, path) {
+    hashParams = encodeParams(hashParams);
+    params = encodeParams(params);
+    path = path ? path : window.location.pathname;
+    if (hashParams === null && params === null) {
+        return path + '#';
+    } else if (hashParams === null && params !== null) {
+        return path + '?' + params;
+    } else if (hashParams !== null && params === null) {
+        return path + '#' + hashParams;
+    }
+    return path + '?' + params + '#' + hashParams;
+}
+
+function encodeParams(params) {
+    let items = [];
+    if (undefined !== params) {
+        let name;
+        for (name in params) {
+            if (params[name] !== null) {
+                items.push(encodeURIComponent(name) + '=' + encodeURIComponent(params[name]));
+            }
+        }
+        for (name in params) {
+            if (params[name] === null) {
+                items.push(encodeURIComponent(name));
+            }
+        }
+    }
+    return items.length ? items.join('&') : null;
 }
 
 function decodeParams(paramString) {
