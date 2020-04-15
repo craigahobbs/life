@@ -99,14 +99,13 @@ function lifePage(parent) {
                 text("Conway's Game of Life")
             ),
             text(nbsp + nbsp + nbsp),
-            elem('a', {'href': 'javascript:gReset = true'}, text('Reset')),
-            text(nbsp + nbsp + nbsp),
             elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, text('Instructions')),
             text(nbsp + nbsp + nbsp),
             elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia')),
         ]),
         elem('p', [
-            text('('),
+            elem('a', {'href': 'javascript:gReset = true'}, text('Reset')),
+            text(nbsp + nbsp + nbsp + '('),
             elem('a', {'href': href(Object.assign(Object.create(params), {'period': period * 2}))}, text('Slower')),
             text(nbsp + endash + nbsp),
             elem('a', {'href': href(Object.assign(Object.create(params), {'period': period / 2}))}, text('Faster')),
