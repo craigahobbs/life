@@ -92,7 +92,7 @@ function lifePage(parent) {
     // Render
     render(parent, [
         // Title
-        elem('p', [
+        elem('p', {'style': 'white-space: nowrap;'}, [
             elem(
                 'span',
                 {'style': 'font-weight: bold;'},
@@ -103,7 +103,7 @@ function lifePage(parent) {
             text(nbsp + nbsp + nbsp),
             elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia')),
         ]),
-        elem('p', [
+        elem('p', {'style': 'white-space: nowrap;'}, [
             elem('a', {'href': 'javascript:gReset = true'}, text('Reset')),
             text(nbsp + nbsp + nbsp),
             elem('a', {'href': href(Object.assign(Object.create(params), {'play': play ? '0' : '1'}))}, text(play ? 'Pause' : 'Play')),
