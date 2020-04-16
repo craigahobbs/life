@@ -15,8 +15,8 @@ Argument       Description
 =============  ===========
 width          The horizontal width of the cell grid (default is 50).
 height         The vertical height of the cell grid (default is 50).
-size           The size, in pixels, of a cell (default is 7).
-gap            The gap, in pixels, between cells (default is 3).
+size           The size, in pixels, of a cell (default is 9).
+gap            The gap, in pixels, between cells (default is 1).
 fill           The cell fill color (default is "#2a803b").
 stroke         The cell stroke color (default is "none").
 strokeWidth    The cell stroke width (default is 1).
@@ -25,7 +25,8 @@ bgStroke       The board stroke color (default is "none").
 bgStrokeWidth  The board stroke width (default is 1).
 threshold      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
 period         The simulation iteration period (default is 1 second).
-play           If not "true" the simulation will not run (default is "false").
+reset          If "true" or "1" the simulation state is randomized (default is "false").
+play           If "true" or "1" the simulation runs; otherwise the simulation is paused (default is "false").
 =============  ===========
 
 Examples
