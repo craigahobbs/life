@@ -72,11 +72,12 @@ p:first-child {
 
 function lifePage(parent) {
     let params = decodeParams(),
-        size = params.size ? parseInt(params.size) : 7,
+        size = params.size ? parseInt(params.size) : 9,
         width = params.width ? parseInt(params.width) : 50,
         height = params.height ? parseInt(params.height) : 50,
         threshold = params.threshold ? parseFloat(params.threshold) : 0.25,
         period = params.period ? parseFloat(params.period) : 1,
+        reset = params.reset ? params.reset === 'true' || params.reset === '1' : false,
         play = params.play ? params.play === 'true' || params.play === '1' : true;
 
     // Generate random cells, if necessary
@@ -104,30 +105,30 @@ function lifePage(parent) {
             elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia')),
         ]),
         elem('p', {'style': 'white-space: nowrap;'}, [
-            elem('a', {'href': 'javascript:void(gReset = true)'}, text('Reset')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'reset': '1'}))}, text('Reset')),
             text(nbsp + nbsp + nbsp),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'play': play ? '0' : '1'}))}, text(play ? 'Pause' : 'Play')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'play': play ? '0' : '1'}))}, text(play ? 'Pause' : 'Play')),
             text(nbsp + nbsp + nbsp + '('),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'period': period * 2}))}, text('Slower')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'period': period * 2}))}, text('Slower')),
             text(nbsp + endash + nbsp),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'period': period / 2}))}, text('Faster')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'period': period / 2}))}, text('Faster')),
             text(')' + nbsp + nbsp + nbsp + '('),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'width': Math.max(10, width - 10)}))}, text('Width-')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'width': Math.max(10, width - 10)}))}, text('Width-')),
             text(nbsp + endash + nbsp),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'width': width + 10}))}, text('Width+')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'width': width + 10}))}, text('Width+')),
             text(')' + nbsp + nbsp + nbsp + '('),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'height': Math.max(10, height - 10)}))}, text('Height-')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'height': Math.max(10, height - 10)}))}, text('Height-')),
             text(nbsp + endash + nbsp),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'height': height + 10}))}, text('Height+')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'height': height + 10}))}, text('Height+')),
             text(')' + nbsp + nbsp + nbsp + '('),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'size': Math.max(3, size - 1)}))}, text('Size-')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'size': Math.max(2, size - 1)}))}, text('Size-')),
             text(nbsp + endash + nbsp),
-            elem('a', {'href': href(Object.assign(Object.create(params), {'size': size + 1}))}, text('Size+')),
+            elem('a', {'href': href(Object.assign(Object.assign({}, params), {'size': size + 1}))}, text('Size+')),
             text(')'),
         ]),
 
         // Life SVG
-        elem('p', {'id': 'lifeSvg'}, lifeSvg(params, gCells))
+        elem('p', {'id': 'lifeSvg'}, lifeSvg(params, size, gCells))
     ]);
 
     // Set the generation interval
@@ -135,21 +136,28 @@ function lifePage(parent) {
         clearInterval(gInterval);
         gInterval = null;
     }
-    if (play) {
+    if (reset) {
+        gCells = randomCells(width, height, threshold);
+
+        // Redirect without reset param
+        let redirectParams = Object.assign({}, params);
+        delete redirectParams.reset;
+        window.location.href = href(redirectParams);
+    } else if (play) {
         gInterval = setInterval(function() {
-            gCells = getNextCells(gCells, threshold, gReset);
-            if (gReset) {
-                gReset = false;
+            let cellsPrev = gCells;
+            gCells = getNextCells(gCells);
+            if (cellsEqual(gCells, cellsPrev)) {
+                gCells = randomCells(width, height, threshold);
             }
-            render(document.getElementById('lifeSvg'), lifeSvg(params, gCells));
+            render(document.getElementById('lifeSvg'), lifeSvg(params, size, gCells));
         }, period * 1000);
     }
 }
 
-function lifeSvg(params, cells) {
+function lifeSvg(params, size, cells) {
     let [width, height] = getCellsWidthHeight(cells),
-        size = params.size ? parseInt(params.size) : 7,
-        gap = params.gap ? parseInt(params.gap) : 3,
+        gap = params.gap ? parseInt(params.gap) : 1,
         svgWidth = gap + width * (size + gap),
         svgHeight = gap + height * (size + gap),
         fill = params.fill || '#2a803b',
@@ -221,18 +229,12 @@ function cellsEqual(cells1, cells2) {
     return true;
 }
 
-function getNextCells(cells, threshold, reset) {
-    let nextCells = cells.map(function(row, iy) {
+function getNextCells(cells) {
+    return cells.map(function(row, iy) {
         return row.map(function(value, ix) {
             return getNextCell(cells, ix, iy);
         });
     });
-    if (reset || cellsEqual(cells, nextCells)) {
-        let [width, height] = getCellsWidthHeight(cells);
-        return randomCells(width, height, threshold);
-    } else  {
-        return nextCells;
-    }
 }
 
 function getCell(cells, ix, iy) {
@@ -380,8 +382,7 @@ function isDict(obj) {
 // ======================================================================
 
 let gCells = null,
-    gInterval = null,
-    gReset = false;
+    gInterval = null;
 
 main(document.body);
 
