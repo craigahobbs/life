@@ -68,7 +68,7 @@ p:first-child {
     </head>
     <body>
     </body>
-    <script>
+    <script type="module">
 
 function lifePage(parent) {
     let params = decodeParams(),
@@ -104,7 +104,7 @@ function lifePage(parent) {
             elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, text('Wikipedia')),
         ]),
         elem('p', {'style': 'white-space: nowrap;'}, [
-            elem('a', {'href': 'javascript:gReset = true'}, text('Reset')),
+            elem('a', {'href': 'javascript:void(gReset = true)'}, text('Reset')),
             text(nbsp + nbsp + nbsp),
             elem('a', {'href': href(Object.assign(Object.create(params), {'play': play ? '0' : '1'}))}, text(play ? 'Pause' : 'Play')),
             text(nbsp + nbsp + nbsp + '('),
