@@ -1,3 +1,6 @@
+// Licensed under the MIT License
+// https://github.com/craigahobbs/life/blob/master/LICENSE
+
 export const nbsp = String.fromCharCode(160);
 export const endash = String.fromCharCode(8211);
 
@@ -69,17 +72,17 @@ export function href(hashParams, params, path) {
 export function encodeParams(params) {
     let items = [];
     if (undefined !== params) {
-        let name;
-        for (name in params) {
-            if (params[name] !== null) {
+        let names = Object.keys(params).sort();
+        names.forEach(function(name) {
+            if (params[name] !== null && params[name] !== undefined) {
                 items.push(encodeURIComponent(name) + '=' + encodeURIComponent(params[name]));
             }
-        }
-        for (name in params) {
+        });
+        names.forEach(function(name) {
             if (params[name] === null) {
                 items.push(encodeURIComponent(name));
             }
-        }
+        });
     }
     return items.length ? items.join('&') : null;
 }

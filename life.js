@@ -1,3 +1,6 @@
+// Licensed under the MIT License
+// https://github.com/craigahobbs/life/blob/master/LICENSE
+
 import * as chisel from './chisel.js';
 
 let gCells = null;
@@ -32,31 +35,31 @@ function lifePage(parent) {
                 {'style': 'font-weight: bold;'},
                 chisel.text("Conway's Game of Life")
             ),
-            chisel.text(chisel.nbsp + chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, chisel.text('Instructions')),
-            chisel.text(chisel.nbsp + chisel.nbsp + chisel.nbsp),
+            chisel.text(chisel.nbsp + chisel.nbsp),
+            chisel.elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, chisel.text('GitHub')),
+            chisel.text(chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, chisel.text('Wikipedia')),
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'reset': '1'}))}, chisel.text('Reset')),
-            chisel.text(chisel.nbsp + chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'play': play ? '0' : '1'}))}, chisel.text(play ? 'Pause' : 'Play')),
-            chisel.text(chisel.nbsp + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'period': period * 2}))}, chisel.text('Slower')),
-            chisel.text(chisel.nbsp + chisel.endash + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'period': period / 2}))}, chisel.text('Faster')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'width': Math.max(10, width - 10)}))}, chisel.text('Width-')),
-            chisel.text(chisel.nbsp + chisel.endash + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'width': width + 10}))}, chisel.text('Width+')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'height': Math.max(10, height - 10)}))}, chisel.text('Height-')),
-            chisel.text(chisel.nbsp + chisel.endash + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'height': height + 10}))}, chisel.text('Height+')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'size': Math.max(2, size - 1)}))}, chisel.text('Size-')),
-            chisel.text(chisel.nbsp + chisel.endash + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href(Object.assign(Object.assign({}, params), {'size': size + 1}))}, chisel.text('Size+')),
+            chisel.elem('a', {'href': chisel.href({...params, 'reset': '1'})}, chisel.text('Reset')),
+            chisel.text(chisel.nbsp + chisel.nbsp),
+            chisel.elem('a', {'href': chisel.href({...params, 'play': play ? '0' : undefined})}, chisel.text(play ? 'Pause' : 'Play')),
+            chisel.text(chisel.nbsp + chisel.nbsp + '('),
+            chisel.elem('a', {'href': chisel.href({...params, 'period': period * 2})}, chisel.text('Slower')),
+            chisel.text(' ' + chisel.endash + ' '),
+            chisel.elem('a', {'href': chisel.href({...params, 'period': period / 2})}, chisel.text('Faster')),
+            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
+            chisel.elem('a', {'href': chisel.href({...params, 'width': Math.max(10, width - 10)})}, chisel.text('Width-')),
+            chisel.text(' ' + chisel.endash + ' '),
+            chisel.elem('a', {'href': chisel.href({...params, 'width': width + 10})}, chisel.text('Width+')),
+            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
+            chisel.elem('a', {'href': chisel.href({...params, 'height': Math.max(10, height - 10)})}, chisel.text('Height-')),
+            chisel.text(' ' + chisel.endash + ' '),
+            chisel.elem('a', {'href': chisel.href({...params, 'height': height + 10})}, chisel.text('Height+')),
+            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
+            chisel.elem('a', {'href': chisel.href({...params, 'size': Math.max(2, size - 1)})}, chisel.text('Size-')),
+            chisel.text(' ' + chisel.endash + ' '),
+            chisel.elem('a', {'href': chisel.href({...params, 'size': size + 1})}, chisel.text('Size+')),
             chisel.text(')'),
         ]),
 
@@ -71,11 +74,7 @@ function lifePage(parent) {
     }
     if (reset) {
         gCells = randomCells(width, height, threshold);
-
-        // Redirect without reset param
-        let redirectParams = Object.assign({}, params);
-        delete redirectParams.reset;
-        window.location.href = chisel.href(redirectParams);
+        window.location.href = chisel.href({...params, 'reset': undefined});
     } else if (play) {
         gInterval = setInterval(function() {
             let cellsPrev = gCells;
