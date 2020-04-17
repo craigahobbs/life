@@ -1,5 +1,5 @@
 // Licensed under the MIT License
-// https://github.com/craigahobbs/life/blob/master/LICENSE
+// https://github.com/craigahobbs/chisel/blob/master/LICENSE
 
 export const nbsp = String.fromCharCode(160);
 export const endash = String.fromCharCode(8211);
@@ -104,7 +104,7 @@ export function decodeParams(paramString) {
 export function xhr(method, url, args) {
     args = args || {};
     let xhr_ = new XMLHttpRequest();
-    xhr_.open(method, href(null, args.params, url));
+    xhr_.open(method, href(undefined, args.params, url));
     xhr_.responseType = args.responseType || 'json';
     xhr_.onreadystatechange = function () {
         if (XMLHttpRequest.DONE === xhr_.readyState) {
