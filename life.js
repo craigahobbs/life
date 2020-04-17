@@ -6,6 +6,16 @@ import * as chisel from './chisel.js';
 let gCells = null;
 let gInterval = null;
 
+export function main(parent) {
+    // Listen for hash parameter changes
+    window.onhashchange = function () {
+        main(parent);
+    };
+
+    // Render page
+    lifePage(parent);
+}
+
 function lifePage(parent) {
     let params = chisel.decodeParams(),
         size = params.size ? parseInt(params.size) : 9,
@@ -17,13 +27,37 @@ function lifePage(parent) {
         play = params.play ? params.play === 'true' || params.play === '1' : true;
 
     // Generate random cells, if necessary
-    if (gCells === null) {
+    if (reset || gCells === null) {
         gCells = randomCells(width, height, threshold);
+        if (reset) {
+            window.location.href = chisel.href({...params, 'reset': undefined});
+        }
     } else {
+        // Cell width or height changed?
         let [cellsWidth, cellsHeight] = getCellsWidthHeight(gCells);
         if (width !== cellsWidth || height !== cellsHeight) {
             gCells = randomCells(width, height, threshold);
         }
+    }
+
+    // Set the generation interval
+    if (gInterval !== null) {
+        clearInterval(gInterval);
+        gInterval = null;
+    }
+    if (play) {
+        gInterval = setInterval(function() {
+            let cellsPrev = gCells;
+
+            // Update cells
+            gCells = getNextCells(gCells);
+            if (cellsEqual(gCells, cellsPrev)) {
+                gCells = randomCells(width, height, threshold);
+            }
+
+            // Render SVG
+            chisel.render(document.getElementById('lifeSvg'), lifeSvg(params, size, gCells));
+        }, period * 1000);
     }
 
     // Render
@@ -66,25 +100,6 @@ function lifePage(parent) {
         // Life SVG
         chisel.elem('p', {'id': 'lifeSvg'}, lifeSvg(params, size, gCells))
     ]);
-
-    // Set the generation interval
-    if (gInterval !== null) {
-        clearInterval(gInterval);
-        gInterval = null;
-    }
-    if (reset) {
-        gCells = randomCells(width, height, threshold);
-        window.location.href = chisel.href({...params, 'reset': undefined});
-    } else if (play) {
-        gInterval = setInterval(function() {
-            let cellsPrev = gCells;
-            gCells = getNextCells(gCells);
-            if (cellsEqual(gCells, cellsPrev)) {
-                gCells = randomCells(width, height, threshold);
-            }
-            chisel.render(document.getElementById('lifeSvg'), lifeSvg(params, size, gCells));
-        }, period * 1000);
-    }
 }
 
 function lifeSvg(params, size, cells) {
@@ -193,14 +208,4 @@ function getNextCell(cells, ix, iy) {
     else {
         return count === 3;
     }
-}
-
-export function main(parent) {
-    // Listen for hash parameter changes
-    window.onhashchange = function () {
-        main(parent);
-    };
-
-    // Render page
-    lifePage(parent);
 }
