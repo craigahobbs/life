@@ -155,6 +155,39 @@ function randomCells(width, height, threshold) {
     return cells;
 }
 
+function getNextCells(cells) {
+    return cells.map(function(row, iy) {
+        return row.map(function(value, ix) {
+            return getNextCell(cells, ix, iy);
+        });
+    });
+}
+
+function getNextCell(cells, ix, iy) {
+    let count =
+        getCell(cells, ix - 1, iy - 1) +
+        getCell(cells, ix, iy - 1) +
+        getCell(cells, ix + 1, iy - 1) +
+        getCell(cells, ix - 1, iy) +
+        getCell(cells, ix + 1, iy) +
+        getCell(cells, ix - 1, iy + 1) +
+        getCell(cells, ix, iy + 1) +
+        getCell(cells, ix + 1, iy + 1);
+
+    if (getCell(cells, ix, iy)) {
+        return count === 2 || count === 3;
+    } else {
+        return count === 3;
+    }
+}
+
+function getCell(cells, ix, iy) {
+    if (ix < 0 || iy < 0 || iy >= cells.length || ix >= cells[iy].length) {
+        return false;
+    }
+    return cells[iy][ix];
+}
+
 function getCellsWidthHeight(cells) {
     return [cells[0].length, cells.length];
 }
@@ -174,38 +207,4 @@ function cellsEqual(cells1, cells2) {
         }
     }
     return true;
-}
-
-function getNextCells(cells) {
-    return cells.map(function(row, iy) {
-        return row.map(function(value, ix) {
-            return getNextCell(cells, ix, iy);
-        });
-    });
-}
-
-function getCell(cells, ix, iy) {
-    if (ix < 0 || iy < 0 || iy >= cells.length || ix >= cells[iy].length) {
-        return false;
-    }
-    return cells[iy][ix];
-}
-
-function getNextCell(cells, ix, iy) {
-    let count =
-        getCell(cells, ix - 1, iy - 1) +
-        getCell(cells, ix, iy - 1) +
-        getCell(cells, ix + 1, iy - 1) +
-        getCell(cells, ix - 1, iy) +
-        getCell(cells, ix + 1, iy) +
-        getCell(cells, ix - 1, iy + 1) +
-        getCell(cells, ix, iy + 1) +
-        getCell(cells, ix + 1, iy + 1);
-
-    if (getCell(cells, ix, iy)) {
-        return count === 2 || count === 3;
-    }
-    else {
-        return count === 3;
-    }
 }
