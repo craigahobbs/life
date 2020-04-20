@@ -17,21 +17,19 @@ export function main(parent) {
 }
 
 function lifePage(parent) {
-    let params = chisel.decodeParams(),
-        size = params.size ? parseInt(params.size) : 9,
-        width = params.width ? parseInt(params.width) : 50,
-        height = params.height ? parseInt(params.height) : 50,
-        threshold = params.threshold ? parseFloat(params.threshold) : 0.25,
-        period = params.period ? parseFloat(params.period) : 1,
-        reset = params.reset ? params.reset === 'true' || params.reset === '1' : false,
-        play = params.play ? params.play === 'true' || params.play === '1' : true;
+    let params = chisel.decodeParams();
+    let size = params.size ? parseInt(params.size) : 10;
+    let width = params.width ? parseInt(params.width) : 50;
+    let height = params.height ? parseInt(params.height) : 50;
+    let threshold = params.threshold ? parseFloat(params.threshold) : 0.25;
+    let period = params.period ? parseFloat(params.period) : 1;
+    let reset = params.reset ? params.reset === 'true' || params.reset === '1' : false;
+    let pause = params.pause ? params.pause === 'true' || params.pause === '1' : false;
+    let step = params.step ? params.step === 'true' || params.step === '1' : false;
 
     // Generate random cells, if necessary
     if (reset || gCells === null) {
         gCells = randomCells(width, height, threshold);
-        if (reset) {
-            window.location.href = chisel.href({...params, 'reset': undefined});
-        }
     } else {
         // Cell width or height changed?
         let [cellsWidth, cellsHeight] = getCellsWidthHeight(gCells);
@@ -40,35 +38,48 @@ function lifePage(parent) {
         }
     }
 
-    // Set the generation interval
+    // Function to advance to next generation
+    function nextGeneration() {
+        let cellsPrev = gCells;
+
+        // Advance to next generation
+        gCells = getNextCells(gCells);
+
+        // Cells unchanged? If so, reset...
+        if (cellsEqual(gCells, cellsPrev)) {
+            gCells = randomCells(width, height, threshold);
+        }
+    }
+
+    // Clear/set the generation interval
     if (gInterval !== null) {
         clearInterval(gInterval);
         gInterval = null;
     }
-    if (play) {
+    if (!pause && !step) {
         gInterval = setInterval(function() {
-            let cellsPrev = gCells;
-
-            // Update cells
-            gCells = getNextCells(gCells);
-            if (cellsEqual(gCells, cellsPrev)) {
-                gCells = randomCells(width, height, threshold);
-            }
-
-            // Render SVG
+            nextGeneration();
             chisel.render(document.getElementById('lifeSvg'), lifeSvg(params, size, gCells));
         }, period * 1000);
+    }
+
+    // Step?
+    if (step) {
+        nextGeneration();
+    }
+
+    // Navigate?
+    if (reset) {
+        window.location.href = chisel.href({...params, 'reset': undefined});
+    } else if (step) {
+        window.location.href = chisel.href({...params, 'step': undefined, 'pause': '1'});
     }
 
     // Render
     chisel.render(parent, [
         // Title
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
-            chisel.elem(
-                'span',
-                {'style': 'font-weight: bold;'},
-                chisel.text("Conway's Game of Life")
-            ),
+            chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
             chisel.text(chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, chisel.text('GitHub')),
             chisel.text(chisel.nbsp + chisel.nbsp),
@@ -77,24 +88,26 @@ function lifePage(parent) {
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
             chisel.elem('a', {'href': chisel.href({...params, 'reset': '1'})}, chisel.text('Reset')),
             chisel.text(chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...params, 'play': play ? '0' : undefined})}, chisel.text(play ? 'Pause' : 'Play')),
-            chisel.text(chisel.nbsp + chisel.nbsp + '('),
+            chisel.elem('a', {'href': chisel.href({...params, 'step': '1'})}, chisel.text('Step')),
+            chisel.text(chisel.nbsp + chisel.nbsp),
+            chisel.elem('a', {'href': chisel.href({...params, 'pause': pause ? undefined : '1'})}, chisel.text(pause ? 'Play' : 'Pause')),
+            chisel.text(chisel.nbsp + chisel.nbsp + '['),
             chisel.elem('a', {'href': chisel.href({...params, 'period': period * 2})}, chisel.text('Slower')),
             chisel.text(' ' + chisel.endash + ' '),
             chisel.elem('a', {'href': chisel.href({...params, 'period': period / 2})}, chisel.text('Faster')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href({...params, 'width': Math.max(10, width - 10)})}, chisel.text('Width-')),
+            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+            chisel.elem('a', {'href': chisel.href({...params, 'width': Math.max(10, width - 5)})}, chisel.text('Width-')),
             chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...params, 'width': width + 10})}, chisel.text('Width+')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href({...params, 'height': Math.max(10, height - 10)})}, chisel.text('Height-')),
+            chisel.elem('a', {'href': chisel.href({...params, 'width': width + 5})}, chisel.text('Width+')),
+            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+            chisel.elem('a', {'href': chisel.href({...params, 'height': Math.max(10, height - 5)})}, chisel.text('Height-')),
             chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...params, 'height': height + 10})}, chisel.text('Height+')),
-            chisel.text(')' + chisel.nbsp + chisel.nbsp + '('),
-            chisel.elem('a', {'href': chisel.href({...params, 'size': Math.max(2, size - 1)})}, chisel.text('Size-')),
+            chisel.elem('a', {'href': chisel.href({...params, 'height': height + 5})}, chisel.text('Height+')),
+            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+            chisel.elem('a', {'href': chisel.href({...params, 'size': Math.max(2, size - 4)})}, chisel.text('Size-')),
             chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...params, 'size': size + 1})}, chisel.text('Size+')),
-            chisel.text(')'),
+            chisel.elem('a', {'href': chisel.href({...params, 'size': size + 4})}, chisel.text('Size+')),
+            chisel.text(']'),
         ]),
 
         // Life SVG
@@ -103,18 +116,18 @@ function lifePage(parent) {
 }
 
 function lifeSvg(params, size, cells) {
-    let [width, height] = getCellsWidthHeight(cells),
-        gap = params.gap ? parseInt(params.gap) : 1,
-        svgWidth = gap + width * (size + gap),
-        svgHeight = gap + height * (size + gap),
-        fill = params.fill || '#2a803b',
-        stroke = params.stroke || 'none',
-        strokeWidth = params.strokeWidth || '1',
-        bgFill = params.bgFill || '#ffffff',
-        bgStroke = params.bgStroke || 'none',
-        bgStrokeWidth = params.bgStrokeWidth || '1',
-        cellElems = [],
-        svgElems = chisel.svgElem('svg', {'width': svgWidth, 'height': svgHeight}, cellElems);
+    let [width, height] = getCellsWidthHeight(cells);
+    let gap = params.gap ? parseInt(params.gap) : 1;
+    let svgWidth = gap + width * (size + gap);
+    let svgHeight = gap + height * (size + gap);
+    let fill = params.fill || '#2a803b';
+    let stroke = params.stroke || 'none';
+    let strokeWidth = params.strokeWidth || '1';
+    let bgFill = params.bgFill || '#ffffff';
+    let bgStroke = params.bgStroke || 'none';
+    let bgStrokeWidth = params.bgStrokeWidth || '1';
+    let cellElems = [];
+    let svgElems = chisel.svgElem('svg', {'width': svgWidth, 'height': svgHeight}, cellElems);
 
     // Background
     cellElems.push(chisel.svgElem('rect', {

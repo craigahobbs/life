@@ -26,7 +26,8 @@ bgStrokeWidth  The board stroke width (default is 1).
 threshold      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
 period         The simulation iteration period (default is 1 second).
 reset          If "true" or "1" the simulation state is randomized (default is "false").
-play           If "true" or "1" the simulation runs; otherwise the simulation is paused (default is "false").
+pause          If "true" or "1" the simulation is paused (default is "false").
+step           If "true" or "1" the simulation is stepped and paused (default is "false").
 =============  ===========
 
 Examples
