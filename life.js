@@ -19,17 +19,31 @@ export function main(parent) {
 
 function lifeParams() {
     let params = chisel.decodeParams();
+    const minWH = 5, maxWH = 1000;
+
+    // Load?
+    let cells = params.load && decodeCells(params.load, minWH, maxWH);
+    let width, height;
+    if (cells) {
+        [width, height] = getCellsWidthHeight(cells);
+    } else {
+        width = Math.max(minWH, Math.min(maxWH, params.width === undefined ? 50 : parseInt(params.width) || 0));
+        height = Math.max(minWH, Math.min(maxWH, params.height === undefined ? 50 : parseInt(params.height) || 0));
+    }
+
     return [
         params,
         {
-            'pause': params.pause === 'true' || params.pause === '1',
+            'pause': !!cells || params.pause === 'true' || params.pause === '1',
             'step': params.step === 'true' || params.step === '1',
             'reset': params.reset === 'true' || params.reset === '1',
             'cellx': params.cellx && Math.max(0, parseInt(params.cellx) || 0),
             'celly': params.celly && Math.max(0, parseInt(params.celly) || 0),
+            'load': cells,
+            'save': params.save === 'true' || params.save === '1',
             'period': Math.max(0.0001, Math.min(60, params.period === undefined ? 1 : parseFloat(params.period) || 0)),
-            'width': Math.max(5, Math.min(1000, params.width === undefined ? 50 : parseInt(params.width) || 0)),
-            'height': Math.max(5, Math.min(1000, params.height === undefined ? 50 : parseInt(params.height) || 0)),
+            'width': width,
+            'height': height,
             'size': Math.max(2, Math.min(100, params.size === undefined ? 10 : parseInt(params.size) || 0)),
             'gap': Math.max(0, Math.min(10, params.gap === undefined ? 1 : parseInt(params.gap) || 0)),
             'threshold': Math.max(0, Math.min(1, params.threshold === undefined ? 0.25 : parseFloat(params.threshold) || 0)),
@@ -47,12 +61,17 @@ function lifePage(parent) {
     let [linkParams, params] = lifeParams();
 
     // Generate random cells, if necessary
-    if (params.reset || gCells === null) {
+    if (params.load) {
+        gCellsPrev = null;
+        gCells = params.load;
+    } else if (params.reset || gCells === null) {
+        gCellsPrev = null;
         gCells = randomCells(params.width, params.height, params.threshold);
     } else {
         // Cell width or height changed?
         let [cellsWidth, cellsHeight] = getCellsWidthHeight(gCells);
         if (params.width !== cellsWidth || params.height !== cellsHeight) {
+            gCellsPrev = null;
             gCells = randomCells(params.width, params.height, params.threshold);
         }
     }
@@ -66,6 +85,7 @@ function lifePage(parent) {
 
         // Reset if cells unchanged after one or two generations
         if (cellsEqual(gCells, gCellsPrev) || (cellsPrev2 !== null && cellsEqual(gCells, cellsPrev2))) {
+            gCellsPrev = null;
             gCells = randomCells(params.width, params.height, params.threshold);
         }
     }
@@ -88,7 +108,9 @@ function lifePage(parent) {
     }
 
     // Navigate?
-    if (params.reset) {
+    if (params.load !== undefined && !params.save) {
+        window.location.href = chisel.href({...linkParams, 'load': undefined, 'width': params.width, 'height': params.height, 'pause': '1'});
+    } else if (params.reset) {
         window.location.href = chisel.href({...linkParams, 'reset': undefined});
     } else if (params.step) {
         window.location.href = chisel.href({...linkParams, 'step': undefined, 'pause': '1'});
@@ -107,15 +129,23 @@ function lifePage(parent) {
             chisel.text(chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': 'https://github.com/craigahobbs/life', 'target': '_blank'}, chisel.text('GitHub')),
             chisel.text(chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, chisel.text('Wikipedia')),
+            chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, chisel.text('Wikipedia'))
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
+            !params.save ? null : [
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'save': undefined})}, chisel.text('Load')),
+                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
+            ],
             chisel.elem('a', {'href': chisel.href({...linkParams, 'pause': params.pause ? undefined : '1'})}, chisel.text(params.pause ? 'Play' : 'Pause')),
-            chisel.text(chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
-            chisel.text(chisel.nbsp + chisel.nbsp),
+            !params.pause ? null : [
+                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
+                chisel.text(chisel.nbsp + chisel.nbsp),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'load': encodeCells(gCells), 'save': '1'})}, chisel.text('Save')),
+            ],
+            chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': chisel.href({...linkParams, 'reset': '1'})}, chisel.text('Random')),
-            chisel.text(chisel.nbsp + chisel.nbsp + '['),
+            chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp + '['),
             chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2})}, chisel.text('Slower')),
             chisel.text(' ' + chisel.endash + ' '),
             chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2})}, chisel.text('Faster')),
@@ -243,4 +273,33 @@ function cellsEqual(cells1, cells2) {
         }
     }
     return true;
+}
+
+function encodeCells(cells) {
+    let [width, height] = getCellsWidthHeight(cells);
+    let values = [];
+    for (let iy = 0; iy < height; iy++) {
+        for (let ix = 0; ix < width; ix++) {
+            values.push(getCell(cells, ix, iy) ? '1' : '0');
+        }
+    }
+    return [width, height, values.join('')].join('-');
+}
+
+function decodeCells(sCells, minWH, maxWH) {
+    let [sWidth, sHeight, sValues] = sCells.split('-');
+    let width = parseInt(sWidth) || 0;
+    let height = parseInt(sHeight) || 0;
+    let cells = null;
+    if (width >= minWH && width < maxWH && height >= minWH && height < maxWH && sValues !== undefined && sValues.length === width * height) {
+        cells = [];
+        for (let iy = 0; iy < height; iy++) {
+            let row = [];
+            for (let ix = 0; ix < width; ix++) {
+                row.push(sValues[iy * width + ix] === '1');
+            }
+            cells.push(row);
+        }
+    }
+    return cells;
 }
