@@ -4,6 +4,7 @@
 import * as chisel from './chisel.js';
 
 let gCells = null;
+let gCellsPrev = null;
 let gInterval = null;
 
 export function main(parent) {
@@ -40,13 +41,13 @@ function lifePage(parent) {
 
     // Function to advance to next generation
     function nextGeneration() {
-        let cellsPrev = gCells;
-
         // Advance to next generation
+        let cellsPrev2 = gCellsPrev;
+        gCellsPrev = gCells;
         gCells = getNextCells(gCells);
 
-        // Cells unchanged? If so, reset...
-        if (cellsEqual(gCells, cellsPrev)) {
+        // Reset if cells unchanged after one or two generations
+        if (cellsEqual(gCells, gCellsPrev) || (cellsPrev2 !== null && cellsEqual(gCells, cellsPrev2))) {
             gCells = randomCells(width, height, threshold);
         }
     }
