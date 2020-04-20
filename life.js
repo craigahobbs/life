@@ -80,7 +80,7 @@ function lifePage(parent) {
         if (cellx !== undefined && celly !== undefined && 0 <= cellx < width && 0 <= celly < height) {
             gCells[celly][cellx] = !gCells[celly][cellx];
         }
-        window.location.href = chisel.href({...params, 'cellx': undefined, 'celly': undefined});
+        window.location.href = chisel.href({...params, 'cellx': undefined, 'celly': undefined, 'pause': '1'});
     }
 
     // Render
@@ -94,11 +94,11 @@ function lifePage(parent) {
             chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, chisel.text('Wikipedia')),
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
-            chisel.elem('a', {'href': chisel.href({...params, 'reset': '1'})}, chisel.text('Reset')),
+            chisel.elem('a', {'href': chisel.href({...params, 'pause': pause ? undefined : '1'})}, chisel.text(pause ? 'Play' : 'Pause')),
             chisel.text(chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': chisel.href({...params, 'step': '1'})}, chisel.text('Step')),
             chisel.text(chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...params, 'pause': pause ? undefined : '1'})}, chisel.text(pause ? 'Play' : 'Pause')),
+            chisel.elem('a', {'href': chisel.href({...params, 'reset': '1'})}, chisel.text('Random')),
             chisel.text(chisel.nbsp + chisel.nbsp + '['),
             chisel.elem('a', {'href': chisel.href({...params, 'period': period * 2})}, chisel.text('Slower')),
             chisel.text(' ' + chisel.endash + ' '),
@@ -139,11 +139,11 @@ function lifeSvg(params, size, cells) {
 
     // Background
     cellElems.push(chisel.svgElem('rect', {
-            'x': '0',
-            'y': '0',
-            'width': svgWidth,
-            'height': svgHeight,
-            'style': 'fill: ' + bgFill + '; stroke: ' + bgStroke + '; stroke-width: ' + bgStrokeWidth + ';'
+        'x': '0',
+        'y': '0',
+        'width': svgWidth,
+        'height': svgHeight,
+        'style': 'fill: ' + bgFill + '; stroke: ' + bgStroke + '; stroke-width: ' + bgStrokeWidth + ';'
     }));
 
     // Cells
@@ -158,7 +158,7 @@ function lifeSvg(params, size, cells) {
                     'fill: ' + fill + '; stroke: ' + stroke + '; stroke-width: ' + strokeWidth + ';' :
                     'fill: rgba(255, 255, 255, 0); stroke: none;',
                 '_callback': function(element) {
-                    element.addEventListener("click", function() {
+                    element.addEventListener('click', function() {
                         window.location.href = chisel.href({...params, 'cellx': ix, 'celly': iy});
                     });
                 }
