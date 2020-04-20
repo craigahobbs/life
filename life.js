@@ -27,6 +27,8 @@ function lifePage(parent) {
     let reset = params.reset ? params.reset === 'true' || params.reset === '1' : false;
     let pause = params.pause ? params.pause === 'true' || params.pause === '1' : false;
     let step = params.step ? params.step === 'true' || params.step === '1' : false;
+    let cellx = params.cellx && parseInt(params.cellx);
+    let celly = params.celly && parseInt(params.celly);
 
     // Generate random cells, if necessary
     if (reset || gCells === null) {
@@ -74,6 +76,11 @@ function lifePage(parent) {
         window.location.href = chisel.href({...params, 'reset': undefined});
     } else if (step) {
         window.location.href = chisel.href({...params, 'step': undefined, 'pause': '1'});
+    } else if (cellx !== undefined || celly !== undefined) {
+        if (cellx !== undefined && celly !== undefined && 0 <= cellx < width && 0 <= celly < height) {
+            gCells[celly][cellx] = !gCells[celly][cellx];
+        }
+        window.location.href = chisel.href({...params, 'cellx': undefined, 'celly': undefined});
     }
 
     // Render
@@ -142,15 +149,20 @@ function lifeSvg(params, size, cells) {
     // Cells
     for (let iy = 0; iy < height; iy++) {
         for (let ix = 0; ix < width; ix++) {
-            if (getCell(cells, ix, iy)) {
-                cellElems.push(chisel.svgElem('rect', {
-                    'x': gap + ix * (size + gap),
-                    'y': gap + iy * (size + gap),
-                    'width': size,
-                    'height': size,
-                    'style': 'fill: ' + fill + '; stroke: ' + stroke + '; stroke-width: ' + strokeWidth + ';'
-                }));
-            }
+            cellElems.push(chisel.svgElem('rect', {
+                'x': gap + ix * (size + gap),
+                'y': gap + iy * (size + gap),
+                'width': size,
+                'height': size,
+                'style': getCell(cells, ix, iy) ?
+                    'fill: ' + fill + '; stroke: ' + stroke + '; stroke-width: ' + strokeWidth + ';' :
+                    'fill: rgba(255, 255, 255, 0); stroke: none;',
+                '_callback': function(element) {
+                    element.addEventListener("click", function() {
+                        window.location.href = chisel.href({...params, 'cellx': ix, 'celly': iy});
+                    });
+                }
+            }));
         }
     }
 
