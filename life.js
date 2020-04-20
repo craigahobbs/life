@@ -19,16 +19,16 @@ export function main(parent) {
 
 function lifePage(parent) {
     let params = chisel.decodeParams();
-    let size = params.size ? parseInt(params.size) : 10;
-    let width = params.width ? parseInt(params.width) : 50;
-    let height = params.height ? parseInt(params.height) : 50;
-    let threshold = params.threshold ? parseFloat(params.threshold) : 0.25;
-    let period = params.period ? parseFloat(params.period) : 1;
-    let reset = params.reset ? params.reset === 'true' || params.reset === '1' : false;
     let pause = params.pause ? params.pause === 'true' || params.pause === '1' : false;
     let step = params.step ? params.step === 'true' || params.step === '1' : false;
+    let reset = params.reset ? params.reset === 'true' || params.reset === '1' : false;
     let cellx = params.cellx && parseInt(params.cellx);
     let celly = params.celly && parseInt(params.celly);
+    let period = params.period ? parseFloat(params.period) : 1;
+    let width = params.width ? parseInt(params.width) : 50;
+    let height = params.height ? parseInt(params.height) : 50;
+    let size = params.size ? parseInt(params.size) : 10;
+    let threshold = params.threshold ? parseFloat(params.threshold) : 0.25;
 
     // Generate random cells, if necessary
     if (reset || gCells === null) {
@@ -62,7 +62,7 @@ function lifePage(parent) {
     if (!pause && !step) {
         gInterval = setInterval(function() {
             nextGeneration();
-            chisel.render(document.getElementById('lifeSvg'), lifeSvg(params, size, gCells));
+            chisel.render(document.getElementById('lifeSvg'), lifeSvg(params, pause, size, gCells));
         }, period * 1000);
     }
 
@@ -119,11 +119,11 @@ function lifePage(parent) {
         ]),
 
         // Life SVG
-        chisel.elem('p', {'id': 'lifeSvg'}, lifeSvg(params, size, gCells))
+        chisel.elem('p', {'id': 'lifeSvg'}, lifeSvg(params, pause, size, gCells))
     ]);
 }
 
-function lifeSvg(params, size, cells) {
+function lifeSvg(params, pause, size, cells) {
     let [width, height] = getCellsWidthHeight(cells);
     let gap = params.gap ? parseInt(params.gap) : 1;
     let svgWidth = gap + width * (size + gap);
@@ -149,20 +149,22 @@ function lifeSvg(params, size, cells) {
     // Cells
     for (let iy = 0; iy < height; iy++) {
         for (let ix = 0; ix < width; ix++) {
-            cellElems.push(chisel.svgElem('rect', {
-                'x': gap + ix * (size + gap),
-                'y': gap + iy * (size + gap),
-                'width': size,
-                'height': size,
-                'style': getCell(cells, ix, iy) ?
-                    'fill: ' + fill + '; stroke: ' + stroke + '; stroke-width: ' + strokeWidth + ';' :
-                    'fill: rgba(255, 255, 255, 0); stroke: none;',
-                '_callback': function(element) {
-                    element.addEventListener('click', function() {
-                        window.location.href = chisel.href({...params, 'cellx': ix, 'celly': iy});
-                    });
-                }
-            }));
+            if (getCell(cells, ix, iy) || pause) {
+                cellElems.push(chisel.svgElem('rect', {
+                    'x': gap + ix * (size + gap),
+                    'y': gap + iy * (size + gap),
+                    'width': size,
+                    'height': size,
+                    'style': getCell(cells, ix, iy) ?
+                        'fill: ' + fill + '; stroke: ' + stroke + '; stroke-width: ' + strokeWidth + ';' :
+                        'fill: rgba(255, 255, 255, 0); stroke: none;',
+                    '_callback': !pause ? undefined : function(element) {
+                        element.addEventListener('click', function() {
+                            window.location.href = chisel.href({...params, 'cellx': ix, 'celly': iy});
+                        });
+                    }
+                }));
+            }
         }
     }
 
