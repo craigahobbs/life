@@ -17,10 +17,10 @@ export function createElement(elem) {
     if (attrs) {
         let callback = attrs._callback;
         if (callback !== undefined) {
-            delete attrs._callback;
+            attrs = {...attrs, '_callback': undefined};
         }
-        for (let attr in elem.attrs) {
-            let value = elem.attrs[attr];
+        for (let attr in attrs) {
+            let value = attrs[attr];
             if (value !== undefined) {
                 element.setAttribute(attr, value);
             }
