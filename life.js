@@ -41,7 +41,7 @@ function lifeParams() {
             'celly': params.celly && Math.max(0, parseInt(params.celly) || 0),
             'load': cells,
             'save': params.save === 'true' || params.save === '1',
-            'period': Math.max(0.0001, Math.min(60, params.period === undefined ? 1 : parseFloat(params.period) || 0)),
+            'period': Math.max(0.0001, Math.min(60, params.period === undefined ? 0.5 : parseFloat(params.period) || 0)),
             'width': width,
             'height': height,
             'size': Math.max(2, Math.min(100, params.size === undefined ? 10 : parseInt(params.size) || 0)),
@@ -120,6 +120,9 @@ function lifePage(parent) {
     }
 
     // Render
+    let sDec = String.fromCharCode(9668);
+    let sInc = String.fromCharCode(9658);
+    let sSep = chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp;
     chisel.render(parent, [
         // Title
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
@@ -135,30 +138,30 @@ function lifePage(parent) {
             ] : [
                 chisel.elem('a', {'href': chisel.href({...linkParams, 'pause': params.pause ? undefined : '1'})}, chisel.text(params.pause ? 'Play' : 'Pause')),
                 !params.pause ? null : [
-                    chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
+                    chisel.text(sSep),
                     chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
                     chisel.text(chisel.nbsp + chisel.nbsp),
                     chisel.elem('a', {'href': chisel.href({...linkParams, 'load': encodeCells(gCells), 'save': '1'})}, chisel.text('Save')),
                 ],
-                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
+                chisel.text(sSep),
                 chisel.elem('a', {'href': chisel.href({...linkParams, 'reset': '1'})}, chisel.text('Random')),
-                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp + '['),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2})}, chisel.text('Slower')),
-                chisel.text(' ' + chisel.endash + ' '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2})}, chisel.text('Faster')),
-                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width - 5})}, chisel.text('Width-')),
-                chisel.text(' ' + chisel.endash + ' '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width + 5})}, chisel.text('Width+')),
-                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height - 5})}, chisel.text('Height-')),
-                chisel.text(' ' + chisel.endash + ' '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height + 5})}, chisel.text('Height+')),
-                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size - 4})}, chisel.text('Size-')),
-                chisel.text(' ' + chisel.endash + ' '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size + 4})}, chisel.text('Size+')),
-                chisel.text(']'),
+                chisel.text(sSep + '[ '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
+                chisel.text(' speed '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
+                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width - 5}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
+                chisel.text(' width '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width + 5}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
+                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height - 5}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
+                chisel.text(' height '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height + 5}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
+                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size - 2}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
+                chisel.text(' size '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size + 2}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
+                chisel.text(' ]'),
             ]
         ]),
 
