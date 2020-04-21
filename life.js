@@ -113,7 +113,8 @@ function lifePage(parent) {
     } else if (params.step) {
         window.location.href = chisel.href({...linkParams, 'step': undefined, 'pause': '1'});
     } else if (params.cellx !== undefined || params.celly !== undefined) {
-        if (params.cellx !== undefined && params.celly !== undefined && 0 <= params.cellx < params.width && 0 <= params.celly < params.height) {
+        if (params.cellx !== undefined && params.cellx >= 0 && params.cellx < params.width &&
+            params.celly !== undefined && params.celly >= 0 && params.celly < params.height) {
             gCells[params.celly][params.cellx] = !gCells[params.celly][params.cellx];
         }
         window.location.href = chisel.href({...linkParams, 'cellx': undefined, 'celly': undefined});
