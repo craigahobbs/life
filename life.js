@@ -104,8 +104,10 @@ function lifePage(parent) {
     }
 
     // Navigate?
-    if (params.load !== undefined && !params.save) {
-        window.location.href = chisel.href({...linkParams, 'load': undefined, 'width': params.width, 'height': params.height, 'pause': '1'});
+    if (params.load !== undefined) {
+        if (!params.save) {
+            window.location.href = chisel.href({...linkParams, 'load': undefined, 'width': params.width, 'height': params.height, 'pause': '1'});
+        }
     } else if (params.reset) {
         window.location.href = chisel.href({...linkParams, 'reset': undefined});
     } else if (params.step) {
@@ -128,36 +130,36 @@ function lifePage(parent) {
             chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'}, chisel.text('Wikipedia'))
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
-            !params.save ? null : [
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'save': undefined})}, chisel.text('Load')),
+            params.save ? [
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'save': undefined})}, chisel.text('Load'))
+            ] : [
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'pause': params.pause ? undefined : '1'})}, chisel.text(params.pause ? 'Play' : 'Pause')),
+                !params.pause ? null : [
+                    chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
+                    chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
+                    chisel.text(chisel.nbsp + chisel.nbsp),
+                    chisel.elem('a', {'href': chisel.href({...linkParams, 'load': encodeCells(gCells), 'save': '1'})}, chisel.text('Save')),
+                ],
                 chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
-            ],
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'pause': params.pause ? undefined : '1'})}, chisel.text(params.pause ? 'Play' : 'Pause')),
-            !params.pause ? null : [
-                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
-                chisel.text(chisel.nbsp + chisel.nbsp),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'load': encodeCells(gCells), 'save': '1'})}, chisel.text('Save')),
-            ],
-            chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'reset': '1'})}, chisel.text('Random')),
-            chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp + '['),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2})}, chisel.text('Slower')),
-            chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2})}, chisel.text('Faster')),
-            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width - 5})}, chisel.text('Width-')),
-            chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width + 5})}, chisel.text('Width+')),
-            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height - 5})}, chisel.text('Height-')),
-            chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height + 5})}, chisel.text('Height+')),
-            chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size - 4})}, chisel.text('Size-')),
-            chisel.text(' ' + chisel.endash + ' '),
-            chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size + 4})}, chisel.text('Size+')),
-            chisel.text(']'),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'reset': '1'})}, chisel.text('Random')),
+                chisel.text(chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp + '['),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2})}, chisel.text('Slower')),
+                chisel.text(' ' + chisel.endash + ' '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2})}, chisel.text('Faster')),
+                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width - 5})}, chisel.text('Width-')),
+                chisel.text(' ' + chisel.endash + ' '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width + 5})}, chisel.text('Width+')),
+                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height - 5})}, chisel.text('Height-')),
+                chisel.text(' ' + chisel.endash + ' '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height + 5})}, chisel.text('Height+')),
+                chisel.text(']' + chisel.nbsp + chisel.nbsp + '['),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size - 4})}, chisel.text('Size-')),
+                chisel.text(' ' + chisel.endash + ' '),
+                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size + 4})}, chisel.text('Size+')),
+                chisel.text(']'),
+            ]
         ]),
 
         // Life SVG
