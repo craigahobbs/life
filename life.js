@@ -60,19 +60,15 @@ function lifeParams() {
 function lifePage(parent) {
     let [linkParams, params] = lifeParams();
 
-    // Generate random cells, if necessary
+    // Update cells
     if (params.load) {
         gCellsPrev = null;
         gCells = params.load;
-    } else if (params.reset || gCells === null) {
-        gCellsPrev = null;
-        gCells = randomCells(params.width, params.height, params.threshold);
     } else {
-        // Cell width or height changed?
-        let [cellsWidth, cellsHeight] = getCellsWidthHeight(gCells);
-        if (params.width !== cellsWidth || params.height !== cellsHeight) {
+        let gCellsUpdated = updateCells(params.reset ? null : gCells, params.width, params.height, params.threshold);
+        if (gCellsUpdated) {
             gCellsPrev = null;
-            gCells = randomCells(params.width, params.height, params.threshold);
+            gCells = gCellsUpdated;
         }
     }
 
@@ -86,7 +82,7 @@ function lifePage(parent) {
         // Reset if cells unchanged after one or two generations
         if (cellsEqual(gCells, gCellsPrev) || (cellsPrev2 !== null && cellsEqual(gCells, cellsPrev2))) {
             gCellsPrev = null;
-            gCells = randomCells(params.width, params.height, params.threshold);
+            gCells = updateCells(null, params.width, params.height, params.threshold);
         }
     }
 
@@ -209,16 +205,48 @@ function lifeSvg(linkParams, params, cells) {
     return svgElems;
 }
 
-function randomCells(width, height, threshold) {
-    let cells = [];
-    for (let iy = 0; iy < height; iy++) {
-        let row = [];
-        cells.push(row);
-        for (let ix = 0; ix < width; ix++) {
-            row.push(Math.random() < threshold);
+function updateCells(cells, width, height, threshold) {
+    let changed = false;
+
+    // Reset?
+    if (!cells) {
+        changed = true;
+        cells = [[]];
+    }
+
+    // Cell width or height changed?
+    let [cellsWidth, cellsHeight] = getCellsWidthHeight(cells);
+    if (width !== cellsWidth || height !== cellsHeight) {
+        changed = true;
+
+        // Add/remove rows as needed
+        if (cellsHeight > height) {
+            for (let iy = cellsHeight - 1; iy >= height; iy--) {
+                cells.pop();
+            }
+        } else if (cellsHeight < height) {
+            for (let iy = cellsHeight; iy < height; iy++) {
+                cells.push([]);
+            }
+        }
+
+        // Add/remove columns as needed
+        for (let iy = 0; iy < height; iy++) {
+            let row = cells[iy];
+            let rowLength = row.length;
+            if (rowLength > width) {
+                for (let ix = rowLength - 1; ix >= width; ix--) {
+                    row.pop();
+                }
+            } else if (rowLength < width) {
+                for (let ix = rowLength; ix < width; ix++) {
+                    row.push(Math.random() < threshold);
+                }
+            }
         }
     }
-    return cells;
+
+    return changed && cells;
 }
 
 function getNextCells(cells) {
