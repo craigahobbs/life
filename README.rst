@@ -30,7 +30,7 @@ cellx          If "true" or "1" in conjunction with "celly" toggles the cell at 
 celly          If "true" or "1" in conjunction with "cellx" toggles the cell at the x, y coordinate.
 load           Load a life board from the string format "<width>-<height>-<[01]{width * height}>".
 save           If "true" or "1" the load agument is not cleared.
-period         The simulation iteration period (default is 0.5 second).
+period         The simulation iteration period (default is 0.5 seconds).
 width          The horizontal width of the cell grid (default is 50).
 height         The vertical height of the cell grid (default is 50).
 size           The size, in pixels, of a cell (default is 10).
