@@ -120,9 +120,12 @@ function lifePage(parent) {
     }
 
     // Render
-    let sDec = String.fromCharCode(9668);
-    let sInc = String.fromCharCode(9658);
-    let sSep = chisel.nbsp + chisel.nbsp + '||' + chisel.nbsp + chisel.nbsp;
+    function button(text, params, section, first) {
+        return [
+            first ? null : chisel.text(section ? ' | ' : chisel.nbsp + chisel.nbsp),
+            chisel.elem('a', {'href': chisel.href({...linkParams, ...params})}, chisel.text(text)),
+        ];
+    }
     chisel.render(parent, [
         // Title
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
@@ -134,34 +137,22 @@ function lifePage(parent) {
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
             params.save ? [
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'save': undefined})}, chisel.text('Load'))
+                button('Load', {'save': undefined}, false, true)
             ] : [
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'pause': params.pause ? undefined : '1'})}, chisel.text(params.pause ? 'Play' : 'Pause')),
+                button(params.pause ? 'Play' : 'Pause', {'pause': params.pause ? undefined : '1'}, false, true),
                 !params.pause ? null : [
-                    chisel.text(sSep),
-                    chisel.elem('a', {'href': chisel.href({...linkParams, 'step': '1'})}, chisel.text('Step')),
-                    chisel.text(chisel.nbsp + chisel.nbsp),
-                    chisel.elem('a', {'href': chisel.href({...linkParams, 'load': encodeCells(gCells), 'save': '1'})}, chisel.text('Save')),
+                    button('Step', {'step': '1'}, true),
+                    button('Save', {'load': encodeCells(gCells), 'save': '1'})
                 ],
-                chisel.text(sSep),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'reset': '1'})}, chisel.text('Random')),
-                chisel.text(sSep + '[ '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period * 2}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
-                chisel.text(' speed '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'period': params.period / 2}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
-                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width - 5}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
-                chisel.text(' width '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'width': params.width + 5}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
-                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height - 5}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
-                chisel.text(' height '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'height': params.height + 5}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
-                chisel.text(' ]' + chisel.nbsp + chisel.nbsp + '[ '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size - 2}), 'style': 'text-decoration: none;'}, chisel.text(sDec)),
-                chisel.text(' size '),
-                chisel.elem('a', {'href': chisel.href({...linkParams, 'size': params.size + 2}), 'style': 'text-decoration: none;'}, chisel.text(sInc)),
-                chisel.text(' ]'),
+                button('Random', {'reset': '1'}, true),
+                button('<<Speed', {'period': params.period * 2}, true),
+                button('Speed>>', {'period': params.period / 2}),
+                button('<<Width', {'width': params.width - 5}, true),
+                button('Width>>', {'width': params.width + 5}),
+                button('<<Height', {'height': params.height - 5}, true),
+                button('Height>>', {'height': params.height + 5}),
+                button('<<Size', {'size': params.size - 2}, true),
+                button('Size>>', {'size': params.size + 2})
             ]
         ]),
 
