@@ -234,7 +234,6 @@ function updateCells(cells, width, height, threshold, border) {
         let max_x_border = (1 - border) * width;
         let min_y_border = border * height;
         let max_y_border = (1 - border) * height;
-
         for (let iy = 0; iy < height; iy++) {
             let row = cells[iy];
             let rowLength = row.length;
@@ -311,11 +310,48 @@ function cellsEqual(cells1, cells2) {
 function encodeCells(cells) {
     let [width, height] = getCellsWidthHeight(cells);
     let values = [];
+
+    // Count pairs of runs of 0's/1's
+    let zero_count = 0;
+    let one_count = 1;
+    let count_zeros = true;
     for (let iy = 0; iy < height; iy++) {
         for (let ix = 0; ix < width; ix++) {
-            values.push(getCell(cells, ix, iy) ? '1' : '0');
+            let value = getCell(cells, ix, iy);
+            if (count_zeros) {
+                if (value) {
+                    one_count = 1;
+                    count_zeros = false;
+                } else {
+                    zero_count++;
+                    if (zero_count >= 35) {
+                        one_count = 0;
+                        count_zeros = false;
+                    }
+                }
+            } else {
+                if (value) {
+                    one_count++;
+                    if (one_count >= 35) {
+                        values.push(zero_count.toString(36));
+                        values.push(one_count.toString(36));
+                        zero_count = 0;
+                        one_count = 0;
+                        count_zeros = true;
+                    }
+                } else {
+                    values.push(zero_count.toString(36));
+                    values.push(one_count.toString(36));
+                    zero_count = 1;
+                    one_count = 0;
+                    count_zeros = true;
+                }
+            }
         }
     }
+    values.push(zero_count.toString(36));
+    values.push(one_count.toString(36));
+
     return [width, height, values.join('')].join('-');
 }
 
@@ -323,13 +359,26 @@ function decodeCells(sCells, minWH, maxWH) {
     let [sWidth, sHeight, sValues] = sCells.split('-');
     let width = parseInt(sWidth) || 0;
     let height = parseInt(sHeight) || 0;
+
+    // Decode the values
+    let values = [];
+    if (sValues !== undefined) {
+        for (let ix = 0; ix < sValues.length; ix++) {
+            let count = parseInt(sValues[ix], 36);
+            for (let ic = 0; ic < count; ic++) {
+                values.push(ix % 2 !== 0);
+            }
+        }
+    }
+
+    // Create the cells
     let cells = null;
-    if (width >= minWH && width < maxWH && height >= minWH && height < maxWH && sValues !== undefined && sValues.length === width * height) {
+    if (width >= minWH && width < maxWH && height >= minWH && height < maxWH && values.length === width * height) {
         cells = [];
         for (let iy = 0; iy < height; iy++) {
             let row = [];
             for (let ix = 0; ix < width; ix++) {
-                row.push(sValues[iy * width + ix] === '1');
+                row.push(values[iy * width + ix]);
             }
             cells.push(row);
         }
