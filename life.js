@@ -46,8 +46,8 @@ function lifeParams() {
             'height': height,
             'size': Math.max(2, Math.min(100, params.size === undefined ? 10 : parseInt(params.size) || 0)),
             'gap': Math.max(0, Math.min(10, params.gap === undefined ? 1 : parseInt(params.gap) || 0)),
-            'threshold': Math.max(0, Math.min(1, params.threshold === undefined ? 0.25 : parseFloat(params.threshold) || 0)),
-            'border': Math.max(0, Math.min(0.45, params.border === undefined ? 0.1 : parseFloat(params.border) || 0)),
+            'lifeRatio': Math.max(0, Math.min(1, params.lifeRatio === undefined ? 0.25 : parseFloat(params.lifeRatio) || 0)),
+            'lifeBorder': Math.max(0, Math.min(0.45, params.lifeBorder === undefined ? 0.1 : parseFloat(params.lifeBorder) || 0)),
             'fill': params.fill || '#2a803b',
             'stroke': params.stroke || 'none',
             'strokeWidth': params.strokeWidth || '1',
@@ -66,7 +66,7 @@ function lifePage(parent) {
         gCellsPrev = null;
         gCells = params.load;
     } else {
-        let gCellsUpdated = updateCells(params.reset ? null : gCells, params.width, params.height, params.threshold, params.border);
+        let gCellsUpdated = updateCells(params.reset ? null : gCells, params.width, params.height, params.lifeRatio, params.lifeBorder);
         if (gCellsUpdated) {
             gCellsPrev = null;
             gCells = gCellsUpdated;
@@ -83,7 +83,7 @@ function lifePage(parent) {
         // Reset if cells unchanged after one or two generations
         if (cellsEqual(gCells, gCellsPrev) || (cellsPrev2 !== null && cellsEqual(gCells, cellsPrev2))) {
             gCellsPrev = null;
-            gCells = updateCells(null, params.width, params.height, params.threshold, params.border);
+            gCells = updateCells(null, params.width, params.height, params.lifeRatio, params.lifeBorder);
         }
     }
 
@@ -148,6 +148,7 @@ function lifePage(parent) {
                     button('Save', {'load': encodeCells(gCells), 'save': '1'})
                 ],
                 button('Random', {'reset': '1'}, true),
+                button('Border', {'bgStroke': params.bgStroke === 'none' ? 'black' : undefined}),
                 button('<<Speed', {'period': params.period * 2}, true),
                 button('Speed>>', {'period': params.period / 2}),
                 button('<<Width', {'width': params.width - 5}, true),
