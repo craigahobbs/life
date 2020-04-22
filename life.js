@@ -47,6 +47,7 @@ function lifeParams() {
             'size': Math.max(2, Math.min(100, params.size === undefined ? 10 : parseInt(params.size) || 0)),
             'gap': Math.max(0, Math.min(10, params.gap === undefined ? 1 : parseInt(params.gap) || 0)),
             'threshold': Math.max(0, Math.min(1, params.threshold === undefined ? 0.25 : parseFloat(params.threshold) || 0)),
+            'border': Math.max(0, Math.min(0.45, params.border === undefined ? 0.1 : parseFloat(params.border) || 0)),
             'fill': params.fill || '#2a803b',
             'stroke': params.stroke || 'none',
             'strokeWidth': params.strokeWidth || '1',
@@ -65,7 +66,7 @@ function lifePage(parent) {
         gCellsPrev = null;
         gCells = params.load;
     } else {
-        let gCellsUpdated = updateCells(params.reset ? null : gCells, params.width, params.height, params.threshold);
+        let gCellsUpdated = updateCells(params.reset ? null : gCells, params.width, params.height, params.threshold, params.border);
         if (gCellsUpdated) {
             gCellsPrev = null;
             gCells = gCellsUpdated;
@@ -82,7 +83,7 @@ function lifePage(parent) {
         // Reset if cells unchanged after one or two generations
         if (cellsEqual(gCells, gCellsPrev) || (cellsPrev2 !== null && cellsEqual(gCells, cellsPrev2))) {
             gCellsPrev = null;
-            gCells = updateCells(null, params.width, params.height, params.threshold);
+            gCells = updateCells(null, params.width, params.height, params.threshold, params.border);
         }
     }
 
@@ -138,7 +139,8 @@ function lifePage(parent) {
         ]),
         chisel.elem('p', {'style': 'white-space: nowrap;'}, [
             params.save ? [
-                button('Load', {'save': undefined}, false, true)
+                button('Load', {'save': undefined}, false, true),
+                chisel.text(chisel.nbsp + chisel.nbsp + chisel.nbsp + '<--' + chisel.nbsp + chisel.nbsp + 'Bookmark this link or the page link to save.')
             ] : [
                 button(params.pause ? 'Play' : 'Pause', {'pause': params.pause ? undefined : '1'}, false, true),
                 !params.pause ? null : [
@@ -202,7 +204,7 @@ function lifeSvg(linkParams, params, cells) {
     return svgElems;
 }
 
-function updateCells(cells, width, height, threshold) {
+function updateCells(cells, width, height, threshold, border) {
     let changed = false;
 
     // Reset?
@@ -228,6 +230,11 @@ function updateCells(cells, width, height, threshold) {
         }
 
         // Add/remove columns as needed
+        let min_x_border = border * width;
+        let max_x_border = (1 - border) * width;
+        let min_y_border = border * height;
+        let max_y_border = (1 - border) * height;
+
         for (let iy = 0; iy < height; iy++) {
             let row = cells[iy];
             let rowLength = row.length;
@@ -237,7 +244,8 @@ function updateCells(cells, width, height, threshold) {
                 }
             } else if (rowLength < width) {
                 for (let ix = rowLength; ix < width; ix++) {
-                    row.push(Math.random() < threshold);
+                    row.push(ix < min_x_border || ix > max_x_border || iy < min_y_border || iy > max_y_border ?
+                             false : Math.random() < threshold);
                 }
             }
         }

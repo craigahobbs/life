@@ -38,6 +38,7 @@ height         The vertical height of the cell grid (default is 50).
 size           The size, in pixels, of a cell (default is 10).
 gap            The gap, in pixels, between cells (default is 1).
 threshold      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
+border         The size ratio of the border around the life board at startup (default is 0.1).
 fill           The cell fill color (default is "#2a803b").
 stroke         The cell stroke color (default is "none").
 strokeWidth    The cell stroke width (default is 1).
