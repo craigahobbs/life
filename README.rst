@@ -37,6 +37,7 @@ width          The horizontal width of the cell grid (default is 50).
 height         The vertical height of the cell grid (default is 50).
 size           The size, in pixels, of a cell (default is 10).
 gap            The gap, in pixels, between cells (default is 1).
+depth          The generation depth used to check for cycles (default is 2).
 lifeRatio      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
 lifeBorder     The size ratio of the lifeless border around the life board at startup (default is 0.1).
 fill           The cell fill color (default is "#2a803b").
