@@ -2,8 +2,12 @@
 
 NODE_VERSION := lts
 
+NPM_ARGS := -e HOME=$(CURDIR)/build
+NPM_INSTALL_ARGS := --prefer-offline
+
 build/eslint.install:
-	docker run --rm -u `id -u`:`id -g` -v $(abspath .):$(abspath .) -w $(abspath .) node:$(NODE_VERSION) npm install -D eslint
+	docker run --rm -u `id -u`:`id -g` -v $(abspath .):$(abspath .) -w $(abspath .) $(NPM_ARGS) node:$(NODE_VERSION) \
+		npm install $(NPM_INSTALL_ARGS) -D eslint
 	mkdir -p $(dir $@)
 	touch $@
 
