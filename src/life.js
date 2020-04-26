@@ -231,7 +231,7 @@ class Life {
         if (values !== undefined && values.length === width * height) {
             this.values = values;
         } else {
-            this.values = Array.from({length: width * height}, (val, ix) => false);
+            this.values = Array.from({length: width * height}, () => false);
         }
     }
 
