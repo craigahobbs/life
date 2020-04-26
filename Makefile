@@ -16,15 +16,15 @@ commit: eslint
 
 .PHONY: eslint
 eslint: build/eslint.install
-	$(NODE_DOCKER) npx eslint src/*.js
+	$(NODE_DOCKER) npx eslint --format unix src
 
 .PHONY: clean
 clean:
 	rm -rf build node_modules
 
 .PHONY: gh-pages
-gh-pages:
-	if [ ! -d ../$(notdir $(CURDIR)).doc ]; then git clone -b gh-pages `git config --get remote.origin.url` ../$(notdir $(CURDIR)).doc; fi
-	cd ../$(notdir $(CURDIR)).doc && git pull
-	rsync -rv --delete --exclude=.git/ src/ ../$(notdir $(CURDIR)).doc
-	touch ../$(notdir $(CURDIR)).doc/.nojekyll
+gh-pages: clean commit
+	if [ ! -d ../$(notdir $(CURDIR)).gh-pages ]; then git clone -b gh-pages `git config --get remote.origin.url` ../$(notdir $(CURDIR)).gh-pages; fi
+	cd ../$(notdir $(CURDIR)).gh-pages && git pull
+	rsync -rv --delete --exclude=.git/ src/ ../$(notdir $(CURDIR)).gh-pages
+	touch ../$(notdir $(CURDIR)).gh-pages/.nojekyll
