@@ -1,13 +1,9 @@
 .DEFAULT_GOAL := help
 
-NODE_VERSION := lts
-
-NPM_ARGS := -e HOME=$(CURDIR)/build
-NPM_INSTALL_ARGS := --prefer-offline
+NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build node:lts
 
 build/eslint.install:
-	docker run --rm -u `id -u`:`id -g` -v $(abspath .):$(abspath .) -w $(abspath .) $(NPM_ARGS) node:$(NODE_VERSION) \
-		npm install $(NPM_INSTALL_ARGS) -D eslint
+	$(NODE_DOCKER) npm install -D eslint
 	mkdir -p $(dir $@)
 	touch $@
 
@@ -20,7 +16,7 @@ commit: eslint
 
 .PHONY: eslint
 eslint: build/eslint.install
-	docker run --rm -u `id -u`:`id -g` -v $(abspath .):$(abspath .) -w $(abspath .) node:$(NODE_VERSION) npx eslint src/*.js
+	$(NODE_DOCKER) npx eslint src/*.js
 
 .PHONY: clean
 clean:
