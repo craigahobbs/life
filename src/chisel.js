@@ -68,13 +68,13 @@ export function href(hashParams, params, path) {
     params = encodeParams(params);
     path = path ? path : window.location.pathname;
     if (hashParams === null && params === null) {
-        return path + '#';
+        return `${path}#`;
     } else if (hashParams === null && params !== null) {
-        return path + '?' + params;
+        return `${path}?${params}`;
     } else if (hashParams !== null && params === null) {
-        return path + '#' + hashParams;
+        return `${path}#${hashParams}`;
     }
-    return path + '?' + params + '#' + hashParams;
+    return `${path}?${params}#${hashParams}`;
 }
 
 export function encodeParams(params) {
@@ -83,7 +83,7 @@ export function encodeParams(params) {
         let names = Object.keys(params).sort();
         names.forEach(function(name) {
             if (params[name] !== null && params[name] !== undefined) {
-                items.push(encodeURIComponent(name) + '=' + encodeURIComponent(params[name]));
+                items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
             }
         });
         names.forEach(function(name) {
@@ -98,7 +98,7 @@ export function encodeParams(params) {
 export function decodeParams(paramString) {
     let params = {},
         r = /([^&;=]+)=?([^&;]*)/g,
-        d = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); },
+        d = function (s) { return decodeURIComponent(s.replace(/\+/g, ' ')); },
         q = (paramString || window.location.hash.substring(1)),
         e;
 
