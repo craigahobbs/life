@@ -8,7 +8,7 @@ export function main(parent) {
     let lifePage = new LifePage();
 
     // Listen for hash parameter changes
-    window.onhashchange = function () {
+    window.onhashchange = () => {
         lifePage.render(parent);
     };
 
@@ -206,8 +206,8 @@ class LifePage {
                         'style': this.current.cell(ix, iy) ?
                             'fill: ' + this.params.fill + '; stroke: ' + this.params.stroke + '; stroke-width: ' + this.params.strokeWidth + ';' :
                             'fill: rgba(255, 255, 255, 0); stroke: none;',
-                        '_callback': !this.params.pause ? undefined : function(element) {
-                            element.addEventListener('click', function() {
+                        '_callback': !this.params.pause ? undefined : (element) => {
+                            element.addEventListener('click', () => {
                                 window.location.href = chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy});
                             });
                         }
