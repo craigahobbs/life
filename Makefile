@@ -1,15 +1,17 @@
 .DEFAULT_GOAL := help
 
-NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build node:lts
+NODE_IMAGE := node:lts
+NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build $(NODE_IMAGE)
+ESLINT_VERSION := 6.8.0
 
 build/eslint.install:
-	$(NODE_DOCKER) npm install -D eslint
+	$(NODE_DOCKER) npm install -D eslint@$(ESLINT_VERSION)
 	mkdir -p $(dir $@)
 	touch $@
 
 .PHONY: help
 help:
-	@echo 'usage: make [clean|commit|eslint]'
+	@echo 'usage: make [clean|commit|eslint|gh-pages]'
 
 .PHONY: commit
 commit: eslint
@@ -21,6 +23,10 @@ eslint: build/eslint.install
 .PHONY: clean
 clean:
 	rm -rf build node_modules
+
+.PHONY: superclean
+superclean: clean
+	docker rmi -f $(NODE_IMAGE)
 
 .PHONY: gh-pages
 gh-pages: clean commit
