@@ -28,11 +28,12 @@ class LifePage {
     }
 
     updateParams() {
-        const linkParams = this.linkParams = chisel.decodeParams();
+        const linkParams = chisel.decodeParams();
 
         // Load?
         let width, height;
-        const minWH = 5, maxWH = 1000;
+        const minWH = 5;
+        const maxWH = 1000;
         let life = linkParams.load && Life.decode(linkParams.load);
         if (life && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
             [width, height] = [life.width, life.height];
@@ -42,6 +43,8 @@ class LifePage {
             height = Math.max(minWH, Math.min(maxWH, linkParams.height === undefined ? 50 : parseInt(linkParams.height, 10) || 0));
         }
 
+        // Update params
+        this.linkParams = linkParams;
         this.params = {
             'pause': !!life || linkParams.pause === 'true' || linkParams.pause === '1',
             'step': linkParams.step === 'true' || linkParams.step === '1',
@@ -73,14 +76,13 @@ class LifePage {
 
     next() {
         // Cycle?  If yes and of insufficient depth, reset...
-        const current = this.current;
-        let next = current.next;
+        let next = this.current.next();
         const foundIndex = this.generations.findIndex((life) => next.isEqual(life));
         if (foundIndex !== -1) {
             const foundDepth = this.generations.length - foundIndex;
             if (foundDepth <= this.params.depth) {
                 this.generations = [];
-                next = new Life(0, 0).resize(current.width, current.height, this.params.lifeRatio, this.params.lifeBorder);
+                next = new Life(0, 0).resize(this.current.width, this.current.height, this.params.lifeRatio, this.params.lifeBorder);
             }
         }
 
@@ -270,8 +272,10 @@ class Life {
 
     resize(width, height, lifeRatio, borderRatio) {
         const values = [];
-        const xBorderMin = borderRatio * width, xBorderMax = (1 - borderRatio) * width;
-        const yBorderMin = borderRatio * height, yBorderMax = (1 - borderRatio) * height;
+        const xBorderMin = borderRatio * width;
+        const xBorderMax = (1 - borderRatio) * width;
+        const yBorderMin = borderRatio * height;
+        const yBorderMax = (1 - borderRatio) * height;
         for (let iy = 0; iy < height; iy++) {
             for (let ix = 0; ix < width; ix++) {
                 if (ix >= 0 && ix < this.width && iy >= 0 && iy < this.height) {
@@ -286,9 +290,10 @@ class Life {
         return new Life(width, height, values);
     }
 
-    get next() {
+    next() {
         const values = [];
-        const maxX = this.width - 1, maxY = this.height - 1;
+        const maxX = this.width - 1;
+        const maxY = this.height - 1;
         for (let iy = 0; iy < this.height; iy++) {
             for (let ix = 0; ix < this.width; ix++) {
                 const count =

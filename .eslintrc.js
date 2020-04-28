@@ -25,6 +25,7 @@ module.exports = {
         'array-element-newline': 'off',
         'complexity': 'off',
         'function-call-argument-newline': 'off',
+        'init-declarations': 'off',
         'max-classes-per-file': 'off',
         'max-lines': 'off',
         'max-lines-per-function': 'off',
@@ -40,26 +41,15 @@ module.exports = {
         'no-negated-condition': 'off',
         'no-plusplus': 'off',
         'no-ternary': 'off',
+        'no-undefined': 'off',
         'no-underscore-dangle': 'off',
         'no-use-before-define': 'off',
         'object-property-newline': 'off',
+        'object-shorthand': 'off',
         'one-var': 'off',
+        'require-unicode-regexp': 'off',
         'sort-keys': 'off',
         'sort-vars': 'off',
-        'space-before-function-paren': 'off',
-
-        // Undecided
-        'guard-for-in': 'off',
-        'id-length': 'off',
-        'init-declarations': 'off',
-        'no-multi-assign': 'off',
-        'no-param-reassign': 'off',
-        'no-shadow': 'off',
-        'no-undefined': 'off',
-        'object-shorthand': 'off',
-        'one-var-declaration-per-line': 'off',
-        'prefer-destructuring': 'off',
-        'prefer-named-capture-group': 'off',
-        'require-unicode-regexp': 'off'
+        'space-before-function-paren': 'off'
     }
 };
