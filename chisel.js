@@ -4,7 +4,7 @@
 export const nbsp = String.fromCharCode(160);
 export const endash = String.fromCharCode(8211);
 
-export function render(parent, elems, clear=true) {
+export function render(parent, elems, clear = true) {
     if (clear) {
         parent.innerHTML = '';
     }
@@ -12,15 +12,15 @@ export function render(parent, elems, clear=true) {
 }
 
 export function createElement(elem) {
-    let element = elem.text ? document.createTextNode(elem.text) : document.createElementNS(elem.ns, elem.tag);
+    const element = elem.text ? document.createTextNode(elem.text) : document.createElementNS(elem.ns, elem.tag);
     let attrs = elem.attrs;
     if (attrs) {
-        let callback = attrs._callback;
+        const callback = attrs._callback;
         if (callback !== undefined) {
             attrs = {...attrs, '_callback': undefined};
         }
-        for (let attr in attrs) {
-            let value = attrs[attr];
+        for (const attr in attrs) {
+            const value = attrs[attr];
             if (value !== undefined) {
                 element.setAttribute(attr, value);
             }
@@ -44,12 +44,12 @@ function appendElements(parent, elems) {
 }
 
 export function elem(tag, attrsOrElems, elems, ns) {
-    let attrs = isDict(attrsOrElems) ? attrsOrElems : undefined;
+    const attrs = isDict(attrsOrElems) ? attrsOrElems : undefined;
     return {
-        tag: tag,
-        attrs: attrs || {},
-        elems: (attrs ? elems : attrsOrElems) || [],
-        ns: ns || 'http://www.w3.org/1999/xhtml'
+        'tag': tag,
+        'attrs': attrs || {},
+        'elems': (attrs ? elems : attrsOrElems) || [],
+        'ns': ns || 'http://www.w3.org/1999/xhtml'
     };
 }
 
@@ -59,7 +59,7 @@ export function svgElem(tag, attrsOrElems, elems) {
 
 export function text(text_) {
     return {
-        text: text_,
+        'text': text_
     };
 }
 
@@ -78,15 +78,15 @@ export function href(hashParams, params, path) {
 }
 
 export function encodeParams(params) {
-    let items = [];
+    const items = [];
     if (undefined !== params) {
-        let names = Object.keys(params).sort();
-        names.forEach(function(name) {
+        const names = Object.keys(params).sort();
+        names.forEach((name) => {
             if (params[name] !== null && params[name] !== undefined) {
                 items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
             }
         });
-        names.forEach(function(name) {
+        names.forEach((name) => {
             if (params[name] === null) {
                 items.push(encodeURIComponent(name));
             }
@@ -96,12 +96,12 @@ export function encodeParams(params) {
 }
 
 export function decodeParams(paramString) {
-    let params = {},
-        r = /([^&;=]+)=?([^&;]*)/g,
-        d = function (s) { return decodeURIComponent(s.replace(/\+/g, ' ')); },
-        q = (paramString || window.location.hash.substring(1)),
-        e;
+    const params = {};
+    const r = /([^&;=]+)=?([^&;]*)/g;
+    const d = (s) => decodeURIComponent(s.replace(/\+/g, ' '));
+    const q = paramString || window.location.hash.substring(1);
 
+    let e;
     while ((e = r.exec(q)) !== null) {
         params[d(e[1])] = d(e[2]);
     }
@@ -111,12 +111,12 @@ export function decodeParams(paramString) {
 
 export function xhr(method, url, args) {
     args = args || {};
-    let xhr_ = new XMLHttpRequest();
+    const xhr_ = new XMLHttpRequest();
     xhr_.open(method, href(undefined, args.params, url));
     xhr_.responseType = args.responseType || 'json';
-    xhr_.onreadystatechange = function () {
+    xhr_.onreadystatechange = () => {
         if (XMLHttpRequest.DONE === xhr_.readyState) {
-            if (200 === xhr_.status) {
+            if (xhr_.status === 200) {
                 if (args.onok) {
                     args.onok(xhr_.response);
                 }
@@ -131,5 +131,5 @@ export function xhr(method, url, args) {
 }
 
 export function isDict(obj) {
-    return !!obj && obj.constructor == Object;
+    return !!obj && obj.constructor === Object;
 }
