@@ -1,34 +1,5 @@
 {
     "devDependencies": {
         "eslint": "^6.8.0"
-    },
-    "eslintConfig": {
-        "env": {
-            "browser": true,
-            "es6": true
-        },
-        "extends": "eslint:recommended",
-        "globals": {
-            "Atomics": "readonly",
-            "SharedArrayBuffer": "readonly"
-        },
-        "parserOptions": {
-            "ecmaVersion": 2018,
-            "sourceType": "module"
-        },
-        "rules": {
-            "semi": [
-                "error",
-                "always"
-            ],
-            "quotes": [
-                "error",
-                "single",
-                {
-                    "avoidEscape": true,
-                    "allowTemplateLiterals": true
-                }
-            ]
-        }
     }
 }
