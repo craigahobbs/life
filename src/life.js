@@ -7,13 +7,17 @@ import * as chisel from './chisel.js';
 export function main(parent) {
     let lifePage = new LifePage();
 
-    // Listen for hash parameter changes
-    window.onhashchange = () => {
-        lifePage.render(parent);
-    };
-
     // Render page
-    lifePage.render(parent);
+    const renderLifePage = () => {
+        let pageElements = lifePage.pageElements();
+        if (pageElements) {
+            chisel.render(parent, pageElements);
+        }
+    };
+    renderLifePage();
+
+    // Listen for hash parameter changes
+    window.onhashchange = renderLifePage;
 }
 
 
@@ -21,10 +25,6 @@ class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
-    }
-
-    get current() {
-        return this.generations[this.generations.length - 1];
     }
 
     updateParams() {
@@ -67,27 +67,31 @@ class LifePage {
         };
     }
 
-    next(params) {
+    get current() {
+        return this.generations[this.generations.length - 1];
+    }
+
+    next() {
         // Cycle?  If yes and of insufficient depth, reset...
         let current = this.current;
         let next = current.next;
         let foundIndex = this.generations.findIndex((life) => next.isEqual(life));
         if (foundIndex !== -1) {
             let foundDepth = this.generations.length - foundIndex;
-            if (foundDepth <= params.depth) {
+            if (foundDepth <= this.params.depth) {
                 this.generations = [];
-                next = new Life(0, 0).resize(current.width, current.height, params.lifeRatio, params.lifeBorder);
+                next = new Life(0, 0).resize(current.width, current.height, this.params.lifeRatio, this.params.lifeBorder);
             }
         }
 
         // Limit generations array size
         this.generations.push(next);
-        if (this.generations.length >= params.depth * 2) {
-            this.generations = this.generations.slice(params.depth);
+        if (this.generations.length >= this.params.depth * 2) {
+            this.generations = this.generations.slice(this.params.depth);
         }
     }
 
-    render(parent) {
+    pageElements() {
         this.updateParams();
 
         // Clear/set the generation interval
@@ -97,7 +101,7 @@ class LifePage {
         }
         if (!this.params.pause && !this.params.step) {
             this.generationInterval = setInterval(() => {
-                this.next(this.params);
+                this.next();
                 chisel.render(document.getElementById('lifeSvg'), this.svgElements());
             }, this.params.period * 1000);
         }
@@ -127,7 +131,7 @@ class LifePage {
                 window.location.href = chisel.href({...this.linkParams, 'reset': undefined});
                 return;
             } else if (this.params.step) {
-                this.next(this.params);
+                this.next();
                 window.location.href = chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'});
                 return;
             } else if (this.params.cellx !== undefined || this.params.celly !== undefined) {
@@ -147,7 +151,7 @@ class LifePage {
                 chisel.elem('a', {'href': chisel.href({...this.linkParams, ...params})}, chisel.text(text)),
             ];
         };
-        chisel.render(parent, [
+        return [
             // Title
             chisel.elem('p', {'style': 'white-space: nowrap;'}, [
                 chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
@@ -182,7 +186,7 @@ class LifePage {
 
             // Life SVG
             chisel.elem('p', {'id': 'lifeSvg'}, this.svgElements())
-        ]);
+        ];
     }
 
     svgElements() {
