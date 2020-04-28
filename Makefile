@@ -2,10 +2,9 @@
 
 NODE_IMAGE := node:lts
 NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build $(NODE_IMAGE)
-ESLINT_VERSION := 6.8.0
 
-build/eslint.install:
-	$(NODE_DOCKER) npm install -D eslint@$(ESLINT_VERSION)
+build/npm.install:
+	$(NODE_DOCKER) npm install
 	mkdir -p $(dir $@)
 	touch $@
 
@@ -17,8 +16,8 @@ help:
 commit: eslint
 
 .PHONY: eslint
-eslint: build/eslint.install
-	$(NODE_DOCKER) npx eslint --format unix --ignore-pattern '!.eslintrc.js' .eslintrc.js src
+eslint: build/npm.install
+	$(NODE_DOCKER) npx eslint --format unix .eslintrc.js src
 
 .PHONY: clean
 clean:

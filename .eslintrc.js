@@ -22,7 +22,6 @@ module.exports = {
         'semi': ['error', 'always'],
 
         // Disabled
-        'array-bracket-newline': 'off',
         'array-element-newline': 'off',
         'complexity': 'off',
         'function-call-argument-newline': 'off',
@@ -50,7 +49,6 @@ module.exports = {
         'space-before-function-paren': 'off',
 
         // Undecided
-        'callback-return': 'off',
         'guard-for-in': 'off',
         'id-length': 'off',
         'init-declarations': 'off',
