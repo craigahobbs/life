@@ -8,6 +8,10 @@ This is a Javascript implementation of
 
 Click `here <https://craigahobbs.github.io/life/>`_ to run the simulation.
 
+
+Instructions
+============
+
 Click "Pause" to stop the simulation. Once paused, you can save the life board by clicking "Save"
 and copying the "Load" link. Also, in the paused state, you can toggle any cell of the life board by
 clicking on it.  Click "Play" to restart the simulation.
