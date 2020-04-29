@@ -81,8 +81,8 @@ class LifePage {
         if (foundIndex !== -1) {
             const foundDepth = this.generations.length - foundIndex;
             if (foundDepth <= this.params.depth) {
-                this.generations = [];
                 next = new Life(0, 0).resize(this.current.width, this.current.height, this.params.lifeRatio, this.params.lifeBorder);
+                this.generations = [next];
             }
         }
 
