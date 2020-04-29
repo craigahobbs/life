@@ -1,3 +1,5 @@
+.. -*- fill-column: 100; -*-
+
 Conway's Game of Life
 *********************
 
@@ -5,6 +7,17 @@ This is a Javascript implementation of
 `Conway's Game of Life <https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life>`_.
 
 Click `here <https://craigahobbs.github.io/life/>`_ to run the simulation.
+
+Click "Pause" to stop the simulation. Once paused, you can save the life board by clicking "Save"
+and copying the "Load" link. Also, in the paused state, you can toggle any cell of the life board by
+clicking on it.  Click "Play" to restart the simulation.
+
+Click "Random" to randomize the life board. Click "Border" to display a border around the life
+board - this can be helpful for editing.
+
+You can increase or decrease the speed of the simulation by clicking the "Speed" controls. Update
+the size of the life board by clicking the "Width" and "Height" controls. Increase or decrease the
+size of the life board cells by clicking the "Size" controls.
 
 
 Examples
