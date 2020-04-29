@@ -58,7 +58,7 @@ class LifePage {
             'height': height,
             'size': Math.max(2, Math.min(100, linkParams.size === undefined ? 10 : parseInt(linkParams.size, 10) || 0)),
             'gap': Math.max(0, Math.min(10, linkParams.gap === undefined ? 1 : parseInt(linkParams.gap, 10) || 0)),
-            'depth': Math.max(1, Math.min(1000, linkParams.depth === undefined ? 2 : parseInt(linkParams.depth, 10) || 0)),
+            'depth': Math.max(0, Math.min(1000, linkParams.depth === undefined ? 2 : parseInt(linkParams.depth, 10) || 0)),
             'lifeRatio': Math.max(0, Math.min(1, linkParams.lifeRatio === undefined ? 0.25 : parseFloat(linkParams.lifeRatio) || 0)),
             'lifeBorder': Math.max(0, Math.min(0.45, linkParams.lifeBorder === undefined ? 0.1 : parseFloat(linkParams.lifeBorder) || 0)),
             'fill': linkParams.fill || '#2a803b',

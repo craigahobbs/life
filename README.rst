@@ -10,13 +10,15 @@ Click `here <https://craigahobbs.github.io/life/>`_ to run the simulation.
 Examples
 ========
 
-* `Pulsar <https://craigahobbs.github.io/life/#period=0.5&size=18&load=31-31-02r4r2z0z0z0z0z0n151o151o232z0g3221223i11111111111m232z0k232m11111111111i3221223z0g232o151o151z0z0z0z0z0n2r4r2>`_
+* `Pulsar <https://craigahobbs.github.io/life/#size=32&load=17-17-z03333n141114141411141414111416333p333614111414141114141411141n333z030>`_
+
+* `Flower <https://craigahobbs.github.io/life/#depth=0&size=32&load=15-15-z0z0c1d111b212b111d1z0z0c0>`_
 
 * `Gosper glider gun <https://craigahobbs.github.io/life/#period=0.05&size=18&load=36-31-02w4w2z0z0z0z0z0z0z0z0w1x111n262c2b13142c4815132e28131124111l15171m131w2z0z0z0z0z0z0z0z0z0z0w2w4w2>`_
 
-* `Clover <https://craigahobbs.github.io/life/#period=0.1&size=8&load=65-65-02z0q4z0q2z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0q3z0q131z0p131z0n2111112z0k1115111z0j191z0j2113112z0l232z0z0z0i232z0l2113112z0j191z0j1115111z0k2111112z0n131z0p131z0q3z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0q2z0q4z0q2>`_
-
 * `Leaves <https://craigahobbs.github.io/life/#period=0.1&size=24&load=21-21-8311111332414111411112329211719121z0626141d121314212412131321171c2j2b181127262123322j172z0612191711292321111411141423311111380>`_
+
+* `Clover <https://craigahobbs.github.io/life/#depth=0&period=0.1&size=8&load=65-65-02z0q4z0q2z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0q3z0q131z0p131z0n2111112z0k1115111z0j191z0j2113112z0l232z0z0z0i232z0l2113112z0j191z0j1115111z0k2111112z0n131z0p131z0q3z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0q2z0q4z0q2>`_
 
 
 Page Arguments
