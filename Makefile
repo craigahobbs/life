@@ -17,7 +17,7 @@ commit: eslint
 
 .PHONY: eslint
 eslint: build/npm.install
-	$(NODE_DOCKER) npx eslint --format unix .eslintrc.js src
+	$(NODE_DOCKER) npx eslint -c .eslintrc.js -f unix .eslintrc.js src
 
 .PHONY: clean
 clean:

@@ -22,6 +22,7 @@ module.exports = {
         'semi': ['error', 'always'],
 
         // Disabled
+        'array-bracket-newline': 'off',
         'array-element-newline': 'off',
         'complexity': 'off',
         'function-call-argument-newline': 'off',
@@ -39,6 +40,7 @@ module.exports = {
         'no-magic-numbers': 'off',
         'no-mixed-operators': 'off',
         'no-negated-condition': 'off',
+        'no-nested-ternary': 'off',
         'no-plusplus': 'off',
         'no-ternary': 'off',
         'no-undefined': 'off',
