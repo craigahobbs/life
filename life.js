@@ -8,16 +8,12 @@ export function main(parent) {
     const lifePage = new LifePage();
 
     // Render page
-    const renderLifePage = () => {
-        const pageElements = lifePage.pageElements();
-        if (pageElements) {
-            chisel.render(parent, pageElements);
-        }
-    };
-    renderLifePage();
+    lifePage.render(parent);
 
     // Listen for hash parameter changes
-    window.onhashchange = renderLifePage;
+    window.onhashchange = () => {
+        lifePage.render(parent);
+    };
 }
 
 
@@ -93,7 +89,7 @@ class LifePage {
         }
     }
 
-    pageElements() {
+    render(parent) {
         this.updateParams();
 
         // Clear/set the generation interval
@@ -119,7 +115,7 @@ class LifePage {
                     'height': this.params.height,
                     'pause': '1'
                 });
-                return null;
+                return;
             }
         } else {
             // Resize?
@@ -133,18 +129,18 @@ class LifePage {
                 this.generations =
                     [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
                 window.location.href = chisel.href({...this.linkParams, 'reset': undefined});
-                return null;
+                return;
             } else if (this.params.step) {
                 this.next();
                 window.location.href = chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'});
-                return null;
+                return;
             } else if (this.params.cellx !== undefined || this.params.celly !== undefined) {
                 if (this.params.cellx !== undefined && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
                     this.params.celly !== undefined && this.params.celly >= 0 && this.params.celly < this.params.height) {
                     this.current.setCell(this.params.cellx, this.params.celly, !this.current.cell(this.params.cellx, this.params.celly));
                 }
                 window.location.href = chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined});
-                return null;
+                return;
             }
         }
 
@@ -153,7 +149,7 @@ class LifePage {
             first ? null : chisel.text(section ? ' | ' : chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': chisel.href({...this.linkParams, ...params})}, chisel.text(text))
         ];
-        return [
+        chisel.render(parent, [
             // Title
             chisel.elem('p', {'style': 'white-space: nowrap;'}, [
                 chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
@@ -192,17 +188,17 @@ class LifePage {
 
             // Life SVG
             chisel.elem('p', {'id': 'lifeSvg'}, this.svgElements())
-        ];
+        ]);
     }
 
     svgElements() {
         const svgWidth = this.params.gap + this.params.width * (this.params.size + this.params.gap);
         const svgHeight = this.params.gap + this.params.height * (this.params.size + this.params.gap);
         const cellElems = [];
-        const svgElems = chisel.svgElem('svg', {'width': svgWidth, 'height': svgHeight}, cellElems);
+        const svgElems = chisel.svg('svg', {'width': svgWidth, 'height': svgHeight}, cellElems);
 
         // Background
-        cellElems.push(chisel.svgElem('rect', {
+        cellElems.push(chisel.svg('rect', {
             'x': '0',
             'y': '0',
             'width': svgWidth,
@@ -214,7 +210,7 @@ class LifePage {
         for (let iy = 0; iy < this.current.height; iy++) {
             for (let ix = 0; ix < this.current.width; ix++) {
                 if (this.current.cell(ix, iy) || this.params.pause) {
-                    cellElems.push(chisel.svgElem('rect', {
+                    cellElems.push(chisel.svg('rect', {
                         'x': this.params.gap + ix * (this.params.size + this.params.gap),
                         'y': this.params.gap + iy * (this.params.size + this.params.gap),
                         'width': this.params.size,
