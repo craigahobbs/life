@@ -233,7 +233,7 @@ class LifePage {
 }
 
 
-class Life {
+export class Life {
     constructor(width, height, values) {
         this.width = width;
         this.height = height;
