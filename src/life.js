@@ -233,14 +233,14 @@ class LifePage {
 }
 
 
-class Life {
+export class Life {
     constructor(width, height, values) {
-        this.width = width;
-        this.height = height;
-        if (values !== undefined && values.length === width * height) {
+        this.width = Math.max(0, width);
+        this.height = Math.max(0, height);
+        if (values !== undefined && values.length === this.width * this.height) {
             this.values = values;
         } else {
-            this.values = Array.from({'length': width * height}, () => false);
+            this.values = Array.from({'length': this.width * this.height}, () => false);
         }
     }
 
@@ -249,9 +249,7 @@ class Life {
     }
 
     setCell(ix, iy, value) {
-        if (ix >= 0 && ix < this.width && iy >= 0 && iy < this.height) {
-            this.values[iy * this.width + ix] = value;
-        }
+        this.values[iy * this.width + ix] = value;
     }
 
     isEqual(other) {
@@ -313,7 +311,7 @@ class Life {
 
         // Count pairs of runs of 0's/1's
         let zeroCount = 0;
-        let oneCount = 1;
+        let oneCount = 0;
         let countZeros = true;
         for (let iv = 0; iv < this.values.length; iv++) {
             const value = this.values[iv];

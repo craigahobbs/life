@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-NODE_IMAGE := node:lts
+NODE_IMAGE := node:13-buster-slim
 NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build $(NODE_IMAGE)
 
 build/npm.install:
@@ -10,14 +10,19 @@ build/npm.install:
 
 .PHONY: help
 help:
-	@echo 'usage: make [clean|commit|eslint|gh-pages]'
+	@echo 'usage: make [clean|commit|lint|test|gh-pages]'
 
 .PHONY: commit
-commit: eslint
+commit: test lint
 
-.PHONY: eslint
-eslint: build/npm.install
-	$(NODE_DOCKER) npx eslint -c .eslintrc.js -f unix .eslintrc.js src
+.PHONY: test
+test: build/npm.install
+	$(NODE_DOCKER) npx nyc --check-coverage --reporter html --reporter text \
+		--report-dir build/coverage --temp-dir build/tmp ava tests/test*.js
+
+.PHONY: lint
+lint: build/npm.install
+	$(NODE_DOCKER) npx eslint -c .eslintrc.js -f unix .eslintrc.js src tests
 
 .PHONY: clean
 clean:
