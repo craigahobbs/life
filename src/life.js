@@ -17,7 +17,7 @@ export function main(parent) {
 }
 
 
-class LifePage {
+export class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;

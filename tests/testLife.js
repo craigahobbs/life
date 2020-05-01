@@ -1,7 +1,19 @@
-import {Life} from '../src/life.js';
+import {Life, LifePage} from '../src/life.js';
 import test from 'ava';
 
 /* eslint-disable id-length */
+
+// LifePage tests
+
+test('LifePage constructor', (t) => {
+    const lifePage = new LifePage();
+    t.deepEqual(lifePage.generations, [new Life(0, 0)]);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.linkParams, undefined);
+    t.is(lifePage.params, undefined);
+});
+
+// Life tests
 
 test('Life constructor', (t) => {
     const life = new Life(3, 2);
@@ -17,8 +29,8 @@ test('Life constructor, values provided', (t) => {
     t.deepEqual(life.values, [false, true, false, true, false, true]);
 });
 
-test('Life constructor, bogus values provided', (t) => {
-    // Bogus: values.length !== width * height
+test('Life constructor, invalid values provided', (t) => {
+    // Invalid: values.length !== width * height
     const life = new Life(3, 2, [false, true, false, true]);
     t.is(life.width, 3);
     t.is(life.height, 2);
@@ -121,58 +133,31 @@ test('Life.next', (t) => {
 });
 
 test('Life.encode', (t) => {
-    t.is(
-        '3-2-60',
-        new Life(3, 2, [
-            false, false, false,
-            false, false, false
-        ]).encode()
-    );
-    t.is(
-        '3-2-06',
-        new Life(3, 2, [
-            true, true, true,
-            true, true, true
-        ]).encode()
-    );
-    t.is(
-        '3-2-0420',
-        new Life(3, 2, [
-            true, true, true,
-            true, false, false
-        ]).encode()
-    );
-    t.is(
-        '3-2-42',
-        new Life(3, 2, [
-            false, false, false,
-            false, true, true
-        ]).encode()
-    );
-    t.is(
-        '6-3-01346310',
-        new Life(6, 3, [
-            true, false, false, false, true, true,
-            true, true, false, false, false, false,
-            false, false, true, true, true, false
-        ]).encode()
-    );
-    t.is(
-        '35-1-z0',
-        new Life(35, 1).encode()
-    );
-    t.is(
-        '36-1-z010',
-        new Life(36, 1).encode()
-    );
-    t.is(
-        '35-1-0z',
-        new Life(35, 1, Array.from({'length': 35}, () => true)).encode()
-    );
-    t.is(
-        '36-1-0z01',
-        new Life(36, 1, Array.from({'length': 36}, () => true)).encode()
-    );
+    t.is('3-2-60', new Life(3, 2, [
+        false, false, false,
+        false, false, false
+    ]).encode());
+    t.is('3-2-06', new Life(3, 2, [
+        true, true, true,
+        true, true, true
+    ]).encode());
+    t.is('3-2-0420', new Life(3, 2, [
+        true, true, true,
+        true, false, false
+    ]).encode());
+    t.is('3-2-42', new Life(3, 2, [
+        false, false, false,
+        false, true, true
+    ]).encode());
+    t.is('6-3-01346310', new Life(6, 3, [
+        true, false, false, false, true, true,
+        true, true, false, false, false, false,
+        false, false, true, true, true, false
+    ]).encode());
+    t.is('35-1-z0', new Life(35, 1).encode());
+    t.is('36-1-z010', new Life(36, 1).encode());
+    t.is('35-1-0z', new Life(35, 1, Array.from({'length': 35}, () => true)).encode());
+    t.is('36-1-0z01', new Life(36, 1, Array.from({'length': 36}, () => true)).encode());
 });
 
 test('Life.decode', (t) => {
@@ -201,4 +186,11 @@ test('Life.decode', (t) => {
     t.true(Life.decode('36-1-z010').isEqual(new Life(36, 1)));
     t.true(Life.decode('35-1-0z').isEqual(new Life(35, 1, Array.from({'length': 35}, () => true))));
     t.true(Life.decode('36-1-0z01').isEqual(new Life(36, 1, Array.from({'length': 36}, () => true))));
+});
+
+test('Life.decode, invalid', (t) => {
+    t.true(Life.decode('3-2').isEqual(new Life(3, 2)));
+    t.true(Life.decode('3').isEqual(new Life(3, 0)));
+    t.true(Life.decode('').isEqual(new Life(0, 0)));
+    t.true(Life.decode('asdf').isEqual(new Life(0, 0)));
 });
