@@ -1,7 +1,14 @@
+import * as chisel from '../src/chisel.js';
 import {Life, LifePage} from '../src/life.js';
+import browserEnv from 'browser-env';
 import test from 'ava';
 
 /* eslint-disable id-length */
+
+
+// Add browser globals
+browserEnv(['document', 'window']);
+
 
 // LifePage tests
 
@@ -12,6 +19,312 @@ test('LifePage constructor', (t) => {
     t.is(lifePage.linkParams, undefined);
     t.is(lifePage.params, undefined);
 });
+
+test('LifePage.updateParams', (t) => {
+    const lifePage = new LifePage();
+    lifePage.updateParams();
+    t.deepEqual(lifePage.linkParams, {});
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': undefined,
+        'celly': undefined,
+        'depth': 2,
+        'fill': '#2a803b',
+        'gap': 1,
+        'height': 50,
+        'lifeBorder': 0.1,
+        'lifeRatio': 0.25,
+        'load': undefined,
+        'pause': false,
+        'period': 0.5,
+        'reset': false,
+        'save': false,
+        'size': 10,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 50
+    });
+});
+
+test('LifePage.updateParams, load', (t) => {
+    const lifePage = new LifePage();
+    const encodedLife = '7-5-077777';
+    const life = Life.decode(encodedLife);
+    window.location.hash = `#load=${encodedLife}`;
+    lifePage.updateParams();
+    t.deepEqual(lifePage.linkParams, {
+        'load': encodedLife
+    });
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': undefined,
+        'celly': undefined,
+        'depth': 2,
+        'fill': '#2a803b',
+        'gap': 1,
+        'height': 5,
+        'lifeBorder': 0.1,
+        'lifeRatio': 0.25,
+        'load': life,
+        'pause': true,
+        'period': 0.5,
+        'reset': false,
+        'save': false,
+        'size': 10,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 7
+    });
+});
+
+test('LifePage.updateParams, invalid load', (t) => {
+    const lifePage = new LifePage();
+    const encodedLife = '7-5-';
+    const life = new Life(7, 5);
+    window.location.hash = `#load=${encodedLife}`;
+    lifePage.updateParams();
+    t.deepEqual(lifePage.linkParams, {
+        'load': encodedLife
+    });
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': undefined,
+        'celly': undefined,
+        'depth': 2,
+        'fill': '#2a803b',
+        'gap': 1,
+        'height': 5,
+        'lifeBorder': 0.1,
+        'lifeRatio': 0.25,
+        'load': life,
+        'pause': true,
+        'period': 0.5,
+        'reset': false,
+        'save': false,
+        'size': 10,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 7
+    });
+});
+
+test('LifePage.updateParams, too-small load', (t) => {
+    const lifePage = new LifePage();
+    const encodedLife = '2-2-22';
+    window.location.hash = `#load=${encodedLife}`;
+    lifePage.updateParams();
+    t.deepEqual(lifePage.linkParams, {
+        'load': encodedLife
+    });
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': undefined,
+        'celly': undefined,
+        'depth': 2,
+        'fill': '#2a803b',
+        'gap': 1,
+        'height': 50,
+        'lifeBorder': 0.1,
+        'lifeRatio': 0.25,
+        'load': undefined,
+        'pause': false,
+        'period': 0.5,
+        'reset': false,
+        'save': false,
+        'size': 10,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 50
+    });
+});
+
+test('LifePage.updateParams, bulk valid', (t) => {
+    const lifePage = new LifePage();
+    const args = {
+        'pause': true,
+        'step': true,
+        'reset': true,
+        'cellx': 5,
+        'celly': 7,
+        'save': true,
+        'period': 0.125,
+        'width': 17,
+        'height': 13,
+        'size': 7,
+        'gap': 3,
+        'depth': 5,
+        'lifeRatio': 0.33,
+        'lifeBorder': 0.2,
+        'fill': '#808080',
+        'stroke': '#000000',
+        'strokeWidth': '2',
+        'bgFill': '#c0c0c0',
+        'bgStroke': '#ffffff',
+        'bgStrokeWidth': '4'
+    };
+    window.location.hash = chisel.encodeParams(args);
+    lifePage.updateParams();
+    t.deepEqual(
+        lifePage.linkParams,
+        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
+    );
+    t.deepEqual(lifePage.params, {...args, 'load': undefined});
+});
+
+test('LifePage.updateParams, bulk invalid', (t) => {
+    const lifePage = new LifePage();
+    const args = {
+        'pause': 'asdf',
+        'step': 'asdf',
+        'reset': 'asdf',
+        'cellx': 'asdf',
+        'celly': 'asdf',
+        'save': 'asdf',
+        'period': 'asdf',
+        'width': 'asdf',
+        'height': 'asdf',
+        'size': 'asdf',
+        'gap': 'asdf',
+        'depth': 'asdf',
+        'lifeRatio': 'asdf',
+        'lifeBorder': 'asdf',
+        'fill': 'asdf',
+        'stroke': 'asdf',
+        'strokeWidth': 'asdf',
+        'bgFill': 'asdf',
+        'bgStroke': 'asdf',
+        'bgStrokeWidth': 'asdf'
+    };
+    window.location.hash = chisel.encodeParams(args);
+    lifePage.updateParams();
+    t.deepEqual(lifePage.linkParams, args);
+    t.deepEqual(lifePage.params, {
+        'bgFill': 'asdf',
+        'bgStroke': 'asdf',
+        'bgStrokeWidth': 'asdf',
+        'cellx': 0,
+        'celly': 0,
+        'depth': 0,
+        'fill': 'asdf',
+        'gap': 0,
+        'height': 5,
+        'lifeBorder': 0,
+        'lifeRatio': 0,
+        'load': undefined,
+        'pause': false,
+        'period': 0.0001,
+        'reset': false,
+        'save': false,
+        'size': 2,
+        'step': false,
+        'stroke': 'asdf',
+        'strokeWidth': 'asdf',
+        'width': 5
+    });
+});
+
+test('LifePage.updateParams, bulk too-small', (t) => {
+    const lifePage = new LifePage();
+    const args = {
+        'cellx': -1,
+        'celly': -1,
+        'period': -1,
+        'width': -1,
+        'height': -1,
+        'size': -1,
+        'gap': -1,
+        'depth': -1,
+        'lifeRatio': -1,
+        'lifeBorder': -1
+    };
+    window.location.hash = chisel.encodeParams(args);
+    lifePage.updateParams();
+    t.deepEqual(
+        lifePage.linkParams,
+        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
+    );
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': 0,
+        'celly': 0,
+        'depth': 0,
+        'fill': '#2a803b',
+        'gap': 0,
+        'height': 5,
+        'lifeBorder': 0,
+        'lifeRatio': 0,
+        'load': undefined,
+        'pause': false,
+        'period': 0.0001,
+        'reset': false,
+        'save': false,
+        'size': 2,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 5
+    });
+});
+
+test('LifePage.updateParams, bulk too-large', (t) => {
+    const lifePage = new LifePage();
+    const args = {
+        'cellx': 10000,
+        'celly': 10000,
+        'period': 10000,
+        'width': 10000,
+        'height': 10000,
+        'size': 10000,
+        'gap': 10000,
+        'depth': 10000,
+        'lifeRatio': 10000,
+        'lifeBorder': 10000
+    };
+    window.location.hash = chisel.encodeParams(args);
+    lifePage.updateParams();
+    t.deepEqual(
+        lifePage.linkParams,
+        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
+    );
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': 999,
+        'celly': 999,
+        'depth': 1000,
+        'fill': '#2a803b',
+        'gap': 10,
+        'height': 1000,
+        'lifeBorder': 0.45,
+        'lifeRatio': 1,
+        'load': undefined,
+        'pause': false,
+        'period': 60,
+        'reset': false,
+        'save': false,
+        'size': 100,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 1000
+    });
+});
+
 
 // Life tests
 

@@ -1,6 +1,7 @@
 {
     "devDependencies": {
         "ava": "~3.8.1",
+        "browser-env": "~3.3.0",
         "eslint": "~7.0.0-rc.0",
         "esm": "~3.2.25",
         "nyc": "~15.0.1"
@@ -14,8 +15,8 @@
         ]
     },
     "nyc": {
-        "branches": 34.65,
-        "lines":  71.31,
+        "branches": 70,
+        "lines": 80.81,
         "exclude": [
             "src/chisel.js"
         ]
