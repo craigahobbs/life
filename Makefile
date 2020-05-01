@@ -26,7 +26,7 @@ lint: build/npm.install
 
 .PHONY: clean
 clean:
-	rm -rf build node_modules
+	rm -rf build node_modules package-lock.json
 
 .PHONY: superclean
 superclean: clean
