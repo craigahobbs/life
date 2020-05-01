@@ -17,7 +17,7 @@ export function main(parent) {
 }
 
 
-class LifePage {
+export class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
@@ -34,7 +34,7 @@ class LifePage {
         if (life && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
             [width, height] = [life.width, life.height];
         } else {
-            life = life && undefined;
+            life = undefined;
             width = Math.max(minWH, Math.min(maxWH, linkParams.width === undefined ? 50 : parseInt(linkParams.width, 10) || 0));
             height = Math.max(minWH, Math.min(maxWH, linkParams.height === undefined ? 50 : parseInt(linkParams.height, 10) || 0));
         }
@@ -45,8 +45,8 @@ class LifePage {
             'pause': !!life || linkParams.pause === 'true' || linkParams.pause === '1',
             'step': linkParams.step === 'true' || linkParams.step === '1',
             'reset': linkParams.reset === 'true' || linkParams.reset === '1',
-            'cellx': linkParams.cellx && Math.max(0, parseInt(linkParams.cellx, 10) || 0),
-            'celly': linkParams.celly && Math.max(0, parseInt(linkParams.celly, 10) || 0),
+            'cellx': linkParams.cellx && Math.max(0, Math.min(maxWH - 1, parseInt(linkParams.cellx, 10) || 0)),
+            'celly': linkParams.celly && Math.max(0, Math.min(maxWH - 1, parseInt(linkParams.celly, 10) || 0)),
             'load': life,
             'save': linkParams.save === 'true' || linkParams.save === '1',
             'period': Math.max(0.0001, Math.min(60, linkParams.period === undefined ? 0.5 : parseFloat(linkParams.period) || 0)),
