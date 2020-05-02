@@ -325,7 +325,7 @@ test('LifePage.updateParams, bulk too-large', (t) => {
     });
 });
 
-test('LifePage.current', (t) => {
+test('LifePage.next', (t) => {
     const lifePage = new LifePage();
     const life = new Life(3, 3, [
         false, true, false,
@@ -337,15 +337,62 @@ test('LifePage.current', (t) => {
     lifePage.generations = [life];
     t.deepEqual(lifePage.current, life);
     lifePage.next();
+    t.is(lifePage.generations.length, 1);
     t.deepEqual(lifePage.current, new Life(3, 3, [
         false, false, false,
         true, true, true,
         false, false, false
     ]));
     lifePage.next();
+    t.is(lifePage.generations.length, 1, '2');
     t.deepEqual(lifePage.current, life);
 });
 
+test('LifePage.next, cycle', (t) => {
+    const lifePage = new LifePage();
+    const life = new Life(3, 3, [
+        false, true, false,
+        false, true, false,
+        false, true, false
+    ]);
+    window.location.hash = `#depth=2&lifeRatio=0&lifeBorder=0`;
+    lifePage.updateParams();
+    lifePage.generations = [life];
+    t.deepEqual(lifePage.current, life);
+    lifePage.next();
+    t.is(lifePage.generations.length, 2);
+    t.deepEqual(lifePage.current, new Life(3, 3, [
+        false, false, false,
+        true, true, true,
+        false, false, false
+    ]));
+    lifePage.next();
+    t.is(lifePage.generations.length, 1);
+    t.deepEqual(lifePage.current, new Life(3, 3));
+});
+
+test('LifePage.next, cycle not found', (t) => {
+    const lifePage = new LifePage();
+    const life = new Life(3, 3, [
+        false, true, false,
+        false, true, false,
+        false, true, false
+    ]);
+    window.location.hash = `#depth=1`;
+    lifePage.updateParams();
+    lifePage.generations = [life];
+    t.deepEqual(lifePage.current, life);
+    lifePage.next();
+    t.is(lifePage.generations.length, 2);
+    t.deepEqual(lifePage.current, new Life(3, 3, [
+        false, false, false,
+        true, true, true,
+        false, false, false
+    ]));
+    lifePage.next();
+    t.is(lifePage.generations.length, 1);
+    t.deepEqual(lifePage.current, life);
+});
 
 // Life tests
 
