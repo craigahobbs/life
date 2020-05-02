@@ -78,14 +78,14 @@ export class LifePage {
             const foundDepth = this.generations.length - foundIndex;
             if (foundDepth <= this.params.depth) {
                 next = new Life(0, 0).resize(this.current.width, this.current.height, this.params.lifeRatio, this.params.lifeBorder);
-                this.generations = [next];
+                this.generations = [];
             }
         }
 
         // Limit generations array size
         this.generations.push(next);
-        if (this.generations.length >= this.params.depth * 2) {
-            this.generations = this.generations.slice(this.params.depth);
+        if (this.generations.length > this.params.depth * 2) {
+            this.generations = this.generations.slice(this.generations.length - Math.max(1, this.params.depth));
         }
     }
 
