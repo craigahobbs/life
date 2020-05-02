@@ -325,6 +325,27 @@ test('LifePage.updateParams, bulk too-large', (t) => {
     });
 });
 
+test('LifePage.current', (t) => {
+    const lifePage = new LifePage();
+    const life = new Life(3, 3, [
+        false, true, false,
+        false, true, false,
+        false, true, false
+    ]);
+    window.location.hash = `#depth=0`;
+    lifePage.updateParams();
+    lifePage.generations = [life];
+    t.deepEqual(lifePage.current, life);
+    lifePage.next();
+    t.deepEqual(lifePage.current, new Life(3, 3, [
+        false, false, false,
+        true, true, true,
+        false, false, false
+    ]));
+    lifePage.next();
+    t.deepEqual(lifePage.current, life);
+});
+
 
 // Life tests
 
