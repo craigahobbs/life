@@ -145,11 +145,15 @@ export class LifePage {
         }
 
         // Render
+        chisel.render(parent, this.pageElements());
+    }
+
+    pageElements() {
         const button = (text, params, section, first) => [
             first ? null : chisel.text(section ? ' | ' : chisel.nbsp + chisel.nbsp),
             chisel.elem('a', {'href': chisel.href({...this.linkParams, ...params})}, chisel.text(text))
         ];
-        chisel.render(parent, [
+        return [
             // Title
             chisel.elem('p', {'style': 'white-space: nowrap;'}, [
                 chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
@@ -188,7 +192,7 @@ export class LifePage {
 
             // Life SVG
             chisel.elem('p', {'id': 'lifeSvg'}, this.svgElements())
-        ]);
+        ];
     }
 
     svgElements() {

@@ -12,7 +12,15 @@ export function render(parent, elems, clear = true) {
 }
 
 export function createElement(element) {
-    const browserElement = element.text ? document.createTextNode(element.text) : document.createElementNS(element.ns, element.tag);
+    let browserElement;
+    if (element.text) {
+        browserElement = document.createTextNode(element.text);
+    } else if (element.ns !== undefined) {
+        browserElement = document.createElementNS(element.ns, element.tag);
+    } else {
+        browserElement = document.createElement(element.tag);
+    }
+
     let {attrs} = element;
     if (attrs) {
         const callback = attrs._callback;
@@ -42,14 +50,17 @@ function appendElements(parent, elems) {
     return parent;
 }
 
-export function elem(tag, attrsOrElems, elems, ns = 'http://www.w3.org/1999/xhtml') {
+export function elem(tag, attrsOrElems, elems, ns) {
     const attrs = isDict(attrsOrElems) ? attrsOrElems : undefined;
-    return {
+    const element = {
         'tag': tag,
         'attrs': attrs || {},
-        'elems': (attrs ? elems : attrsOrElems) || [],
-        'ns': ns
+        'elems': (attrs ? elems : attrsOrElems) || []
     };
+    if (ns !== undefined) {
+        element.ns = ns;
+    }
+    return element;
 }
 
 export function svg(tag, attrsOrElems, elems) {
