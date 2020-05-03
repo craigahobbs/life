@@ -396,14 +396,14 @@ test('LifePage.next, cycle not found', (t) => {
 
 test('LifePage.pageElements', (t) => {
     const lifePage = new LifePage();
-    const life = new Life(3, 3, [
-        false, true, false,
-        false, true, false,
-        false, true, false
+    const life = new Life(2, 2, [
+        false, true,
+        true, false
     ]);
     window.location.hash = `#width=5&height=5`;
     lifePage.updateParams();
     lifePage.generations = [life];
+
     t.deepEqual(lifePage.pageElements(), [
         {
             'tag': 'p',
@@ -498,16 +498,7 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            '_callback': undefined, 'x': 12, 'y': 12, 'width': 10, 'height': 10,
-                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
-                        },
-                        'elems': [],
-                        'ns': 'http://www.w3.org/2000/svg'
-                    },
-                    {
-                        'tag': 'rect',
-                        'attrs': {
-                            '_callback': undefined, 'x': 12, 'y': 23, 'width': 10, 'height': 10,
+                            '_callback': undefined, 'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
                         'elems': [],
@@ -528,6 +519,8 @@ test('LifePage.pageElements, pause', (t) => {
     window.location.hash = `#width=5&height=5&pause=1&bgStroke=black`;
     lifePage.updateParams();
     lifePage.generations = [life];
+
+    // Check the SVG element callback functions
     const pageElements = lifePage.pageElements();
     const svgElements = pageElements[2].elems.elems;
     for (let ix = 1; ix < svgElements.length; ix++) {
@@ -536,6 +529,7 @@ test('LifePage.pageElements, pause', (t) => {
         t.true(typeof element.attrs._callback === 'function');
         delete element.attrs._callback;
     }
+
     t.deepEqual(pageElements, [
         {
             'tag': 'p',
@@ -692,6 +686,107 @@ test('LifePage.pageElements, pause', (t) => {
             }
         }
     ]);
+});
+
+test('LifePage.render', (t) => {
+    const lifePage = new LifePage();
+    window.location.hash = `#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1`;
+    lifePage.render(document.body);
+
+    t.is(window.location.hash, '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1');
+    t.deepEqual(lifePage.current, new Life(5, 5, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]));
+    t.is(lifePage.generationInterval, null);
+    t.deepEqual(lifePage.linkParams, {
+        'height': '5',
+        'lifeBorder': '0.2',
+        'lifeRatio': '1',
+        'pause': '1',
+        'width': '5'
+    });
+    t.deepEqual(lifePage.params, {
+        'bgFill': '#ffffff',
+        'bgStroke': 'none',
+        'bgStrokeWidth': '1',
+        'cellx': undefined,
+        'celly': undefined,
+        'depth': 2,
+        'fill': '#2a803b',
+        'gap': 1,
+        'height': 5,
+        'lifeBorder': 0.2,
+        'lifeRatio': 1,
+        'load': undefined,
+        'pause': true,
+        'period': 0.5,
+        'reset': false,
+        'save': false,
+        'size': 10,
+        'step': false,
+        'stroke': 'none',
+        'strokeWidth': '1',
+        'width': 5
+    });
+    t.is(
+        document.body.innerHTML,
+        '<p style="white-space: nowrap;">' +
+            '<span style="font-weight: bold;">Conway\'s Game of Life</span>&nbsp;&nbsp;' +
+            '<a href="https://github.com/craigahobbs/life">GitHub</a>&nbsp;&nbsp;' +
+            '<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">Wikipedia</a>' +
+            '</p>' +
+            '<p style="white-space: nowrap;">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a> | ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;step=1&amp;width=5">Step</a>&nbsp;&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;load=5-5-63232360&amp;pause=1&amp;save=1&amp;width=5">' +
+            'Save</a> | ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;reset=1&amp;width=5">Random</a>&nbsp;&nbsp;' +
+            '<a href="blank#bgStroke=black&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Border</a> | ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=1&amp;width=5">' +
+            '&lt;&lt;Speed</a>&nbsp;&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=0.25&amp;width=5">Speed&gt;&gt;</a> | ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=0">&lt;&lt;Width</a>&nbsp;&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=10">Width&gt;&gt;</a> | ' +
+            '<a href="blank#height=0&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">&lt;&lt;Height</a>&nbsp;&nbsp;' +
+            '<a href="blank#height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Height&gt;&gt;</a> | ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=8&amp;width=5">&lt;&lt;Size</a>&nbsp;&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=12&amp;width=5">Size&gt;&gt;</a>' +
+            '</p>' +
+            '<p id="lifeSvg">' +
+            '<svg width="56" height="56">' +
+            '<rect x="0" y="0" width="56" height="56" style="fill: #ffffff; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="1" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="12" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="23" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="34" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="45" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="1" y="12" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="12" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="1" y="23" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="23" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="1" y="34" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="34" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="1" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="12" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="23" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="34" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '<rect x="45" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
+            '</svg>' +
+            '</p>'
+    );
 });
 
 

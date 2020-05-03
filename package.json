@@ -16,8 +16,13 @@
         ]
     },
     "nyc": {
-        "branches": 84.5,
-        "lines": 90.22,
+        "all": true,
+        "branches": 90,
+        "lines": 93.48,
+        "include": [
+            "src",
+            "tests"
+        ],
         "exclude": [
             "src/chisel.js"
         ]
