@@ -23,6 +23,15 @@ export class LifePage {
         this.generationInterval = null;
     }
 
+    // The method "assignLocation" is non-static so that it can easily be overwritten in unit tests.
+    // Hence the coverage and lint ignores that follow.
+    //
+    // istanbul ignore next
+    // eslint-disable-next-line class-methods-use-this
+    assignLocation(location) {
+        window.location.href = location;
+    }
+
     updateParams() {
         const linkParams = chisel.decodeParams();
 
@@ -108,13 +117,13 @@ export class LifePage {
         if (this.params.load) {
             this.generations = [this.params.load];
             if (!this.params.save) {
-                window.location.href = chisel.href({
+                this.assignLocation(chisel.href({
                     ...this.linkParams,
                     'load': undefined,
                     'width': this.params.width,
                     'height': this.params.height,
                     'pause': '1'
-                });
+                }));
                 return;
             }
         } else {
@@ -128,18 +137,18 @@ export class LifePage {
             if (this.params.reset) {
                 this.generations =
                     [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
-                window.location.href = chisel.href({...this.linkParams, 'reset': undefined});
+                this.assignLocation(chisel.href({...this.linkParams, 'reset': undefined}));
                 return;
             } else if (this.params.step) {
                 this.next();
-                window.location.href = chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'});
+                this.assignLocation(chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'}));
                 return;
             } else if (this.params.cellx !== undefined || this.params.celly !== undefined) {
                 if (this.params.cellx !== undefined && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
                     this.params.celly !== undefined && this.params.celly >= 0 && this.params.celly < this.params.height) {
                     this.current.setCell(this.params.cellx, this.params.celly, !this.current.cell(this.params.cellx, this.params.celly));
                 }
-                window.location.href = chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined});
+                this.assignLocation(chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined}));
                 return;
             }
         }
@@ -224,7 +233,7 @@ export class LifePage {
                             : 'fill: rgba(255, 255, 255, 0); stroke: none;',
                         '_callback': this.params.load || !this.params.pause ? undefined : (element) => {
                             element.addEventListener('click', () => {
-                                window.location.href = chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy});
+                                this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
                             });
                         }
                     }));

@@ -174,7 +174,7 @@ test('LifePage.updateParams, bulk valid', (t) => {
         'bgStroke': '#ffffff',
         'bgStrokeWidth': '4'
     };
-    window.location.hash = chisel.encodeParams(args);
+    window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
     t.deepEqual(
         lifePage.linkParams,
@@ -207,7 +207,7 @@ test('LifePage.updateParams, bulk invalid', (t) => {
         'bgStroke': 'asdf',
         'bgStrokeWidth': 'asdf'
     };
-    window.location.hash = chisel.encodeParams(args);
+    window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
     t.deepEqual(lifePage.linkParams, args);
     t.deepEqual(lifePage.params, {
@@ -249,7 +249,7 @@ test('LifePage.updateParams, bulk too-small', (t) => {
         'lifeRatio': -1,
         'lifeBorder': -1
     };
-    window.location.hash = chisel.encodeParams(args);
+    window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
     t.deepEqual(
         lifePage.linkParams,
@@ -294,7 +294,7 @@ test('LifePage.updateParams, bulk too-large', (t) => {
         'lifeRatio': 10000,
         'lifeBorder': 10000
     };
-    window.location.hash = chisel.encodeParams(args);
+    window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
     t.deepEqual(
         lifePage.linkParams,
@@ -332,7 +332,7 @@ test('LifePage.next', (t) => {
         false, true, false,
         false, true, false
     ]);
-    window.location.hash = `#depth=0`;
+    window.location.hash = '#depth=0';
     lifePage.updateParams();
     lifePage.generations = [life];
     t.deepEqual(lifePage.current, life);
@@ -355,7 +355,7 @@ test('LifePage.next, cycle', (t) => {
         false, true, false,
         false, true, false
     ]);
-    window.location.hash = `#depth=2&lifeRatio=0&lifeBorder=0`;
+    window.location.hash = '#depth=2&lifeRatio=0&lifeBorder=0';
     lifePage.updateParams();
     lifePage.generations = [life];
     t.deepEqual(lifePage.current, life);
@@ -378,7 +378,7 @@ test('LifePage.next, cycle not found', (t) => {
         false, true, false,
         false, true, false
     ]);
-    window.location.hash = `#depth=1`;
+    window.location.hash = '#depth=1';
     lifePage.updateParams();
     lifePage.generations = [life];
     t.deepEqual(lifePage.current, life);
@@ -400,7 +400,7 @@ test('LifePage.pageElements', (t) => {
         false, true,
         true, false
     ]);
-    window.location.hash = `#width=5&height=5`;
+    window.location.hash = '#width=5&height=5';
     lifePage.updateParams();
     lifePage.generations = [life];
 
@@ -516,7 +516,7 @@ test('LifePage.pageElements, pause', (t) => {
         false, true,
         true, false
     ]);
-    window.location.hash = `#width=5&height=5&pause=1&bgStroke=black`;
+    window.location.hash = '#width=5&height=5&pause=1&bgStroke=black';
     lifePage.updateParams();
     lifePage.generations = [life];
 
@@ -690,10 +690,15 @@ test('LifePage.pageElements, pause', (t) => {
 
 test('LifePage.render', (t) => {
     const lifePage = new LifePage();
-    window.location.hash = `#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1`;
-    lifePage.render(document.body);
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
 
-    t.is(window.location.hash, '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1');
+    // Validate initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
+    lifePage.render(document.body);
+    t.deepEqual(assignLocation, []);
     t.deepEqual(lifePage.current, new Life(5, 5, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -787,6 +792,93 @@ test('LifePage.render', (t) => {
             '</svg>' +
             '</p>'
     );
+});
+
+test('LifePage.render, step', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+
+    // Step
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&step=1';
+    document.body.innerHTML = '';
+    lifePage.render(document.body);
+    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, true, false, false,
+        false, true, false, true, false,
+        true, false, false, false, true,
+        false, true, false, true, false,
+        false, false, true, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
+test('LifePage.render, reset', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+
+    // Reset
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&reset=1';
+    lifePage.render(document.body);
+    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
+test('LifePage.render, toggle cell', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+    // Toggle cell
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=2&celly=1';
+    lifePage.render(document.body);
+    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, false, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
+test('LifePage.render, load', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+    // Toggle cell
+    window.location.hash = '#load=5-5-555550';
+    lifePage.render(document.body);
+    t.deepEqual(assignLocation, ['blank#height=5&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
 });
 
 
