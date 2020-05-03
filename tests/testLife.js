@@ -394,6 +394,307 @@ test('LifePage.next, cycle not found', (t) => {
     t.deepEqual(lifePage.current, life);
 });
 
+test('LifePage.pageElements', (t) => {
+    const lifePage = new LifePage();
+    const life = new Life(3, 3, [
+        false, true, false,
+        false, true, false,
+        false, true, false
+    ]);
+    window.location.hash = `#width=5&height=5`;
+    lifePage.updateParams();
+    lifePage.generations = [life];
+    t.deepEqual(lifePage.pageElements(), [
+        {
+            'tag': 'p',
+            'attrs': {'style': 'white-space: nowrap;'},
+            'elems': [
+                {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
+                {'text': chisel.nbsp + chisel.nbsp},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life'}, 'elems': {'text': 'GitHub'}},
+                {'text': chisel.nbsp + chisel.nbsp},
+                {
+                    'tag': 'a',
+                    'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'},
+                    'elems': {'text': 'Wikipedia'}
+                }
+            ]
+        },
+        {
+            'tag': 'p',
+            'attrs': {'style': 'white-space: nowrap;'},
+            'elems': [
+                [
+                    [
+                        null,
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&pause=1&width=5'}, 'elems': {'text': 'Pause'}}
+                    ],
+                    null,
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&reset=1&width=5'}, 'elems': {'text': 'Random'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Border'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=1&width=5'}, 'elems': {'text': '<<Speed'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=0.25&width=5'}, 'elems': {'text': 'Speed>>'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=0'}, 'elems': {'text': '<<Width'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=10'}, 'elems': {'text': 'Width>>'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=0&width=5'}, 'elems': {'text': '<<Height'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=10&width=5'}, 'elems': {'text': 'Height>>'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=8&width=5'}, 'elems': {'text': '<<Size'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=12&width=5'}, 'elems': {'text': 'Size>>'}}
+                    ]
+                ]
+            ]
+        },
+        {
+            'tag': 'p',
+            'attrs': {'id': 'lifeSvg'},
+            'elems': {
+                'tag': 'svg',
+                'attrs': {'width': 56, 'height': 56},
+                'elems': [
+                    {
+                        'tag': 'rect',
+                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: none; stroke-width: 1;'},
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            '_callback': undefined, 'x': 12, 'y': 1, 'width': 10, 'height': 10,
+                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            '_callback': undefined, 'x': 12, 'y': 12, 'width': 10, 'height': 10,
+                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            '_callback': undefined, 'x': 12, 'y': 23, 'width': 10, 'height': 10,
+                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'}
+                ],
+                'ns': 'http://www.w3.org/2000/svg'
+            }
+        }
+    ]);
+});
+
+test('LifePage.pageElements, pause', (t) => {
+    const lifePage = new LifePage();
+    const life = new Life(2, 2, [
+        false, true,
+        true, false
+    ]);
+    window.location.hash = `#width=5&height=5&pause=1&bgStroke=black`;
+    lifePage.updateParams();
+    lifePage.generations = [life];
+    const pageElements = lifePage.pageElements();
+    const svgElements = pageElements[2].elems.elems;
+    for (let ix = 1; ix < svgElements.length; ix++) {
+        const element = svgElements[ix];
+        t.is(element.tag, 'rect');
+        t.true(typeof element.attrs._callback === 'function');
+        delete element.attrs._callback;
+    }
+    t.deepEqual(pageElements, [
+        {
+            'tag': 'p',
+            'attrs': {'style': 'white-space: nowrap;'},
+            'elems': [
+                {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
+                {'text': chisel.nbsp + chisel.nbsp},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life'}, 'elems': {'text': 'GitHub'}},
+                {'text': chisel.nbsp + chisel.nbsp},
+                {
+                    'tag': 'a',
+                    'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'},
+                    'elems': {'text': 'Wikipedia'}
+                }
+            ]
+        },
+        {
+            'tag': 'p',
+            'attrs': {'style': 'white-space: nowrap;'},
+            'elems': [
+                [
+                    [
+                        null,
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Play'}}
+                    ],
+                    [
+                        [
+                            {'text': ' | '},
+                            {
+                                'tag': 'a',
+                                'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&step=1&width=5'},
+                                'elems': {'text': 'Step'}
+                            }
+                        ],
+                        [
+                            {'text': chisel.nbsp + chisel.nbsp},
+                            {
+                                'tag': 'a',
+                                'attrs': {'href': 'blank#bgStroke=black&height=5&load=2-2-1210&pause=1&save=1&width=5'},
+                                'elems': {'text': 'Save'}
+                            }
+                        ]
+                    ],
+                    [
+                        {'text': ' | '},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&reset=1&width=5'},
+                            'elems': {'text': 'Random'}
+                        }
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&pause=1&width=5'}, 'elems': {'text': 'Border'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=1&width=5'},
+                            'elems': {'text': '<<Speed'}
+                        }
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=0.25&width=5'},
+                            'elems': {'text': 'Speed>>'}
+                        }
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=0'}, 'elems': {'text': '<<Width'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=10'}, 'elems': {'text': 'Width>>'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=0&pause=1&width=5'}, 'elems': {'text': '<<Height'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=10&pause=1&width=5'}, 'elems': {'text': 'Height>>'}}
+                    ],
+                    [
+                        {'text': ' | '},
+                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=8&width=5'}, 'elems': {'text': '<<Size'}}
+                    ],
+                    [
+                        {'text': chisel.nbsp + chisel.nbsp},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=12&width=5'},
+                            'elems': {'text': 'Size>>'}
+                        }
+                    ]
+                ]
+            ]
+        },
+        {
+            'tag': 'p',
+            'attrs': {'id': 'lifeSvg'},
+            'elems': {
+                'tag': 'svg',
+                'attrs': {'width': 56, 'height': 56},
+                'elems': [
+                    {
+                        'tag': 'rect',
+                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: black; stroke-width: 1;'},
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            'x': 1, 'y': 1, 'width': 10, 'height': 10,
+                            'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            'x': 12, 'y': 1, 'width': 10, 'height': 10,
+                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            'x': 1, 'y': 12, 'width': 10, 'height': 10,
+                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    },
+                    {
+                        'tag': 'rect',
+                        'attrs': {
+                            'x': 12, 'y': 12, 'width': 10, 'height': 10,
+                            'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
+                        },
+                        'elems': [],
+                        'ns': 'http://www.w3.org/2000/svg'
+                    }
+                ],
+                'ns': 'http://www.w3.org/2000/svg'
+            }
+        }
+    ]);
+});
+
+
 // Life tests
 
 test('Life constructor', (t) => {

@@ -46,6 +46,7 @@ module.exports = {
         'no-undefined': 'off',
         'no-underscore-dangle': 'off',
         'no-use-before-define': 'off',
+        'object-curly-newline': 'off',
         'object-property-newline': 'off',
         'object-shorthand': 'off',
         'one-var': 'off',
