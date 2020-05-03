@@ -17,8 +17,8 @@
     },
     "nyc": {
         "all": true,
-        "branches": 96,
-        "lines": 97.36,
+        "branches": 98.5,
+        "lines": 99.07,
         "include": [
             "src",
             "tests"

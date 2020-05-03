@@ -4,23 +4,25 @@
 import * as chisel from './chisel.js';
 
 
-export function main(parent) {
-    const lifePage = new LifePage();
-
-    // Render page
-    lifePage.render(parent);
-
-    // Listen for hash parameter changes
-    window.onhashchange = () => {
-        lifePage.render(parent);
-    };
-}
-
-
 export class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
+    }
+
+    static main() {
+        const lifePage = new LifePage();
+
+        // Render page
+        lifePage.render();
+
+        // Listen for hash parameter changes
+        const onHashChange = () => lifePage.render();
+        window.addEventListener('hashchange', onHashChange, false);
+
+        // Return onHashChange function so that it can be removed by unit tests using:
+        // "window.removeEventListener('hashchange', onHashChange, false);"
+        return onHashChange;
     }
 
     // The method "assignLocation" is non-static so that it can easily be overwritten in unit tests.
@@ -98,7 +100,7 @@ export class LifePage {
         }
     }
 
-    render(parent) {
+    render() {
         this.updateParams();
 
         // Clear/set the generation interval
@@ -154,7 +156,7 @@ export class LifePage {
         }
 
         // Render
-        chisel.render(parent, this.pageElements());
+        chisel.render(document.body, this.pageElements());
     }
 
     pageElements() {

@@ -826,6 +826,7 @@ test('LifePage.render, reset', (t) => {
 
     // Reset
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&reset=1';
+    document.body.innerHTML = '';
     lifePage.render(document.body);
     t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
@@ -845,8 +846,8 @@ test('LifePage.render, toggle cell', (t) => {
     lifePage.assignLocation = (location) => {
         assignLocation.push(location);
     };
-    // Toggle cell
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=2&celly=1';
+    document.body.innerHTML = '';
     lifePage.render(document.body);
     t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
@@ -866,8 +867,8 @@ test('LifePage.render, load', (t) => {
     lifePage.assignLocation = (location) => {
         assignLocation.push(location);
     };
-    // Toggle cell
     window.location.hash = '#load=5-5-555550';
+    document.body.innerHTML = '';
     lifePage.render(document.body);
     t.deepEqual(assignLocation, ['blank#height=5&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
@@ -879,6 +880,17 @@ test('LifePage.render, load', (t) => {
     ]);
     t.is(lifePage.generationInterval, null);
     t.is(document.body.innerHTML, '');
+});
+
+test('LifePage.main', (t) => {
+    window.location.hash = '#';
+    document.body.innerHTML = '';
+    const onHashChange = LifePage.main(document.body);
+    window.removeEventListener('hashchange', onHashChange, false);
+    t.not(document.body.innerHTML, '');
+    document.body.innerHTML = '';
+    onHashChange();
+    t.not(document.body.innerHTML, '');
 });
 
 
