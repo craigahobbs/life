@@ -2,21 +2,20 @@
 // https://github.com/craigahobbs/chisel/blob/master/LICENSE
 
 export const nbsp = String.fromCharCode(160);
-export const endash = String.fromCharCode(8211);
 
-export function render(parent, elems, clear = true) {
+export function render(parent, elems = null, clear = true) {
     if (clear) {
         parent.innerHTML = '';
     }
     return appendElements(parent, elems);
 }
 
-function appendElements(parent, elems) {
+function appendElements(parent, elems = null) {
     if (Array.isArray(elems)) {
         for (let iElem = 0; iElem < elems.length; iElem++) {
             appendElements(parent, elems[iElem]);
         }
-    } else if (elems) {
+    } else if (elems !== null) {
         parent.appendChild(createElement(elems));
     }
     return parent;
@@ -45,9 +44,7 @@ function createElement(element) {
 }
 
 export function elem(tag, attrsOrElems = null, elems = null, ns = null) {
-    const element = {
-        'tag': tag
-    };
+    const element = {'tag': tag};
     const attrs = attrsOrElems !== null && !Array.isArray(attrsOrElems) ? attrsOrElems : null;
     const elemsActual = attrs === null ? attrsOrElems : elems;
     if (attrs !== null) {
@@ -67,21 +64,13 @@ export function svg(tag, attrsOrElems, elems) {
 }
 
 export function text(text_) {
-    return {
-        'text': text_
-    };
+    return {'text': text_};
 }
 
-export function href(hash = null, query = null, pathname = null, target = null) {
+export function href(hash = null, query = null, pathname = null) {
     let hashStr = '';
     if (hash !== null) {
-        if (target !== null) {
-            hashStr = `#${encodeParams(hash)}&${target}`;
-        } else {
-            hashStr = `#${encodeParams(hash)}`;
-        }
-    } else if (target !== null) {
-        hashStr = `#${target}`;
+        hashStr = `#${encodeParams(hash)}`;
     } else if (query === null) {
         hashStr = '#';
     }
@@ -127,18 +116,19 @@ export function decodeParams(paramStr = null) {
     return params;
 }
 
-export function xhr(method, url, args = {}) {
-    const xhr_ = new XMLHttpRequest();
-    xhr_.open(method, href(null, args.params, url));
-    xhr_.responseType = args.responseType || 'json';
+export function xhr(method, pathname, args, testXMLHttpRequest) {
+    // istanbul ignore next
+    const xhr_ = typeof testXMLHttpRequest !== 'undefined' ? testXMLHttpRequest : new XMLHttpRequest();
+    xhr_.open(method, href(null, typeof args.params !== 'undefined' ? args.params : {}, pathname));
+    xhr_.responseType = typeof args.responseType !== 'undefined' ? args.responseType : 'json';
     xhr_.onreadystatechange = () => {
-        if (XMLHttpRequest.DONE === xhr_.readyState) {
+        if (xhr_.readyState === xhr_.DONE) {
             if (xhr_.status === 200) {
-                if (args.onok) {
+                if (typeof args.onok !== 'undefined') {
                     args.onok(xhr_.response);
                 }
             } else {
-                if (args.onerror) {
+                if (typeof args.onerror !== 'undefined') {
                     args.onerror(xhr_.response);
                 }
             }
