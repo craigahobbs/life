@@ -109,10 +109,11 @@ export class LifePage {
             this.generationInterval = null;
         }
         if (!this.params.pause && !this.params.step) {
-            this.generationInterval = setInterval(() => {
-                this.next();
-                chisel.render(document.getElementById('lifeSvg'), this.svgElements());
-            }, this.params.period * 1000);
+            this.generationInterval = window.setInterval(
+                // istanbul ignore next
+                () => this.onIntervalTimeout(),
+                this.params.period * 1000
+            );
         }
 
         // Load?
@@ -157,6 +158,11 @@ export class LifePage {
 
         // Render
         chisel.render(document.body, this.pageElements());
+    }
+
+    onIntervalTimeout() {
+        this.next();
+        chisel.render(document.getElementById('lifeSvg'), this.svgElements());
     }
 
     pageElements() {

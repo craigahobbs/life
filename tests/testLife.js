@@ -697,7 +697,7 @@ test('LifePage.render', (t) => {
 
     // Validate initial render
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
-    lifePage.render(document.body);
+    lifePage.render();
     t.deepEqual(assignLocation, []);
     t.deepEqual(lifePage.current, new Life(5, 5, [
         false, false, false, false, false,
@@ -804,7 +804,7 @@ test('LifePage.render, step', (t) => {
     // Step
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&step=1';
     document.body.innerHTML = '';
-    lifePage.render(document.body);
+    lifePage.render();
     t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
@@ -827,7 +827,7 @@ test('LifePage.render, reset', (t) => {
     // Reset
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&reset=1';
     document.body.innerHTML = '';
-    lifePage.render(document.body);
+    lifePage.render();
     t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
@@ -848,7 +848,7 @@ test('LifePage.render, toggle cell', (t) => {
     };
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=2&celly=1';
     document.body.innerHTML = '';
-    lifePage.render(document.body);
+    lifePage.render();
     t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
@@ -869,7 +869,7 @@ test('LifePage.render, load', (t) => {
     };
     window.location.hash = '#load=5-5-555550';
     document.body.innerHTML = '';
-    lifePage.render(document.body);
+    lifePage.render();
     t.deepEqual(assignLocation, ['blank#height=5&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
@@ -882,12 +882,65 @@ test('LifePage.render, load', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
+test('LifePage.render, play', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+
+    // Initial load
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocation, []);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+    t.not(lifePage.generationInterval, null);
+    t.not(document.body.innerHTML, '');
+
+    // Execute the generation interval
+    const loadInnerHTML = document.body.innerHTML;
+    lifePage.onIntervalTimeout();
+    t.deepEqual(lifePage.current.values, [
+        false, false, true, false, false,
+        false, true, false, true, false,
+        true, false, false, false, true,
+        false, true, false, true, false,
+        false, false, true, false, false
+    ]);
+    t.not(document.body.innerHTML, loadInnerHTML);
+
+    // Pause
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocation, []);
+    t.deepEqual(lifePage.current.values, [
+        false, false, true, false, false,
+        false, true, false, true, false,
+        true, false, false, false, true,
+        false, true, false, true, false,
+        false, false, true, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.not(document.body.innerHTML, '');
+});
+
 test('LifePage.main', (t) => {
     window.location.hash = '#';
     document.body.innerHTML = '';
     const onHashChange = LifePage.main(document.body);
     window.removeEventListener('hashchange', onHashChange, false);
     t.not(document.body.innerHTML, '');
+
+    // Execute onHashChange to verify it renders and to clear the generation interval
+    window.location.hash = '#pause=1';
     document.body.innerHTML = '';
     onHashChange();
     t.not(document.body.innerHTML, '');
