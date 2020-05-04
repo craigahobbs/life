@@ -520,15 +520,38 @@ test('LifePage.pageElements, pause', (t) => {
     lifePage.updateParams();
     lifePage.generations = [life];
 
+    // Overwrite lifePage.assignLocation
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+
     // Check the SVG element callback functions
     const pageElements = lifePage.pageElements();
     const svgElements = pageElements[2].elems.elems;
     for (let ix = 1; ix < svgElements.length; ix++) {
         const element = svgElements[ix];
         t.is(element.tag, 'rect');
-        t.true(typeof element.attrs._callback === 'function');
+
+        // Call the callback
+        const callback = element.attrs._callback;
+        t.true(typeof callback === 'function');
+        callback({
+            'addEventListener': (event, onclick) => {
+                t.is(event, 'click');
+                t.is(typeof onclick, 'function');
+                onclick();
+            }
+        });
+
         delete element.attrs._callback;
     }
+    t.deepEqual(assignLocation, [
+        'blank#bgStroke=black&cellx=0&celly=0&height=5&pause=1&width=5',
+        'blank#bgStroke=black&cellx=1&celly=0&height=5&pause=1&width=5',
+        'blank#bgStroke=black&cellx=0&celly=1&height=5&pause=1&width=5',
+        'blank#bgStroke=black&cellx=1&celly=1&height=5&pause=1&width=5'
+    ]);
 
     t.deepEqual(pageElements, [
         {
@@ -692,6 +715,7 @@ test('LifePage.render', (t) => {
     const lifePage = new LifePage();
     const assignLocation = [];
     lifePage.assignLocation = (location) => {
+        // istanbul ignore next
         assignLocation.push(location);
     };
 
@@ -861,6 +885,27 @@ test('LifePage.render, toggle cell', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
+test('LifePage.render, invalid toggle cell', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        assignLocation.push(location);
+    };
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=99&celly=99';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
 test('LifePage.render, load', (t) => {
     const lifePage = new LifePage();
     const assignLocation = [];
@@ -882,10 +927,33 @@ test('LifePage.render, load', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
+test('LifePage.render, save', (t) => {
+    const lifePage = new LifePage();
+    const assignLocation = [];
+    lifePage.assignLocation = (location) => {
+        // istanbul ignore next
+        assignLocation.push(location);
+    };
+    window.location.hash = '#load=5-5-555550&save=1';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocation, []);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.not(document.body.innerHTML, '');
+});
+
 test('LifePage.render, play', (t) => {
     const lifePage = new LifePage();
     const assignLocation = [];
     lifePage.assignLocation = (location) => {
+        // istanbul ignore next
         assignLocation.push(location);
     };
 
