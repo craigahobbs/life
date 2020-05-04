@@ -4,23 +4,34 @@
 import * as chisel from './chisel.js';
 
 
-export function main(parent) {
-    const lifePage = new LifePage();
-
-    // Render page
-    lifePage.render(parent);
-
-    // Listen for hash parameter changes
-    window.onhashchange = () => {
-        lifePage.render(parent);
-    };
-}
-
-
 export class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
+    }
+
+    static main() {
+        const lifePage = new LifePage();
+
+        // Render page
+        lifePage.render();
+
+        // Listen for hash parameter changes
+        const onHashChange = () => lifePage.render();
+        window.addEventListener('hashchange', onHashChange, false);
+
+        // Return onHashChange function so that it can be removed by unit tests using:
+        // "window.removeEventListener('hashchange', onHashChange, false);"
+        return onHashChange;
+    }
+
+    // The method "assignLocation" is non-static so that it can easily be overwritten in unit tests.
+    // Hence the coverage and lint ignores that follow.
+    //
+    // istanbul ignore next
+    // eslint-disable-next-line class-methods-use-this
+    assignLocation(location) {
+        window.location.href = location;
     }
 
     updateParams() {
@@ -89,7 +100,7 @@ export class LifePage {
         }
     }
 
-    render(parent) {
+    render() {
         this.updateParams();
 
         // Clear/set the generation interval
@@ -98,23 +109,24 @@ export class LifePage {
             this.generationInterval = null;
         }
         if (!this.params.pause && !this.params.step) {
-            this.generationInterval = setInterval(() => {
-                this.next();
-                chisel.render(document.getElementById('lifeSvg'), this.svgElements());
-            }, this.params.period * 1000);
+            this.generationInterval = window.setInterval(
+                // istanbul ignore next
+                () => this.onIntervalTimeout(),
+                this.params.period * 1000
+            );
         }
 
         // Load?
         if (this.params.load) {
             this.generations = [this.params.load];
             if (!this.params.save) {
-                window.location.href = chisel.href({
+                this.assignLocation(chisel.href({
                     ...this.linkParams,
                     'load': undefined,
                     'width': this.params.width,
                     'height': this.params.height,
                     'pause': '1'
-                });
+                }));
                 return;
             }
         } else {
@@ -128,24 +140,29 @@ export class LifePage {
             if (this.params.reset) {
                 this.generations =
                     [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
-                window.location.href = chisel.href({...this.linkParams, 'reset': undefined});
+                this.assignLocation(chisel.href({...this.linkParams, 'reset': undefined}));
                 return;
             } else if (this.params.step) {
                 this.next();
-                window.location.href = chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'});
+                this.assignLocation(chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'}));
                 return;
             } else if (this.params.cellx !== undefined || this.params.celly !== undefined) {
                 if (this.params.cellx !== undefined && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
                     this.params.celly !== undefined && this.params.celly >= 0 && this.params.celly < this.params.height) {
                     this.current.setCell(this.params.cellx, this.params.celly, !this.current.cell(this.params.cellx, this.params.celly));
                 }
-                window.location.href = chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined});
+                this.assignLocation(chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined}));
                 return;
             }
         }
 
         // Render
-        chisel.render(parent, this.pageElements());
+        chisel.render(document.body, this.pageElements());
+    }
+
+    onIntervalTimeout() {
+        this.next();
+        chisel.render(document.getElementById('lifeSvg'), this.svgElements());
     }
 
     pageElements() {
@@ -224,7 +241,7 @@ export class LifePage {
                             : 'fill: rgba(255, 255, 255, 0); stroke: none;',
                         '_callback': this.params.load || !this.params.pause ? undefined : (element) => {
                             element.addEventListener('click', () => {
-                                window.location.href = chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy});
+                                this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
                             });
                         }
                     }));

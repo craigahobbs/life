@@ -73,46 +73,51 @@ export function text(text_) {
     };
 }
 
-export function href(hashParams, params, path = window.location.pathname) {
-    const hashParamsStr = encodeParams(hashParams);
-    const paramsStr = encodeParams(params);
-    if (hashParamsStr === null && paramsStr === null) {
-        return `${path}#`;
-    } else if (hashParamsStr === null && paramsStr !== null) {
-        return `${path}?${paramsStr}`;
-    } else if (hashParamsStr !== null && paramsStr === null) {
-        return `${path}#${hashParamsStr}`;
+export function href(hash = null, query = null, pathname = null) {
+    let hashStr = '';
+    let queryStr = '';
+    let pathname_ = pathname;
+    if (hash !== null) {
+        hashStr = `#${encodeParams(hash)}`;
+        if (hashStr === '#') {
+            hashStr = '';
+        }
     }
-    return `${path}?${paramsStr}#${hashParamsStr}`;
+    if (query !== null) {
+        queryStr = `#${encodeParams(query)}`;
+        if (queryStr === '#') {
+            queryStr = '';
+        }
+    }
+    if (pathname_ === null) {
+        pathname_ = window.location.pathname;
+    }
+    return `${pathname_}${queryStr}${hashStr}`;
 }
 
 export function encodeParams(params) {
     const items = [];
-    if (undefined !== params) {
-        const names = Object.keys(params).sort();
-        names.forEach((name) => {
-            if (params[name] !== null && params[name] !== undefined) {
-                items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
-            }
-        });
-        names.forEach((name) => {
-            if (params[name] === null) {
-                items.push(encodeURIComponent(name));
-            }
-        });
-    }
-    return items.length ? items.join('&') : null;
+    const names = Object.keys(params).sort();
+    names.forEach((name) => {
+        if (params[name] !== null && params[name] !== undefined) {
+            items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
+        }
+    });
+    names.forEach((name) => {
+        if (params[name] === null) {
+            items.push(encodeURIComponent(name));
+        }
+    });
+    return items.join('&');
 }
 
 export function decodeParams(paramString = window.location.hash.substring(1)) {
     const rNextKeyValue = /([^&=]+)=?([^&]*)/g;
-
     let match;
     const params = {};
     while ((match = rNextKeyValue.exec(paramString)) !== null) {
         params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
     }
-
     return params;
 }
 
