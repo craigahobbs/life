@@ -10,21 +10,6 @@ export class LifePage {
         this.generationInterval = null;
     }
 
-    static main() {
-        const lifePage = new LifePage();
-
-        // Render page
-        lifePage.render();
-
-        // Listen for hash parameter changes
-        const onHashChange = () => lifePage.render();
-        window.addEventListener('hashchange', onHashChange, false);
-
-        // Return onHashChange function so that it can be removed by unit tests using:
-        // "window.removeEventListener('hashchange', onHashChange, false);"
-        return onHashChange;
-    }
-
     // The method "assignLocation" is non-static so that it can easily be overwritten in unit tests.
     // Hence the coverage and lint ignores that follow.
     //

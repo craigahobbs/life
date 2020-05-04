@@ -991,20 +991,6 @@ test('LifePage.render, play', (t) => {
     t.not(document.body.innerHTML, '');
 });
 
-test('LifePage.main', (t) => {
-    window.location.hash = '#';
-    document.body.innerHTML = '';
-    const onHashChange = LifePage.main(document.body);
-    window.removeEventListener('hashchange', onHashChange, false);
-    t.not(document.body.innerHTML, '');
-
-    // Execute onHashChange to verify it renders and to clear the generation interval
-    window.location.hash = '#pause=1';
-    document.body.innerHTML = '';
-    onHashChange();
-    t.not(document.body.innerHTML, '');
-});
-
 
 // Life tests
 
