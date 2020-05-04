@@ -11,34 +11,6 @@ export function render(parent, elems, clear = true) {
     return appendElements(parent, elems);
 }
 
-export function createElement(element) {
-    let browserElement;
-    if (element.text) {
-        browserElement = document.createTextNode(element.text);
-    } else if (element.ns !== undefined) {
-        browserElement = document.createElementNS(element.ns, element.tag);
-    } else {
-        browserElement = document.createElement(element.tag);
-    }
-
-    let {attrs} = element;
-    if (attrs) {
-        const callback = attrs._callback;
-        if (callback !== undefined) {
-            attrs = {...attrs, '_callback': undefined};
-        }
-        for (const [attr, value] of Object.entries(attrs)) {
-            if (value !== undefined) {
-                browserElement.setAttribute(attr, value);
-            }
-        }
-        if (callback !== undefined) {
-            callback(browserElement);
-        }
-    }
-    return appendElements(browserElement, element.elems);
-}
-
 function appendElements(parent, elems) {
     if (Array.isArray(elems)) {
         for (let iElem = 0; iElem < elems.length; iElem++) {
@@ -50,14 +22,41 @@ function appendElements(parent, elems) {
     return parent;
 }
 
-export function elem(tag, attrsOrElems, elems, ns) {
-    const attrs = isDict(attrsOrElems) ? attrsOrElems : undefined;
+function createElement(element) {
+    let browserElement;
+    if (element.text) {
+        browserElement = document.createTextNode(element.text);
+    } else if (typeof element.ns !== 'undefined') {
+        browserElement = document.createElementNS(element.ns, element.tag);
+    } else {
+        browserElement = document.createElement(element.tag);
+    }
+    if (typeof element.attrs !== 'undefined') {
+        for (const [attr, value] of Object.entries(element.attrs)) {
+            if (attr !== '_callback' && typeof value !== 'undefined') {
+                browserElement.setAttribute(attr, value);
+            }
+        }
+        if (typeof element.attrs._callback !== 'undefined') {
+            element.attrs._callback(browserElement);
+        }
+    }
+    return appendElements(browserElement, element.elems);
+}
+
+export function elem(tag, attrsOrElems = null, elems = null, ns = null) {
     const element = {
-        'tag': tag,
-        'attrs': attrs || {},
-        'elems': (attrs ? elems : attrsOrElems) || []
+        'tag': tag
     };
-    if (ns !== undefined) {
+    const attrs = attrsOrElems !== null && !Array.isArray(attrsOrElems) ? attrsOrElems : null;
+    const elemsActual = attrs === null ? attrsOrElems : elems;
+    if (attrs !== null) {
+        element.attrs = attrs;
+    }
+    if (elemsActual !== null) {
+        element.elems = elemsActual;
+    }
+    if (ns !== null) {
         element.ns = ns;
     }
     return element;
@@ -99,7 +98,7 @@ export function encodeParams(params) {
     const items = [];
     const names = Object.keys(params).sort();
     names.forEach((name) => {
-        if (params[name] !== null && params[name] !== undefined) {
+        if (params[name] !== null && typeof params[name] !== 'undefined') {
             items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
         }
     });
@@ -111,11 +110,16 @@ export function encodeParams(params) {
     return items.join('&');
 }
 
-export function decodeParams(paramString = window.location.hash.substring(1)) {
+export function decodeParams(paramStr = null) {
+    let paramStr_ = paramStr;
+    if (paramStr_ === null) {
+        paramStr_ = window.location.hash.substring(1);
+    }
+
     const rNextKeyValue = /([^&=]+)=?([^&]*)/g;
     let match;
     const params = {};
-    while ((match = rNextKeyValue.exec(paramString)) !== null) {
+    while ((match = rNextKeyValue.exec(paramStr_)) !== null) {
         params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
     }
     return params;
@@ -123,7 +127,7 @@ export function decodeParams(paramString = window.location.hash.substring(1)) {
 
 export function xhr(method, url, args = {}) {
     const xhr_ = new XMLHttpRequest();
-    xhr_.open(method, href(undefined, args.params, url));
+    xhr_.open(method, href(null, args.params, url));
     xhr_.responseType = args.responseType || 'json';
     xhr_.onreadystatechange = () => {
         if (XMLHttpRequest.DONE === xhr_.readyState) {
@@ -139,8 +143,4 @@ export function xhr(method, url, args = {}) {
         }
     };
     xhr_.send();
-}
-
-export function isDict(obj) {
-    return !!obj && obj.constructor === Object;
 }
