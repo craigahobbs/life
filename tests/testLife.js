@@ -16,8 +16,8 @@ test('LifePage constructor', (t) => {
     const lifePage = new LifePage();
     t.deepEqual(lifePage.generations, [new Life(0, 0)]);
     t.is(lifePage.generationInterval, null);
-    t.is(lifePage.linkParams, undefined);
-    t.is(lifePage.params, undefined);
+    t.is(typeof lifePage.linkParams, 'undefined');
+    t.is(typeof lifePage.params, 'undefined');
 });
 
 test('LifePage.updateParams', (t) => {
@@ -28,15 +28,15 @@ test('LifePage.updateParams', (t) => {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
         'bgStrokeWidth': '1',
-        'cellx': undefined,
-        'celly': undefined,
+        'cellx': null,
+        'celly': null,
         'depth': 2,
         'fill': '#2a803b',
         'gap': 1,
         'height': 50,
         'lifeBorder': 0.1,
         'lifeRatio': 0.25,
-        'load': undefined,
+        'load': null,
         'pause': false,
         'period': 0.5,
         'reset': false,
@@ -62,8 +62,8 @@ test('LifePage.updateParams, load', (t) => {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
         'bgStrokeWidth': '1',
-        'cellx': undefined,
-        'celly': undefined,
+        'cellx': null,
+        'celly': null,
         'depth': 2,
         'fill': '#2a803b',
         'gap': 1,
@@ -86,7 +86,6 @@ test('LifePage.updateParams, load', (t) => {
 test('LifePage.updateParams, invalid load', (t) => {
     const lifePage = new LifePage();
     const encodedLife = '7-5-';
-    const life = new Life(7, 5);
     window.location.hash = `#load=${encodedLife}`;
     lifePage.updateParams();
     t.deepEqual(lifePage.linkParams, {
@@ -96,16 +95,16 @@ test('LifePage.updateParams, invalid load', (t) => {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
         'bgStrokeWidth': '1',
-        'cellx': undefined,
-        'celly': undefined,
+        'cellx': null,
+        'celly': null,
         'depth': 2,
         'fill': '#2a803b',
         'gap': 1,
-        'height': 5,
+        'height': 50,
         'lifeBorder': 0.1,
         'lifeRatio': 0.25,
-        'load': life,
-        'pause': true,
+        'load': null,
+        'pause': false,
         'period': 0.5,
         'reset': false,
         'save': false,
@@ -113,7 +112,7 @@ test('LifePage.updateParams, invalid load', (t) => {
         'step': false,
         'stroke': 'none',
         'strokeWidth': '1',
-        'width': 7
+        'width': 50
     });
 });
 
@@ -129,15 +128,15 @@ test('LifePage.updateParams, too-small load', (t) => {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
         'bgStrokeWidth': '1',
-        'cellx': undefined,
-        'celly': undefined,
+        'cellx': null,
+        'celly': null,
         'depth': 2,
         'fill': '#2a803b',
         'gap': 1,
         'height': 50,
         'lifeBorder': 0.1,
         'lifeRatio': 0.25,
-        'load': undefined,
+        'load': null,
         'pause': false,
         'period': 0.5,
         'reset': false,
@@ -180,7 +179,7 @@ test('LifePage.updateParams, bulk valid', (t) => {
         lifePage.linkParams,
         Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
     );
-    t.deepEqual(lifePage.params, {...args, 'load': undefined});
+    t.deepEqual(lifePage.params, {...args, 'load': null});
 });
 
 test('LifePage.updateParams, bulk invalid', (t) => {
@@ -222,7 +221,7 @@ test('LifePage.updateParams, bulk invalid', (t) => {
         'height': 5,
         'lifeBorder': 0,
         'lifeRatio': 0,
-        'load': undefined,
+        'load': null,
         'pause': false,
         'period': 0.0001,
         'reset': false,
@@ -267,7 +266,7 @@ test('LifePage.updateParams, bulk too-small', (t) => {
         'height': 5,
         'lifeBorder': 0,
         'lifeRatio': 0,
-        'load': undefined,
+        'load': null,
         'pause': false,
         'period': 0.0001,
         'reset': false,
@@ -312,7 +311,7 @@ test('LifePage.updateParams, bulk too-large', (t) => {
         'height': 1000,
         'lifeBorder': 0.45,
         'lifeRatio': 1,
-        'load': undefined,
+        'load': null,
         'pause': false,
         'period': 60,
         'reset': false,
@@ -488,7 +487,7 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            '_callback': undefined, 'x': 12, 'y': 1, 'width': 10, 'height': 10,
+                            '_callback': null, 'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
@@ -496,7 +495,7 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            '_callback': undefined, 'x': 1, 'y': 12, 'width': 10, 'height': 10,
+                            '_callback': null, 'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'}
@@ -734,15 +733,15 @@ test('LifePage.render', (t) => {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
         'bgStrokeWidth': '1',
-        'cellx': undefined,
-        'celly': undefined,
+        'cellx': null,
+        'celly': null,
         'depth': 2,
         'fill': '#2a803b',
         'gap': 1,
         'height': 5,
         'lifeBorder': 0.2,
         'lifeRatio': 1,
-        'load': undefined,
+        'load': null,
         'pause': true,
         'period': 0.5,
         'reset': false,
@@ -1183,8 +1182,10 @@ test('Life.decode', (t) => {
 });
 
 test('Life.decode, invalid', (t) => {
-    t.true(Life.decode('3-2').isEqual(new Life(3, 2)));
-    t.true(Life.decode('3').isEqual(new Life(3, 0)));
-    t.true(Life.decode('').isEqual(new Life(0, 0)));
-    t.true(Life.decode('asdf').isEqual(new Life(0, 0)));
+    t.is(Life.decode('3-2'), null);
+    t.is(Life.decode('3'), null);
+    t.is(Life.decode(''), null);
+    t.is(Life.decode('asdf-asdf-asdf'), null);
+    t.is(Life.decode('asdf-asdf'), null);
+    t.is(Life.decode('asdf'), null);
 });

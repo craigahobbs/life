@@ -35,45 +35,45 @@ export class LifePage {
     }
 
     updateParams() {
-        const linkParams = chisel.decodeParams();
+        const params = chisel.decodeParams();
 
         // Load?
         let width, height;
         const minWH = 5;
         const maxWH = 1000;
-        let life = linkParams.load && Life.decode(linkParams.load);
-        if (life && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
+        let life = typeof params.load !== 'undefined' && Life.decode(params.load);
+        if (life !== null && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
             [width, height] = [life.width, life.height];
         } else {
-            life = undefined;
-            width = Math.max(minWH, Math.min(maxWH, linkParams.width === undefined ? 50 : parseInt(linkParams.width, 10) || 0));
-            height = Math.max(minWH, Math.min(maxWH, linkParams.height === undefined ? 50 : parseInt(linkParams.height, 10) || 0));
+            life = null;
+            width = Math.max(minWH, Math.min(maxWH, typeof params.width === 'undefined' ? 50 : parseInt(params.width, 10) || 0));
+            height = Math.max(minWH, Math.min(maxWH, typeof params.height === 'undefined' ? 50 : parseInt(params.height, 10) || 0));
         }
 
         // Update params
-        this.linkParams = linkParams;
+        this.linkParams = params;
         this.params = {
-            'pause': !!life || linkParams.pause === 'true' || linkParams.pause === '1',
-            'step': linkParams.step === 'true' || linkParams.step === '1',
-            'reset': linkParams.reset === 'true' || linkParams.reset === '1',
-            'cellx': linkParams.cellx && Math.max(0, Math.min(maxWH - 1, parseInt(linkParams.cellx, 10) || 0)),
-            'celly': linkParams.celly && Math.max(0, Math.min(maxWH - 1, parseInt(linkParams.celly, 10) || 0)),
+            'pause': !!life || params.pause === 'true' || params.pause === '1',
+            'step': params.step === 'true' || params.step === '1',
+            'reset': params.reset === 'true' || params.reset === '1',
+            'cellx': typeof params.cellx === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.cellx, 10) || 0)),
+            'celly': typeof params.celly === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.celly, 10) || 0)),
             'load': life,
-            'save': linkParams.save === 'true' || linkParams.save === '1',
-            'period': Math.max(0.0001, Math.min(60, linkParams.period === undefined ? 0.5 : parseFloat(linkParams.period) || 0)),
+            'save': params.save === 'true' || params.save === '1',
+            'period': Math.max(0.0001, Math.min(60, typeof params.period === 'undefined' ? 0.5 : parseFloat(params.period) || 0)),
             'width': width,
             'height': height,
-            'size': Math.max(2, Math.min(100, linkParams.size === undefined ? 10 : parseInt(linkParams.size, 10) || 0)),
-            'gap': Math.max(0, Math.min(10, linkParams.gap === undefined ? 1 : parseInt(linkParams.gap, 10) || 0)),
-            'depth': Math.max(0, Math.min(1000, linkParams.depth === undefined ? 2 : parseInt(linkParams.depth, 10) || 0)),
-            'lifeRatio': Math.max(0, Math.min(1, linkParams.lifeRatio === undefined ? 0.25 : parseFloat(linkParams.lifeRatio) || 0)),
-            'lifeBorder': Math.max(0, Math.min(0.45, linkParams.lifeBorder === undefined ? 0.1 : parseFloat(linkParams.lifeBorder) || 0)),
-            'fill': linkParams.fill || '#2a803b',
-            'stroke': linkParams.stroke || 'none',
-            'strokeWidth': linkParams.strokeWidth || '1',
-            'bgFill': linkParams.bgFill || '#ffffff',
-            'bgStroke': linkParams.bgStroke || 'none',
-            'bgStrokeWidth': linkParams.bgStrokeWidth || '1'
+            'size': Math.max(2, Math.min(100, typeof params.size === 'undefined' ? 10 : parseInt(params.size, 10) || 0)),
+            'gap': Math.max(0, Math.min(10, typeof params.gap === 'undefined' ? 1 : parseInt(params.gap, 10) || 0)),
+            'depth': Math.max(0, Math.min(1000, typeof params.depth === 'undefined' ? 2 : parseInt(params.depth, 10) || 0)),
+            'lifeRatio': Math.max(0, Math.min(1, typeof params.lifeRatio === 'undefined' ? 0.25 : parseFloat(params.lifeRatio) || 0)),
+            'lifeBorder': Math.max(0, Math.min(0.45, typeof params.lifeBorder === 'undefined' ? 0.1 : parseFloat(params.lifeBorder) || 0)),
+            'fill': params.fill || '#2a803b',
+            'stroke': params.stroke || 'none',
+            'strokeWidth': params.strokeWidth || '1',
+            'bgFill': params.bgFill || '#ffffff',
+            'bgStroke': params.bgStroke || 'none',
+            'bgStrokeWidth': params.bgStrokeWidth || '1'
         };
     }
 
@@ -117,12 +117,12 @@ export class LifePage {
         }
 
         // Load?
-        if (this.params.load) {
+        if (this.params.load !== null) {
             this.generations = [this.params.load];
             if (!this.params.save) {
                 this.assignLocation(chisel.href({
                     ...this.linkParams,
-                    'load': undefined,
+                    'load': null,
                     'width': this.params.width,
                     'height': this.params.height,
                     'pause': '1'
@@ -140,18 +140,18 @@ export class LifePage {
             if (this.params.reset) {
                 this.generations =
                     [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
-                this.assignLocation(chisel.href({...this.linkParams, 'reset': undefined}));
+                this.assignLocation(chisel.href({...this.linkParams, 'reset': null}));
                 return;
             } else if (this.params.step) {
                 this.next();
-                this.assignLocation(chisel.href({...this.linkParams, 'step': undefined, 'pause': '1'}));
+                this.assignLocation(chisel.href({...this.linkParams, 'step': null, 'pause': '1'}));
                 return;
-            } else if (this.params.cellx !== undefined || this.params.celly !== undefined) {
-                if (this.params.cellx !== undefined && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
-                    this.params.celly !== undefined && this.params.celly >= 0 && this.params.celly < this.params.height) {
+            } else if (this.params.cellx !== null || this.params.celly !== null) {
+                if (this.params.cellx !== null && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
+                    this.params.cellx !== null && this.params.celly >= 0 && this.params.celly < this.params.height) {
                     this.current.setCell(this.params.cellx, this.params.celly, !this.current.cell(this.params.cellx, this.params.celly));
                 }
-                this.assignLocation(chisel.href({...this.linkParams, 'cellx': undefined, 'celly': undefined}));
+                this.assignLocation(chisel.href({...this.linkParams, 'cellx': null, 'celly': null}));
                 return;
             }
         }
@@ -185,17 +185,17 @@ export class LifePage {
             ]),
             chisel.elem('p', {'style': 'white-space: nowrap;'}, [
                 this.params.save ? [
-                    button('Load', {'save': undefined}, false, true),
+                    button('Load', {'save': null}, false, true),
                     chisel.text(`${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}
                                 Bookmark this link or the page link to save.`)
                 ] : [
-                    button(this.params.pause ? 'Play' : 'Pause', {'pause': this.params.pause ? undefined : '1'}, false, true),
+                    button(this.params.pause ? 'Play' : 'Pause', {'pause': this.params.pause ? null : '1'}, false, true),
                     !this.params.pause ? null : [
                         button('Step', {'step': '1'}, true),
                         button('Save', {'load': this.current.encode(), 'save': '1'})
                     ],
                     button('Random', {'reset': '1'}, true),
-                    button('Border', {'bgStroke': this.params.bgStroke === 'none' ? 'black' : undefined}),
+                    button('Border', {'bgStroke': this.params.bgStroke === 'none' ? 'black' : null}),
                     button('<<Speed', {'period': this.params.period * 2}, true),
                     button('Speed>>', {'period': this.params.period / 2}),
                     button('<<Width', {'width': this.params.width - 5}, true),
@@ -239,7 +239,7 @@ export class LifePage {
                         'style': this.current.cell(ix, iy)
                             ? `fill: ${this.params.fill}; stroke: ${this.params.stroke}; stroke-width: ${this.params.strokeWidth};`
                             : 'fill: rgba(255, 255, 255, 0); stroke: none;',
-                        '_callback': this.params.load || !this.params.pause ? undefined : (element) => {
+                        '_callback': this.params.load !== null || !this.params.pause ? null : (element) => {
                             element.addEventListener('click', () => {
                                 this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
                             });
@@ -255,10 +255,10 @@ export class LifePage {
 
 
 export class Life {
-    constructor(width, height, values) {
+    constructor(width, height, values = null) {
         this.width = Math.max(0, width);
         this.height = Math.max(0, height);
-        if (values !== undefined && values.length === this.width * this.height) {
+        if (values !== null && values.length === this.width * this.height) {
             this.values = values;
         } else {
             this.values = Array.from({'length': this.width * this.height}, () => false);
@@ -375,20 +375,26 @@ export class Life {
     }
 
     static decode(lifeString) {
-        const [sWidth, sHeight, sValues] = lifeString.split('-');
-        const width = parseInt(sWidth, 10) || 0;
-        const height = parseInt(sHeight, 10) || 0;
-
-        // Decode the values
-        const values = [];
-        if (sValues !== undefined) {
-            for (let ix = 0; ix < sValues.length; ix++) {
-                const count = parseInt(sValues[ix], 36);
-                for (let ic = 0; ic < count; ic++) {
-                    values.push(ix % 2 !== 0);
+        let life = null;
+        const parts = lifeString.split('-');
+        if (parts.length === 3) {
+            const [sWidth, sHeight, sValues] = parts;
+            const width = parseInt(sWidth, 10);
+            const height = parseInt(sHeight, 10);
+            if (width > 0 && height > 0) {
+                // Decode the values
+                const values = [];
+                for (let ix = 0; ix < sValues.length; ix++) {
+                    const count = parseInt(sValues[ix], 36);
+                    for (let ic = 0; ic < count; ic++) {
+                        values.push(ix % 2 !== 0);
+                    }
+                }
+                if (values.length === width * height) {
+                    life = new Life(width, height, values);
                 }
             }
         }
-        return new Life(width, height, values);
+        return life;
     }
 }

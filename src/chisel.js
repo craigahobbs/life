@@ -33,11 +33,11 @@ function createElement(element) {
     }
     if (typeof element.attrs !== 'undefined') {
         for (const [attr, value] of Object.entries(element.attrs)) {
-            if (attr !== '_callback' && typeof value !== 'undefined') {
+            if (attr !== '_callback' && value !== null && typeof value !== 'undefined') {
                 browserElement.setAttribute(attr, value);
             }
         }
-        if (typeof element.attrs._callback !== 'undefined') {
+        if (element.attrs._callback !== null && typeof element.attrs._callback !== 'undefined') {
             element.attrs._callback(browserElement);
         }
     }
@@ -72,10 +72,16 @@ export function text(text_) {
     };
 }
 
-export function href(hash = null, query = null, pathname = null) {
+export function href(hash = null, query = null, pathname = null, target = null) {
     let hashStr = '';
     if (hash !== null) {
-        hashStr = `#${encodeParams(hash)}`;
+        if (target !== null) {
+            hashStr = `#${encodeParams(hash)}&${target}`;
+        } else {
+            hashStr = `#${encodeParams(hash)}`;
+        }
+    } else if (target !== null) {
+        hashStr = `#${target}`;
     } else if (query === null) {
         hashStr = '#';
     }
@@ -98,15 +104,9 @@ export function href(hash = null, query = null, pathname = null) {
 
 export function encodeParams(params) {
     const items = [];
-    const names = Object.keys(params).sort();
-    names.forEach((name) => {
+    Object.keys(params).sort().forEach((name) => {
         if (params[name] !== null && typeof params[name] !== 'undefined') {
             items.push(`${encodeURIComponent(name)}=${encodeURIComponent(params[name])}`);
-        }
-    });
-    names.forEach((name) => {
-        if (params[name] === null) {
-            items.push(encodeURIComponent(name));
         }
     });
     return items.join('&');

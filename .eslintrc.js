@@ -34,6 +34,7 @@ module.exports = {
         'max-statements': 'off',
         'multiline-comment-style': 'off',
         'multiline-ternary': 'off',
+        'newline-per-chained-call': 'off',
         'no-extra-parens': 'off',
         'no-implicit-coercion': 'off',
         'no-lonely-if': 'off',
