@@ -74,23 +74,25 @@ export function text(text_) {
 
 export function href(hash = null, query = null, pathname = null) {
     let hashStr = '';
-    let queryStr = '';
-    let pathname_ = pathname;
     if (hash !== null) {
         hashStr = `#${encodeParams(hash)}`;
-        if (hashStr === '#') {
-            hashStr = '';
-        }
+    } else if (query === null) {
+        hashStr = '#';
     }
+
+    let queryStr = '';
     if (query !== null) {
-        queryStr = `#${encodeParams(query)}`;
-        if (queryStr === '#') {
+        queryStr = `?${encodeParams(query)}`;
+        if (queryStr === '?') {
             queryStr = '';
         }
     }
+
+    let pathname_ = pathname;
     if (pathname_ === null) {
         pathname_ = window.location.pathname;
     }
+
     return `${pathname_}${queryStr}${hashStr}`;
 }
 
