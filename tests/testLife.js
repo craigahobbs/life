@@ -483,7 +483,6 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: none; stroke-width: 1;'},
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -492,7 +491,6 @@ test('LifePage.pageElements', (t) => {
                             '_callback': undefined, 'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -501,7 +499,6 @@ test('LifePage.pageElements', (t) => {
                             '_callback': undefined, 'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'}
                 ],
                 'ns': 'http://www.w3.org/2000/svg'
@@ -665,7 +662,6 @@ test('LifePage.pageElements, pause', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: black; stroke-width: 1;'},
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -674,7 +670,6 @@ test('LifePage.pageElements, pause', (t) => {
                             'x': 1, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -683,7 +678,6 @@ test('LifePage.pageElements, pause', (t) => {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -692,7 +686,6 @@ test('LifePage.pageElements, pause', (t) => {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
@@ -701,7 +694,6 @@ test('LifePage.pageElements, pause', (t) => {
                             'x': 12, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
                         },
-                        'elems': [],
                         'ns': 'http://www.w3.org/2000/svg'
                     }
                 ],
