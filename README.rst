@@ -56,7 +56,7 @@ width          The horizontal width of the cell grid (default is 50).
 height         The vertical height of the cell grid (default is 50).
 size           The size, in pixels, of a cell (default is 10).
 gap            The gap, in pixels, between cells (default is 1).
-depth          The generation depth used to check for cycles (default is 2).
+depth          The generation depth used to check for cycles (default is 6).
 lifeRatio      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
 lifeBorder     The size ratio of the lifeless border around the life board at startup (default is 0.1).
 fill           The cell fill color (default is "#2a803b").
@@ -66,3 +66,59 @@ bgFill         The board fill color (default is "#ffffff").
 bgStroke       The board stroke color (default is "none").
 bgStrokeWidth  The board stroke width (default is 1).
 =============  ===========
+
+
+Development
+===========
+
+The life application is written in JavaScript (specifically `ECMAScript 2018
+<https://en.wikipedia.org/wiki/ECMAScript#9th_Edition_-_ECMAScript_2018>`_). Its `hosted on GitHub
+Pages <https://craigahobbs.github.io/life/>`_ as pure source with no packing or transpiling (to
+ES5).
+
+The application source code is located in the "src" directory. Unit tests are located in the "tests"
+directory and provide 100% line and branch coverage. Before committing changes first run the
+following:
+
+.. code:: sh
+
+   make commit
+
+The "make commit" has the folliwng system requirements:
+
+- `Docker <https://www.docker.com/get-started>`_ (for the `Node.js <https://nodejs.org/en/>`_
+  runtime via the "standard" `Node images <https://hub.docker.com/_/node/>`_.
+
+The following development dependencies are installed:
+
+- `Ava <https://github.com/avajs/ava#>`_ (for unit testing)
+- `NYC <https://github.com/istanbuljs/nyc#nyc>`_ (for unit test coverage)
+- `ESLint <https://github.com/eslint/eslint#eslint>`_ (for static code analysis)
+
+To cleanup the source directory run:
+
+.. code:: sh
+
+   make clean
+
+To also cleanup the downloaded Node.js Docker image run:
+
+.. code:: sh
+
+   make superclean
+
+To deploy your changes to GitHub Pages run:
+
+.. code:: sh
+
+   make gh-pages
+
+This command creates a "../life.gh-pages" directory with the "gh-pages" branch checked out. To
+deploy, commit and push the changes.
+
+Keeping Current
+---------------
+
+It's a good idea to update development dependency versions periodically. To do this, compare the
+versions in the generated "package-lock.json" file with the versions in the "package.json"
+file. Update any dependency version for which a new major version is available.

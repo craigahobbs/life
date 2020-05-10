@@ -160,7 +160,7 @@ export class LifePage {
             chisel.elem('p', {'style': 'white-space: nowrap;'}, [
                 chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
                 chisel.text(chisel.nbsp + chisel.nbsp),
-                chisel.elem('a', {'href': 'https://github.com/craigahobbs/life'}, chisel.text('GitHub')),
+                chisel.elem('a', {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, chisel.text('GitHub')),
                 chisel.text(chisel.nbsp + chisel.nbsp),
                 chisel.elem(
                     'a',

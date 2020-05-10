@@ -410,7 +410,7 @@ test('LifePage.pageElements', (t) => {
             'elems': [
                 {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
                 {'text': chisel.nbsp + chisel.nbsp},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life'}, 'elems': {'text': 'GitHub'}},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, 'elems': {'text': 'GitHub'}},
                 {'text': chisel.nbsp + chisel.nbsp},
                 {
                     'tag': 'a',
@@ -556,7 +556,7 @@ test('LifePage.pageElements, pause', (t) => {
             'elems': [
                 {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
                 {'text': chisel.nbsp + chisel.nbsp},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life'}, 'elems': {'text': 'GitHub'}},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, 'elems': {'text': 'GitHub'}},
                 {'text': chisel.nbsp + chisel.nbsp},
                 {
                     'tag': 'a',
@@ -756,7 +756,7 @@ test('LifePage.render', (t) => {
         document.body.innerHTML,
         '<p style="white-space: nowrap;">' +
             '<span style="font-weight: bold;">Conway\'s Game of Life</span>&nbsp;&nbsp;' +
-            '<a href="https://github.com/craigahobbs/life">GitHub</a>&nbsp;&nbsp;' +
+            '<a href="https://github.com/craigahobbs/life#conways-game-of-life">GitHub</a>&nbsp;&nbsp;' +
             '<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">Wikipedia</a>' +
             '</p>' +
             '<p style="white-space: nowrap;">' +
