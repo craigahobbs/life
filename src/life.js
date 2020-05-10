@@ -50,7 +50,7 @@ export class LifePage {
             'height': height,
             'size': Math.max(2, Math.min(100, typeof params.size === 'undefined' ? 10 : parseInt(params.size, 10) || 0)),
             'gap': Math.max(0, Math.min(10, typeof params.gap === 'undefined' ? 1 : parseInt(params.gap, 10) || 0)),
-            'depth': Math.max(0, Math.min(1000, typeof params.depth === 'undefined' ? 2 : parseInt(params.depth, 10) || 0)),
+            'depth': Math.max(0, Math.min(1000, typeof params.depth === 'undefined' ? 6 : parseInt(params.depth, 10) || 0)),
             'lifeRatio': Math.max(0, Math.min(1, typeof params.lifeRatio === 'undefined' ? 0.25 : parseFloat(params.lifeRatio) || 0)),
             'lifeBorder': Math.max(0, Math.min(0.45, typeof params.lifeBorder === 'undefined' ? 0.1 : parseFloat(params.lifeBorder) || 0)),
             'fill': params.fill || '#2a803b',
