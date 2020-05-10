@@ -84,10 +84,10 @@ following:
 
    make commit
 
-The "make commit" has the folliwng system requirements:
+The "make commit" command has the following system requirements:
 
 - `Docker <https://www.docker.com/get-started>`_ (for the `Node.js <https://nodejs.org/en/>`_
-  runtime via the "standard" `Node images <https://hub.docker.com/_/node/>`_.
+  runtime via the "standard" `Node.js images <https://hub.docker.com/_/node/>`_.
 
 The following development dependencies are installed:
 
@@ -114,11 +114,12 @@ To deploy your changes to GitHub Pages run:
    make gh-pages
 
 This command creates a "../life.gh-pages" directory with the "gh-pages" branch checked out. To
-deploy, commit and push the changes.
+deploy, commit the changes and push.
 
 Keeping Current
 ---------------
 
 It's a good idea to update development dependency versions periodically. To do this, compare the
 versions in the generated "package-lock.json" file with the versions in the "package.json"
-file. Update any dependency version for which a new major version is available.
+file. Update any dependency version in the "package.json" file for which a new major version is
+available.
