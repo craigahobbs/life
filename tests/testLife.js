@@ -40,6 +40,7 @@ test('LifePage.updateParams', (t) => {
         'bgStrokeWidth': '1',
         'cellx': null,
         'celly': null,
+        'clear': false,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
@@ -74,6 +75,7 @@ test('LifePage.updateParams, load', (t) => {
         'bgStrokeWidth': '1',
         'cellx': null,
         'celly': null,
+        'clear': false,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
@@ -107,6 +109,7 @@ test('LifePage.updateParams, invalid load', (t) => {
         'bgStrokeWidth': '1',
         'cellx': null,
         'celly': null,
+        'clear': false,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
@@ -140,6 +143,7 @@ test('LifePage.updateParams, too-small load', (t) => {
         'bgStrokeWidth': '1',
         'cellx': null,
         'celly': null,
+        'clear': false,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
@@ -167,6 +171,7 @@ test('LifePage.updateParams, bulk valid', (t) => {
         'reset': true,
         'cellx': 5,
         'celly': 7,
+        'clear': false,
         'save': true,
         'period': 0.125,
         'width': 17,
@@ -200,6 +205,7 @@ test('LifePage.updateParams, bulk invalid', (t) => {
         'reset': 'asdf',
         'cellx': 'asdf',
         'celly': 'asdf',
+        'clear': 'asdf',
         'save': 'asdf',
         'period': 'asdf',
         'width': 'asdf',
@@ -225,6 +231,7 @@ test('LifePage.updateParams, bulk invalid', (t) => {
         'bgStrokeWidth': 'asdf',
         'cellx': 0,
         'celly': 0,
+        'clear': false,
         'depth': 0,
         'fill': 'asdf',
         'gap': 0,
@@ -270,6 +277,7 @@ test('LifePage.updateParams, bulk too-small', (t) => {
         'bgStrokeWidth': '1',
         'cellx': 0,
         'celly': 0,
+        'clear': false,
         'depth': 0,
         'fill': '#2a803b',
         'gap': 0,
@@ -315,6 +323,7 @@ test('LifePage.updateParams, bulk too-large', (t) => {
         'bgStrokeWidth': '1',
         'cellx': 999,
         'celly': 999,
+        'clear': false,
         'depth': 1000,
         'fill': '#2a803b',
         'gap': 10,
@@ -606,6 +615,14 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp + chisel.nbsp},
                             {
                                 'tag': 'a',
+                                'attrs': {'href': 'blank#bgStroke=black&clear=1&height=5&pause=1&width=5'},
+                                'elems': {'text': 'Clear'}
+                            }
+                        ],
+                        [
+                            {'text': chisel.nbsp + chisel.nbsp},
+                            {
+                                'tag': 'a',
                                 'attrs': {'href': 'blank#bgStroke=black&height=5&load=2-2-1210&pause=1&save=1&width=5'},
                                 'elems': {'text': 'Save'}
                             }
@@ -734,6 +751,7 @@ test('LifePage.render', (t) => {
         'bgStrokeWidth': '1',
         'cellx': null,
         'celly': null,
+        'clear': false,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
@@ -761,6 +779,7 @@ test('LifePage.render', (t) => {
             '<p style="white-space: nowrap;">' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a> | ' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;step=1&amp;width=5">Step</a>&nbsp;&nbsp;' +
+            '<a href="blank#clear=1&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Clear</a>&nbsp;&nbsp;' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;load=5-5-63232360&amp;pause=1&amp;save=1&amp;width=5">' +
             'Save</a> | ' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;reset=1&amp;width=5">Random</a>&nbsp;&nbsp;' +
@@ -807,6 +826,26 @@ test('LifePage.render, step', (t) => {
         true, false, false, false, true,
         false, true, false, true, false,
         false, false, true, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
+test('LifePage.render, clear', (t) => {
+    const lifePage = new LifePage();
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    // Clear
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&clear=1';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, false, false, false, false,
+        false, false, false, false, false,
+        false, false, false, false, false,
+        false, false, false, false, false
     ]);
     t.is(lifePage.generationInterval, null);
     t.is(document.body.innerHTML, '');

@@ -31,6 +31,8 @@ Examples
 
 * `Flower <https://craigahobbs.github.io/life/#depth=0&size=32&load=15-15-z0z0c1d111b212b111d1z0z0c0>`_
 
+* `Flower2 <https://craigahobbs.github.io/life/#depth=0&size=32&load=12-12-t29471415242424251417492t0>`_
+
 * `Gosper glider gun <https://craigahobbs.github.io/life/#depth=0&period=0.05&size=18&load=36-31-02w4w2z0z0z0z0z0z0z0z0w1x111n262c2b13142c4815132e28131124111l15171m131w2z0z0z0z0z0z0z0z0z0z0w2w4w2>`_
 
 * `Leaves <https://craigahobbs.github.io/life/#depth=0&period=0.1&size=24&load=21-21-8311111332414111411112329211719121z0626141d121314212412131321171c2j2b181127262123322j172z0612191711292321111411141423311111380>`_
@@ -47,6 +49,7 @@ Argument       Description
 pause          If "true" or "1" the simulation is paused (default is "false").
 step           If "true" or "1" the simulation is stepped and paused (default is "false").
 reset          If "true" or "1" the simulation state is randomized (default is "false").
+clear          If "true" or "1" the simulation state is cleared (default is "false").
 cellx          If "true" or "1" in conjunction with "celly" toggles the cell at the x, y coordinate.
 celly          If "true" or "1" in conjunction with "cellx" toggles the cell at the x, y coordinate.
 load           Load a life board from the string format "<width>-<height>-<[01]{width * height}>".
