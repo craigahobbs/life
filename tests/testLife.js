@@ -6,6 +6,16 @@ import test from 'ava';
 /* eslint-disable id-length */
 
 
+// Test helper function to mock a LifePage instance's assignLocation method
+function mockLifePageAssignLocation(lifePage) {
+    const locations = [];
+    lifePage.assignLocation = (location) => {
+        locations.push(location);
+    };
+    return locations;
+}
+
+
 // Add browser globals
 browserEnv(['document', 'window']);
 
@@ -508,6 +518,7 @@ test('LifePage.pageElements', (t) => {
 
 test('LifePage.pageElements, pause', (t) => {
     const lifePage = new LifePage();
+    const assignLocations = mockLifePageAssignLocation(lifePage);
     const lifePageWidth = 2;
     const lifePageHeight = 2;
     const life = new Life(lifePageWidth, lifePageHeight, [
@@ -517,12 +528,6 @@ test('LifePage.pageElements, pause', (t) => {
     window.location.hash = '#width=5&height=5&pause=1&bgStroke=black';
     lifePage.updateParams();
     lifePage.generations = [life];
-
-    // Overwrite lifePage.assignLocation
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
 
     // Check the SVG element callback functions
     const pageElements = lifePage.pageElements();
@@ -554,7 +559,7 @@ test('LifePage.pageElements, pause', (t) => {
             });
         }
     }
-    t.deepEqual(assignLocation, [
+    t.deepEqual(assignLocations, [
         'blank#bgStroke=black&cellx=0&celly=0&height=5&pause=1&width=5',
         'blank#bgStroke=black&cellx=1&celly=0&height=5&pause=1&width=5',
         'blank#bgStroke=black&cellx=0&celly=1&height=5&pause=1&width=5',
@@ -702,16 +707,12 @@ test('LifePage.pageElements, pause', (t) => {
 
 test('LifePage.render', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        // istanbul ignore next
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Validate initial render
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
     lifePage.render();
-    t.deepEqual(assignLocation, []);
+    t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current, new Life(5, 5, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -793,16 +794,13 @@ test('LifePage.render', (t) => {
 
 test('LifePage.render, step', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Step
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&step=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
         false, true, false, true, false,
@@ -816,16 +814,13 @@ test('LifePage.render, step', (t) => {
 
 test('LifePage.render, reset', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Reset
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&reset=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -839,14 +834,12 @@ test('LifePage.render, reset', (t) => {
 
 test('LifePage.render, toggle cell', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=2&celly=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, false, true, false,
@@ -860,14 +853,12 @@ test('LifePage.render, toggle cell', (t) => {
 
 test('LifePage.render, invalid toggle cell', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=99&celly=99';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -881,14 +872,12 @@ test('LifePage.render, invalid toggle cell', (t) => {
 
 test('LifePage.render, load', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
     window.location.hash = '#load=5-5-555550';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, ['blank#height=5&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&pause=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         true, true, true, true, true,
@@ -902,15 +891,12 @@ test('LifePage.render, load', (t) => {
 
 test('LifePage.render, save', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        // istanbul ignore next
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
     window.location.hash = '#load=5-5-555550&save=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, []);
+    t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         true, true, true, true, true,
@@ -924,17 +910,13 @@ test('LifePage.render, save', (t) => {
 
 test('LifePage.render, play', (t) => {
     const lifePage = new LifePage();
-    const assignLocation = [];
-    lifePage.assignLocation = (location) => {
-        // istanbul ignore next
-        assignLocation.push(location);
-    };
+    const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Initial load
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, []);
+    t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -961,7 +943,7 @@ test('LifePage.render, play', (t) => {
     window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocation, []);
+    t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
         false, true, false, true, false,
