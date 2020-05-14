@@ -201,7 +201,19 @@ export class LifePage {
         const svgWidth = this.params.gap + this.params.width * (this.params.size + this.params.gap);
         const svgHeight = this.params.gap + this.params.height * (this.params.size + this.params.gap);
         const cellElems = [];
-        const svgElems = chisel.svg('svg', {'width': svgWidth, 'height': svgHeight}, cellElems);
+        const svgElems = chisel.svg('svg', {
+            'width': svgWidth,
+            'height': svgHeight,
+            '_callback': this.params.load !== null || !this.params.pause ? null : (element) => {
+                element.addEventListener('click', (event) => {
+                    const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
+                    const clickSize = this.params.size + this.params.gap;
+                    const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.params.gap) / clickSize);
+                    const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.params.gap) / clickSize);
+                    this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
+                });
+            }
+        }, cellElems);
 
         // Background
         cellElems.push(chisel.svg('rect', {
@@ -215,20 +227,13 @@ export class LifePage {
         // Life cells
         for (let iy = 0; iy < this.current.height; iy++) {
             for (let ix = 0; ix < this.current.width; ix++) {
-                if (this.current.cell(ix, iy) || this.params.pause) {
+                if (this.current.cell(ix, iy)) {
                     cellElems.push(chisel.svg('rect', {
                         'x': this.params.gap + ix * (this.params.size + this.params.gap),
                         'y': this.params.gap + iy * (this.params.size + this.params.gap),
                         'width': this.params.size,
                         'height': this.params.size,
-                        'style': this.current.cell(ix, iy)
-                            ? `fill: ${this.params.fill}; stroke: ${this.params.stroke}; stroke-width: ${this.params.strokeWidth};`
-                            : 'fill: rgba(255, 255, 255, 0); stroke: none;',
-                        '_callback': this.params.load !== null || !this.params.pause ? null : (element) => {
-                            element.addEventListener('click', () => {
-                                this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
-                            });
-                        }
+                        'style': `fill: ${this.params.fill}; stroke: ${this.params.stroke}; stroke-width: ${this.params.strokeWidth};`
                     }));
                 }
             }

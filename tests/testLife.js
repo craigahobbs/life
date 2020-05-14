@@ -477,7 +477,7 @@ test('LifePage.pageElements', (t) => {
             'attrs': {'id': 'lifeSvg'},
             'elems': {
                 'tag': 'svg',
-                'attrs': {'width': 56, 'height': 56},
+                'attrs': {'_callback': null, 'width': 56, 'height': 56},
                 'elems': [
                     {
                         'tag': 'rect',
@@ -487,7 +487,7 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            '_callback': null, 'x': 12, 'y': 1, 'width': 10, 'height': 10,
+                            'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
@@ -495,7 +495,7 @@ test('LifePage.pageElements', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            '_callback': null, 'x': 1, 'y': 12, 'width': 10, 'height': 10,
+                            'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'}
@@ -508,7 +508,9 @@ test('LifePage.pageElements', (t) => {
 
 test('LifePage.pageElements, pause', (t) => {
     const lifePage = new LifePage();
-    const life = new Life(2, 2, [
+    const lifePageWidth = 2;
+    const lifePageHeight = 2;
+    const life = new Life(lifePageWidth, lifePageHeight, [
         false, true,
         true, false
     ]);
@@ -524,23 +526,33 @@ test('LifePage.pageElements, pause', (t) => {
 
     // Check the SVG element callback functions
     const pageElements = lifePage.pageElements();
-    const svgElements = pageElements[2].elems.elems;
-    for (let ix = 1; ix < svgElements.length; ix++) {
-        const element = svgElements[ix];
-        t.is(element.tag, 'rect');
+    const svgElement = pageElements[2].elems;
+    const [rectElement] = svgElement.elems;
+    t.is(svgElement.tag, 'svg');
+    t.is(rectElement.tag, 'rect');
 
-        // Call the callback
-        const callback = element.attrs._callback;
-        t.true(typeof callback === 'function');
-        callback({
-            'addEventListener': (event, onclick) => {
-                t.is(event, 'click');
-                t.is(typeof onclick, 'function');
-                onclick();
-            }
-        });
-
-        delete element.attrs._callback;
+    // Call the chisel.js element creation callback
+    const callback = svgElement.attrs._callback;
+    delete svgElement.attrs._callback;
+    t.true(typeof callback === 'function');
+    rectElement.ownerSVGElement = svgElement;
+    const svgBoundingRect = {'left': 10, 'top': 20};
+    svgElement.getBoundingClientRect = () => svgBoundingRect;
+    for (let iy = 0; iy < lifePageHeight; iy++) {
+        for (let ix = 0; ix < lifePageWidth; ix++) {
+            const clickEvent = {
+                'target': rectElement,
+                'clientX': svgBoundingRect.left + (ix + 1) * (lifePage.params.size + lifePage.params.gap),
+                'clientY': svgBoundingRect.top + (iy + 1) * (lifePage.params.size + lifePage.params.gap)
+            };
+            callback({
+                'addEventListener': (event, onclick) => {
+                    t.is(event, 'click');
+                    t.is(typeof onclick, 'function');
+                    onclick(clickEvent);
+                }
+            });
+        }
     }
     t.deepEqual(assignLocation, [
         'blank#bgStroke=black&cellx=0&celly=0&height=5&pause=1&width=5',
@@ -548,6 +560,8 @@ test('LifePage.pageElements, pause', (t) => {
         'blank#bgStroke=black&cellx=0&celly=1&height=5&pause=1&width=5',
         'blank#bgStroke=black&cellx=1&celly=1&height=5&pause=1&width=5'
     ]);
+    delete rectElement.ownerSVGElement;
+    delete svgElement.getBoundingClientRect;
 
     t.deepEqual(pageElements, [
         {
@@ -666,14 +680,6 @@ test('LifePage.pageElements, pause', (t) => {
                     {
                         'tag': 'rect',
                         'attrs': {
-                            'x': 1, 'y': 1, 'width': 10, 'height': 10,
-                            'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'
-                    },
-                    {
-                        'tag': 'rect',
-                        'attrs': {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
                         },
@@ -684,14 +690,6 @@ test('LifePage.pageElements, pause', (t) => {
                         'attrs': {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'
-                    },
-                    {
-                        'tag': 'rect',
-                        'attrs': {
-                            'x': 12, 'y': 12, 'width': 10, 'height': 10,
-                            'style': 'fill: rgba(255, 255, 255, 0); stroke: none;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
                     }
@@ -779,31 +777,15 @@ test('LifePage.render', (t) => {
             '<p id="lifeSvg">' +
             '<svg width="56" height="56">' +
             '<rect x="0" y="0" width="56" height="56" style="fill: #ffffff; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="1" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="12" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="23" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="34" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="45" y="1" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="1" y="12" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
             '<rect x="12" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="23" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="34" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="45" y="12" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="1" y="23" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
             '<rect x="12" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="23" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="34" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="45" y="23" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="1" y="34" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
             '<rect x="12" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="23" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="34" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="45" y="34" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="1" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="12" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="23" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="34" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
-            '<rect x="45" y="45" width="10" height="10" style="fill: rgba(255, 255, 255, 0); stroke: none;"></rect>' +
             '</svg>' +
             '</p>'
     );
