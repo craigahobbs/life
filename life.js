@@ -41,6 +41,7 @@ export class LifePage {
             'pause': !!life || params.pause === 'true' || params.pause === '1',
             'step': params.step === 'true' || params.step === '1',
             'reset': params.reset === 'true' || params.reset === '1',
+            'clear': params.clear === 'true' || params.clear === '1',
             'cellx': typeof params.cellx === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.cellx, 10) || 0)),
             'celly': typeof params.celly === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.celly, 10) || 0)),
             'load': life,
@@ -127,6 +128,10 @@ export class LifePage {
                     [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
                 this.assignLocation(chisel.href({...this.linkParams, 'reset': null}));
                 return;
+            } else if (this.params.clear) {
+                this.generations = [new Life(0, 0).resize(this.params.width, this.params.height, 0, 0)];
+                this.assignLocation(chisel.href({...this.linkParams, 'clear': null}));
+                return;
             } else if (this.params.step) {
                 this.next();
                 this.assignLocation(chisel.href({...this.linkParams, 'step': null, 'pause': '1'}));
@@ -177,6 +182,7 @@ export class LifePage {
                     button(this.params.pause ? 'Play' : 'Pause', {'pause': this.params.pause ? null : '1'}, false, true),
                     !this.params.pause ? null : [
                         button('Step', {'step': '1'}, true),
+                        button('Clear', {'clear': '1'}),
                         button('Save', {'load': this.current.encode(), 'save': '1'})
                     ],
                     button('Random', {'reset': '1'}, true),
