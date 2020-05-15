@@ -425,22 +425,16 @@ test('LifePage.pageElements', (t) => {
     t.deepEqual(lifePage.pageElements(), [
         {
             'tag': 'p',
-            'attrs': {'style': 'white-space: nowrap;'},
             'elems': [
-                {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
-                {'text': chisel.nbsp + chisel.nbsp},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, 'elems': {'text': 'GitHub'}},
-                {'text': chisel.nbsp + chisel.nbsp},
-                {
-                    'tag': 'a',
-                    'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'},
-                    'elems': {'text': 'Wikipedia'}
-                }
+                {'tag': 'span', 'attrs': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elems': {'text': "Conway's Game of Life"}},
+                {'text': `${chisel.nbsp}${chisel.nbsp} `},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elems': {'text': 'GitHub'}},
+                {'text': `${chisel.nbsp}${chisel.nbsp}`},
+                {'tag': 'a', 'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elems': {'text': 'Wikipedia'}}
             ]
         },
         {
             'tag': 'p',
-            'attrs': {'style': 'white-space: nowrap;'},
             'elems': [
                 [
                     [
@@ -449,43 +443,43 @@ test('LifePage.pageElements', (t) => {
                     ],
                     null,
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&reset=1&width=5'}, 'elems': {'text': 'Random'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Border'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=1&width=5'}, 'elems': {'text': '<<Speed'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=0.25&width=5'}, 'elems': {'text': 'Speed>>'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=0'}, 'elems': {'text': '<<Width'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=10'}, 'elems': {'text': 'Width>>'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=0&width=5'}, 'elems': {'text': '<<Height'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=10&width=5'}, 'elems': {'text': 'Height>>'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=8&width=5'}, 'elems': {'text': '<<Size'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=12&width=5'}, 'elems': {'text': 'Size>>'}}
                     ]
                 ]
@@ -580,22 +574,16 @@ test('LifePage.pageElements, pause', (t) => {
     t.deepEqual(pageElements, [
         {
             'tag': 'p',
-            'attrs': {'style': 'white-space: nowrap;'},
             'elems': [
-                {'tag': 'span', 'attrs': {'style': 'font-weight: bold;'}, 'elems': {'text': "Conway's Game of Life"}},
-                {'text': chisel.nbsp + chisel.nbsp},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, 'elems': {'text': 'GitHub'}},
-                {'text': chisel.nbsp + chisel.nbsp},
-                {
-                    'tag': 'a',
-                    'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'},
-                    'elems': {'text': 'Wikipedia'}
-                }
+                {'tag': 'span', 'attrs': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elems': {'text': "Conway's Game of Life"}},
+                {'text': `${chisel.nbsp}${chisel.nbsp} `},
+                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elems': {'text': 'GitHub'}},
+                {'text': `${chisel.nbsp}${chisel.nbsp}`},
+                {'tag': 'a', 'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elems': {'text': 'Wikipedia'}}
             ]
         },
         {
             'tag': 'p',
-            'attrs': {'style': 'white-space: nowrap;'},
             'elems': [
                 [
                     [
@@ -604,7 +592,7 @@ test('LifePage.pageElements, pause', (t) => {
                     ],
                     [
                         [
-                            {'text': ' | '},
+                            {'text': `${chisel.nbsp}| `},
                             {
                                 'tag': 'a',
                                 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&step=1&width=5'},
@@ -612,7 +600,7 @@ test('LifePage.pageElements, pause', (t) => {
                             }
                         ],
                         [
-                            {'text': chisel.nbsp + chisel.nbsp},
+                            {'text': chisel.nbsp},
                             {
                                 'tag': 'a',
                                 'attrs': {'href': 'blank#bgStroke=black&clear=1&height=5&pause=1&width=5'},
@@ -620,7 +608,7 @@ test('LifePage.pageElements, pause', (t) => {
                             }
                         ],
                         [
-                            {'text': chisel.nbsp + chisel.nbsp},
+                            {'text': chisel.nbsp},
                             {
                                 'tag': 'a',
                                 'attrs': {'href': 'blank#bgStroke=black&height=5&load=2-2-1210&pause=1&save=1&width=5'},
@@ -629,7 +617,7 @@ test('LifePage.pageElements, pause', (t) => {
                         ]
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {
                             'tag': 'a',
                             'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&reset=1&width=5'},
@@ -637,11 +625,11 @@ test('LifePage.pageElements, pause', (t) => {
                         }
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#height=5&pause=1&width=5'}, 'elems': {'text': 'Border'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {
                             'tag': 'a',
                             'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=1&width=5'},
@@ -649,7 +637,7 @@ test('LifePage.pageElements, pause', (t) => {
                         }
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {
                             'tag': 'a',
                             'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=0.25&width=5'},
@@ -657,27 +645,27 @@ test('LifePage.pageElements, pause', (t) => {
                         }
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=0'}, 'elems': {'text': '<<Width'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=10'}, 'elems': {'text': 'Width>>'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=0&pause=1&width=5'}, 'elems': {'text': '<<Height'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=10&pause=1&width=5'}, 'elems': {'text': 'Height>>'}}
                     ],
                     [
-                        {'text': ' | '},
+                        {'text': `${chisel.nbsp}| `},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=8&width=5'}, 'elems': {'text': '<<Size'}}
                     ],
                     [
-                        {'text': chisel.nbsp + chisel.nbsp},
+                        {'text': chisel.nbsp},
                         {
                             'tag': 'a',
                             'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=12&width=5'},
@@ -771,27 +759,27 @@ test('LifePage.render', (t) => {
     });
     t.is(
         document.body.innerHTML,
-        '<p style="white-space: nowrap;">' +
-            '<span style="font-weight: bold;">Conway\'s Game of Life</span>&nbsp;&nbsp;' +
-            '<a href="https://github.com/craigahobbs/life#conways-game-of-life">GitHub</a>&nbsp;&nbsp;' +
-            '<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">Wikipedia</a>' +
+        '<p>' +
+            '<span style="font-weight: bold; white-space: nowrap;">Conway\'s Game of Life</span>&nbsp;&nbsp; ' +
+            '<a href="https://github.com/craigahobbs/life#readme">GitHub</a>&nbsp;&nbsp;' +
+            '<a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life">Wikipedia</a>' +
             '</p>' +
-            '<p style="white-space: nowrap;">' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a> | ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;step=1&amp;width=5">Step</a>&nbsp;&nbsp;' +
-            '<a href="blank#clear=1&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Clear</a>&nbsp;&nbsp;' +
+            '<p>' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;step=1&amp;width=5">Step</a>&nbsp;' +
+            '<a href="blank#clear=1&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Clear</a>&nbsp;' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;load=5-5-63232360&amp;pause=1&amp;save=1&amp;width=5">' +
-            'Save</a> | ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;reset=1&amp;width=5">Random</a>&nbsp;&nbsp;' +
-            '<a href="blank#bgStroke=black&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Border</a> | ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=1&amp;width=5">' +
-            '&lt;&lt;Speed</a>&nbsp;&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=0.25&amp;width=5">Speed&gt;&gt;</a> | ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=0">&lt;&lt;Width</a>&nbsp;&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=10">Width&gt;&gt;</a> | ' +
-            '<a href="blank#height=0&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">&lt;&lt;Height</a>&nbsp;&nbsp;' +
-            '<a href="blank#height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Height&gt;&gt;</a> | ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=8&amp;width=5">&lt;&lt;Size</a>&nbsp;&nbsp;' +
+            'Save</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;reset=1&amp;width=5">Random</a>&nbsp;' +
+            '<a href="blank#bgStroke=black&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Border</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=1&amp;width=5">&lt;&lt;Speed</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=0.25&amp;width=5">' +
+            'Speed&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=0">&lt;&lt;Width</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=10">Width&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#height=0&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">&lt;&lt;Height</a>&nbsp;' +
+            '<a href="blank#height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Height&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=8&amp;width=5">&lt;&lt;Size</a>&nbsp;' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=12&amp;width=5">Size&gt;&gt;</a>' +
             '</p>' +
             '<p id="lifeSvg">' +
