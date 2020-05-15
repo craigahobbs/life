@@ -80,12 +80,17 @@ Pages <https://craigahobbs.github.io/life/>`_ as pure source with no packing or 
 ES5).
 
 The application source code is located in the "src" directory. Unit tests are located in the "tests"
-directory and provide 100% line and branch coverage. Before committing changes first run the
-following:
+directory.
+
+Before committing changes first run the following:
 
 .. code:: sh
 
    make commit
+
+The "make commit" first runs unit tests ("make test") and ensures 100% line and branch
+coverage. Next, it runs eslint ("make lint"). Finally, it runs jsdoc ("make doc") to ensure the code
+documentation is sane.
 
 The "make commit" command has the following system requirements:
 
@@ -94,9 +99,10 @@ The "make commit" command has the following system requirements:
 
 The following development dependencies are installed:
 
-- `Ava <https://github.com/avajs/ava#>`_ (for unit testing)
-- `NYC <https://github.com/istanbuljs/nyc#nyc>`_ (for unit test coverage)
-- `ESLint <https://github.com/eslint/eslint#eslint>`_ (for static code analysis)
+- `Ava <https://github.com/avajs/ava#readme>`_ (for unit testing)
+- `NYC <https://github.com/istanbuljs/nyc#readme>`_ (for unit test coverage)
+- `ESLint <https://github.com/eslint/eslint#readme>`_ (for static code analysis)
+- `JSDoc <https://github.com/jsdoc/jsdoc#readme>`_ (for static code analysis)
 
 To cleanup the source directory run:
 

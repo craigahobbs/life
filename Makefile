@@ -13,7 +13,7 @@ help:
 	@echo 'usage: make [clean|commit|lint|test|gh-pages]'
 
 .PHONY: commit
-commit: test lint
+commit: test lint doc
 
 .PHONY: test
 test: build/npm.install
@@ -23,6 +23,10 @@ test: build/npm.install
 .PHONY: lint
 lint: build/npm.install
 	$(NODE_DOCKER) npx eslint -c .eslintrc.js -f unix .eslintrc.js src tests
+
+.PHONY: doc
+doc: build/npm.install
+	$(NODE_DOCKER) npx jsdoc --pedantic -d build/doc src/life.js
 
 .PHONY: clean
 clean:
