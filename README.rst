@@ -102,7 +102,7 @@ The following development dependencies are installed:
 - `Ava <https://github.com/avajs/ava#readme>`_ (for unit testing)
 - `NYC <https://github.com/istanbuljs/nyc#readme>`_ (for unit test coverage)
 - `ESLint <https://github.com/eslint/eslint#readme>`_ (for static code analysis)
-- `JSDoc <https://github.com/jsdoc/jsdoc#readme>`_ (for static code analysis)
+- `JSDoc <https://github.com/jsdoc/jsdoc#readme>`_ (for documentation generation)
 
 To cleanup the source directory run:
 
