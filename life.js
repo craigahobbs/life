@@ -195,24 +195,20 @@ export class LifePage {
      * @returns {Array}
      */
     pageElements() {
-        const button = (text, params, section, first) => [
-            first ? null : chisel.text(section ? ' | ' : chisel.nbsp + chisel.nbsp),
+        const button = (text, params, isSection, isFirst) => [
+            isFirst ? null : chisel.text(isSection ? `${chisel.nbsp}| ` : chisel.nbsp),
             chisel.elem('a', {'href': chisel.href({...this.linkParams, ...params})}, chisel.text(text))
         ];
         return [
             // Title
-            chisel.elem('p', {'style': 'white-space: nowrap;'}, [
-                chisel.elem('span', {'style': 'font-weight: bold;'}, chisel.text("Conway's Game of Life")),
-                chisel.text(chisel.nbsp + chisel.nbsp),
-                chisel.elem('a', {'href': 'https://github.com/craigahobbs/life#conways-game-of-life'}, chisel.text('GitHub')),
-                chisel.text(chisel.nbsp + chisel.nbsp),
-                chisel.elem(
-                    'a',
-                    {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life', 'target': '_blank'},
-                    chisel.text('Wikipedia')
-                )
+            chisel.elem('p', null, [
+                chisel.elem('span', {'style': 'font-weight: bold; white-space: nowrap;'}, chisel.text("Conway's Game of Life")),
+                chisel.text(`${chisel.nbsp}${chisel.nbsp} `),
+                chisel.elem('a', {'href': 'https://github.com/craigahobbs/life#readme'}, chisel.text('GitHub')),
+                chisel.text(`${chisel.nbsp}${chisel.nbsp}`),
+                chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, chisel.text('Wikipedia'))
             ]),
-            chisel.elem('p', {'style': 'white-space: nowrap;'}, [
+            chisel.elem('p', null, [
                 this.params.save ? [
                     button('Load', {'save': null}, false, true),
                     chisel.text(`${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}
