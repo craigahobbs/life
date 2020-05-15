@@ -4,21 +4,40 @@
 import * as chisel from './chisel.js';
 
 
+/**
+ * The life simulation application class.
+ *
+ * @property {Life[]} generations - The array of life board generations. The current state is the last array element.
+ * @property {?Interval} generationInterval - The interval (timer) for the running simulation or null if not running.
+ * @property {Object} linkParams - The decoded, unparsed hash parameters object for use in link creation.
+ * @property {Object} params - The parsed and validated hash parameters object.
+ */
 export class LifePage {
+    /**
+     * Create the life simulation application instance.
+     */
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
     }
 
-    // The method "assignLocation" is non-static so that it can easily be overwritten in unit tests.
-    // Hence the coverage and lint ignores that follow.
-    //
+    /**
+     * Navigate to a new location. This method is non-static so that it can easily be overwritten in unit tests.
+     *
+     * @param {string} location - The location to navigate to.
+     */
     // istanbul ignore next
     // eslint-disable-next-line class-methods-use-this
     assignLocation(location) {
         window.location.href = location;
     }
 
+    /**
+     * Parse the window location's hash parameters. This method sets two class members:
+     * this.linkParams and this.params.  this.linkParams is the decoded hash parameters object for
+     * use with creating links to the application.  this.params is object containing all known hash
+     * parameters parsed and validated.
+     */
     updateParams() {
         const params = chisel.decodeParams();
 
@@ -63,10 +82,18 @@ export class LifePage {
         };
     }
 
+    /**
+     * Get the current life board object.
+     *
+     * @returns {Life}
+     */
     get current() {
         return this.generations[this.generations.length - 1];
     }
 
+    /**
+     * Advance to the next state in the life simulation.
+     */
     next() {
         // Cycle?  If yes and of insufficient depth, reset...
         let next = this.current.next();
@@ -86,6 +113,10 @@ export class LifePage {
         }
     }
 
+    /**
+     * The main entry point for the life simulation application. This method renders the life
+     * simulation page within the document.body element.
+     */
     render() {
         this.updateParams();
 
@@ -150,11 +181,19 @@ export class LifePage {
         chisel.render(document.body, this.pageElements());
     }
 
+    /**
+     * The life simulation interval callback. This advances to the next simlation state and re-renders the life board SVG.
+     */
     onIntervalTimeout() {
         this.next();
         chisel.render(document.getElementById('lifeSvg'), this.svgElements());
     }
 
+    /**
+     * Generate the life simulation page elments for use with the chisel.render function.
+     *
+     * @returns {Array}
+     */
     pageElements() {
         const button = (text, params, section, first) => [
             first ? null : chisel.text(section ? ' | ' : chisel.nbsp + chisel.nbsp),
@@ -203,6 +242,11 @@ export class LifePage {
         ];
     }
 
+    /**
+     * Generate the life board SVG elments for use with the chisel.render function.
+     *
+     * @returns {Object}
+     */
     svgElements() {
         const svgWidth = this.params.gap + this.params.width * (this.params.size + this.params.gap);
         const svgHeight = this.params.gap + this.params.height * (this.params.size + this.params.gap);
@@ -250,7 +294,21 @@ export class LifePage {
 }
 
 
+/**
+ * Class representing a life simulation "board".
+ *
+ * @property {number} width - The integer width of the life board.
+ * @property {number} height - The integer height of the life board.
+ * @property {number} values - The living state of the life board in row order.
+ */
 export class Life {
+    /**
+     *  Create a new life board object.
+     *
+     * @param {number} width - The integer width of the life board.
+     * @param {number} height - The integer height of the life board.
+     * @param {?boolean[]} values - Optional default initial living state array. Must be of length widht * height.
+     */
     constructor(width, height, values = null) {
         this.width = Math.max(0, width);
         this.height = Math.max(0, height);
@@ -261,14 +319,34 @@ export class Life {
         }
     }
 
+    /**
+     * Get the living state of a cell of the life board.
+     *
+     * @param {number} ix - The integer X index of the cell in the range 0 and Life.width.
+     * @param {number} iy - The integer Y index of the cell in the range 0 and Life.height.
+     * @returns {boolean} true if the cell is living; false otherwise.
+     */
     cell(ix, iy) {
         return this.values[iy * this.width + ix];
     }
 
+    /**
+     * Set the living state of a cell of the life board.
+     *
+     * @param {number} ix - The integer X index of the cell in the range 0 and Life.width.
+     * @param {number} iy - The integer Y index of the cell in the range 0 and Life.height.
+     * @param {boolean} value - true if the cell is living; false otherwise.
+     */
     setCell(ix, iy, value) {
         this.values[iy * this.width + ix] = value;
     }
 
+    /**
+     * Compare this life board with another.
+     *
+     * @param {Life} other - The other life board.
+     * @returns {boolean} true if the life boards are identical; false otherwise.
+     */
     isEqual(other) {
         if (this.width !== other.width || this.height !== other.height) {
             return false;
@@ -281,12 +359,22 @@ export class Life {
         return true;
     }
 
+    /**
+     * Resize the life board.
+     *
+     * @param {number} width - The integer width of the life board.
+     * @param {number} height - The integer height of the life board.
+     * @param {number} lifeRatio - The probability in the range 0 to 1 that a new cell will be living.
+     * @param {number} lifeBorder - The size of the non-living border around the life board as a ratio of the width
+     *     height in the range 0 to 1.
+     * @returns {Life} The resized life board.
+     */
     resize(width, height, lifeRatio, borderRatio) {
         const values = [];
-        const xBorderMin = borderRatio * width;
-        const xBorderMax = (1 - borderRatio) * width;
-        const yBorderMin = borderRatio * height;
-        const yBorderMax = (1 - borderRatio) * height;
+        const xBorderMin = Math.floor(borderRatio * width);
+        const xBorderMax = Math.ceil((1 - borderRatio) * width);
+        const yBorderMin = Math.floor(borderRatio * height);
+        const yBorderMax = Math.ceil((1 - borderRatio) * height);
         for (let iy = 0; iy < height; iy++) {
             for (let ix = 0; ix < width; ix++) {
                 if (ix >= 0 && ix < this.width && iy >= 0 && iy < this.height) {
@@ -301,6 +389,11 @@ export class Life {
         return new Life(width, height, values);
     }
 
+    /**
+     * Compute the next life board state in the simulation.
+     *
+     * @returns {Life}
+     */
     next() {
         const values = [];
         const maxX = this.width - 1;
@@ -322,6 +415,11 @@ export class Life {
         return new Life(this.width, this.height, values);
     }
 
+    /**
+     * Encode the life board as a string.
+     *
+     * @returns {string}
+     */
     encode() {
         const values = [];
         const radix = 36;
@@ -370,6 +468,11 @@ export class Life {
         return [this.width, this.height, values.join('')].join('-');
     }
 
+    /**
+     * Decode the life board from a string.
+     *
+     * @returns {?Life} The life board object or null on failure.
+     */
     static decode(lifeString) {
         let life = null;
         const parts = lifeString.split('-');
