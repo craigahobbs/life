@@ -88,9 +88,9 @@ Before committing changes first run the following:
 
    make commit
 
-The "make commit" first runs unit tests ("make test") and ensures 100% line and branch
-coverage. Next, it runs eslint ("make lint"). Finally, it runs jsdoc ("make doc") to ensure the code
-documentation is sane.
+The "make commit" command first runs unit tests ("make test") and ensures 100% line and branch
+coverage. Next, it runs eslint ("make lint") for static code analysis. Finally, it runs jsdoc ("make
+doc") to ensure the code documentation is sane.
 
 The "make commit" command has the following system requirements:
 
