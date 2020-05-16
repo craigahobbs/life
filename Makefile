@@ -1,40 +1,21 @@
-.DEFAULT_GOAL := help
+ifeq '$(wildcard .makefile)' ''
+    $(info Downloading base makefile...)
+    $(shell curl -s -o .makefile 'https://raw.githubusercontent.com/craigahobbs/chisel/master/static/Makefile')
+endif
+ifeq '$(wildcard package.json)' ''
+    $(info Downloading package.json...)
+    $(shell curl -s -o package.json 'https://raw.githubusercontent.com/craigahobbs/chisel/master/static/package.json')
+endif
+ifeq '$(wildcard .eslintrc.js)' ''
+    $(info Downloading .eslintrc.js...)
+    $(shell curl -s -o .eslintrc.js 'https://raw.githubusercontent.com/craigahobbs/chisel/master/static/.eslintrc.js')
+endif
+include .makefile
 
-NODE_IMAGE := node:13-buster-slim
-NODE_DOCKER := docker run --rm -u `id -u`:`id -g` -v $(CURDIR):$(CURDIR) -w $(CURDIR) -e HOME=$(CURDIR)/build $(NODE_IMAGE)
+NYC_ARGS := --exclude src/chisel.js
 
-build/npm.install:
-	$(NODE_DOCKER) npm install
-	mkdir -p $(dir $@)
-	touch $@
-
-.PHONY: help
-help:
-	@echo 'usage: make [clean|commit|lint|test|gh-pages]'
-
-.PHONY: commit
-commit: test lint doc
-
-.PHONY: test
-test: build/npm.install
-	$(NODE_DOCKER) npx nyc --check-coverage --reporter html --reporter text \
-		--report-dir build/coverage --temp-dir build/tmp ava tests/test*.js
-
-.PHONY: lint
-lint: build/npm.install
-	$(NODE_DOCKER) npx eslint -c .eslintrc.js -f unix .eslintrc.js src tests
-
-.PHONY: doc
-doc: build/npm.install
-	$(NODE_DOCKER) npx jsdoc --pedantic -d build/doc src/life.js
-
-.PHONY: clean
 clean:
-	rm -rf build node_modules package-lock.json
-
-.PHONY: superclean
-superclean: clean
-	docker rmi -f $(NODE_IMAGE)
+	rm -f .makefile package.json .eslintrc.js
 
 .PHONY: gh-pages
 gh-pages: clean commit
