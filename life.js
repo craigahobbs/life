@@ -303,7 +303,7 @@ export class Life {
      *
      * @param {number} width - The integer width of the life board.
      * @param {number} height - The integer height of the life board.
-     * @param {?boolean[]} values - Optional default initial living state array. Must be of length widht * height.
+     * @param {boolean[]} [values=null] - Optional default initial living state array. Must be of length widht * height.
      */
     constructor(width, height, values = null) {
         this.width = Math.max(0, width);
@@ -320,7 +320,7 @@ export class Life {
      *
      * @param {number} ix - The integer X index of the cell in the range 0 and Life.width.
      * @param {number} iy - The integer Y index of the cell in the range 0 and Life.height.
-     * @returns {boolean} true if the cell is living; false otherwise.
+     * @returns {boolean} If true, the cell is living.
      */
     cell(ix, iy) {
         return this.values[iy * this.width + ix];
@@ -331,7 +331,7 @@ export class Life {
      *
      * @param {number} ix - The integer X index of the cell in the range 0 and Life.width.
      * @param {number} iy - The integer Y index of the cell in the range 0 and Life.height.
-     * @param {boolean} value - true if the cell is living; false otherwise.
+     * @param {boolean} value - If true, the cell is living.
      */
     setCell(ix, iy, value) {
         this.values[iy * this.width + ix] = value;
@@ -341,7 +341,7 @@ export class Life {
      * Compare this life board with another.
      *
      * @param {Life} other - The other life board.
-     * @returns {boolean} true if the life boards are identical; false otherwise.
+     * @returns {boolean} If true, the life boards are equal.
      */
     isEqual(other) {
         if (this.width !== other.width || this.height !== other.height) {
