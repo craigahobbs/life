@@ -14,6 +14,8 @@ include .makefile
 
 NYC_ARGS := --exclude src/chisel.js
 
+JSDOC_ARGS := -c jsdoc.json
+
 clean:
 	rm -f .makefile package.json .eslintrc.js
 
