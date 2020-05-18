@@ -45,13 +45,13 @@ export class LifePage {
         let width, height;
         const minWH = 5;
         const maxWH = 1000;
-        let life = typeof params.load !== 'undefined' && Life.decode(params.load);
+        let life = 'load' in params && Life.decode(params.load);
         if (life !== null && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
             [width, height] = [life.width, life.height];
         } else {
             life = null;
-            width = Math.max(minWH, Math.min(maxWH, typeof params.width === 'undefined' ? 50 : parseInt(params.width, 10) || 0));
-            height = Math.max(minWH, Math.min(maxWH, typeof params.height === 'undefined' ? 50 : parseInt(params.height, 10) || 0));
+            width = 'width' in params ? Math.max(minWH, Math.min(maxWH, parseInt(params.width, 10) || 0)) : 50;
+            height = 'height' in params ? Math.max(minWH, Math.min(maxWH, parseInt(params.height, 10) || 0)) : 50;
         }
 
         // Update params
@@ -61,18 +61,18 @@ export class LifePage {
             'step': params.step === 'true' || params.step === '1',
             'reset': params.reset === 'true' || params.reset === '1',
             'clear': params.clear === 'true' || params.clear === '1',
-            'cellx': typeof params.cellx === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.cellx, 10) || 0)),
-            'celly': typeof params.celly === 'undefined' ? null : Math.max(0, Math.min(maxWH - 1, parseInt(params.celly, 10) || 0)),
+            'cellx': 'cellx' in params ? Math.max(0, Math.min(maxWH - 1, parseInt(params.cellx, 10) || 0)) : null,
+            'celly': 'celly' in params ? Math.max(0, Math.min(maxWH - 1, parseInt(params.celly, 10) || 0)) : null,
             'load': life,
             'save': params.save === 'true' || params.save === '1',
-            'period': Math.max(0.0001, Math.min(60, typeof params.period === 'undefined' ? 0.5 : parseFloat(params.period) || 0)),
+            'period': 'period' in params ? Math.max(0.0001, Math.min(60, parseFloat(params.period) || 0)) : 0.5,
             'width': width,
             'height': height,
-            'size': Math.max(2, Math.min(100, typeof params.size === 'undefined' ? 10 : parseInt(params.size, 10) || 0)),
-            'gap': Math.max(0, Math.min(10, typeof params.gap === 'undefined' ? 1 : parseInt(params.gap, 10) || 0)),
-            'depth': Math.max(0, Math.min(1000, typeof params.depth === 'undefined' ? 6 : parseInt(params.depth, 10) || 0)),
-            'lifeRatio': Math.max(0, Math.min(1, typeof params.lifeRatio === 'undefined' ? 0.25 : parseFloat(params.lifeRatio) || 0)),
-            'lifeBorder': Math.max(0, Math.min(0.45, typeof params.lifeBorder === 'undefined' ? 0.1 : parseFloat(params.lifeBorder) || 0)),
+            'size': 'size' in params ? Math.max(2, Math.min(100, parseInt(params.size, 10) || 0)) : 10,
+            'gap': 'gap' in params ? Math.max(0, Math.min(10, parseInt(params.gap, 10) || 0)) : 1,
+            'depth': 'depth' in params ? Math.max(0, Math.min(1000, parseInt(params.depth, 10) || 0)) : 6,
+            'lifeRatio': 'lifeRatio' in params ? Math.max(0, Math.min(1, parseFloat(params.lifeRatio) || 0)) : 0.25,
+            'lifeBorder': 'lifeBorder' in params ? Math.max(0, Math.min(0.45, parseFloat(params.lifeBorder) || 0)) : 0.1,
             'fill': params.fill || '#2a803b',
             'stroke': params.stroke || 'none',
             'strokeWidth': params.strokeWidth || '1',
