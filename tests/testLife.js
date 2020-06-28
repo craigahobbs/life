@@ -26,139 +26,28 @@ test('LifePage constructor', (t) => {
     const lifePage = new LifePage();
     t.deepEqual(lifePage.generations, [new Life(0, 0)]);
     t.is(lifePage.generationInterval, null);
-    t.is(typeof lifePage.linkParams, 'undefined');
     t.is(typeof lifePage.params, 'undefined');
+    t.is(typeof lifePage.config, 'undefined');
 });
 
 test('LifePage.updateParams', (t) => {
     const lifePage = new LifePage();
     lifePage.updateParams();
-    t.deepEqual(lifePage.linkParams, {});
-    t.deepEqual(lifePage.params, {
+    t.deepEqual(lifePage.params, {});
+    t.deepEqual(lifePage.config, {
         'bgFill': '#ffffff',
         'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': null,
-        'celly': null,
-        'clear': false,
+        'bgStrokeWidth': 1,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
         'height': 50,
         'lifeBorder': 0.1,
         'lifeRatio': 0.25,
-        'load': null,
-        'pause': false,
         'period': 0.5,
-        'reset': false,
-        'save': false,
         'size': 10,
-        'step': false,
         'stroke': 'none',
-        'strokeWidth': '1',
-        'width': 50
-    });
-});
-
-test('LifePage.updateParams, load', (t) => {
-    const lifePage = new LifePage();
-    const encodedLife = '7-5-077777';
-    const life = Life.decode(encodedLife);
-    window.location.hash = `#load=${encodedLife}`;
-    lifePage.updateParams();
-    t.deepEqual(lifePage.linkParams, {
-        'load': encodedLife
-    });
-    t.deepEqual(lifePage.params, {
-        'bgFill': '#ffffff',
-        'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': null,
-        'celly': null,
-        'clear': false,
-        'depth': 6,
-        'fill': '#2a803b',
-        'gap': 1,
-        'height': 5,
-        'lifeBorder': 0.1,
-        'lifeRatio': 0.25,
-        'load': life,
-        'pause': true,
-        'period': 0.5,
-        'reset': false,
-        'save': false,
-        'size': 10,
-        'step': false,
-        'stroke': 'none',
-        'strokeWidth': '1',
-        'width': 7
-    });
-});
-
-test('LifePage.updateParams, invalid load', (t) => {
-    const lifePage = new LifePage();
-    const encodedLife = '7-5-';
-    window.location.hash = `#load=${encodedLife}`;
-    lifePage.updateParams();
-    t.deepEqual(lifePage.linkParams, {
-        'load': encodedLife
-    });
-    t.deepEqual(lifePage.params, {
-        'bgFill': '#ffffff',
-        'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': null,
-        'celly': null,
-        'clear': false,
-        'depth': 6,
-        'fill': '#2a803b',
-        'gap': 1,
-        'height': 50,
-        'lifeBorder': 0.1,
-        'lifeRatio': 0.25,
-        'load': null,
-        'pause': false,
-        'period': 0.5,
-        'reset': false,
-        'save': false,
-        'size': 10,
-        'step': false,
-        'stroke': 'none',
-        'strokeWidth': '1',
-        'width': 50
-    });
-});
-
-test('LifePage.updateParams, too-small load', (t) => {
-    const lifePage = new LifePage();
-    const encodedLife = '2-2-22';
-    window.location.hash = `#load=${encodedLife}`;
-    lifePage.updateParams();
-    t.deepEqual(lifePage.linkParams, {
-        'load': encodedLife
-    });
-    t.deepEqual(lifePage.params, {
-        'bgFill': '#ffffff',
-        'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': null,
-        'celly': null,
-        'clear': false,
-        'depth': 6,
-        'fill': '#2a803b',
-        'gap': 1,
-        'height': 50,
-        'lifeBorder': 0.1,
-        'lifeRatio': 0.25,
-        'load': null,
-        'pause': false,
-        'period': 0.5,
-        'reset': false,
-        'save': false,
-        'size': 10,
-        'step': false,
-        'stroke': 'none',
-        'strokeWidth': '1',
+        'strokeWidth': 1,
         'width': 50
     });
 });
@@ -166,13 +55,7 @@ test('LifePage.updateParams, too-small load', (t) => {
 test('LifePage.updateParams, bulk valid', (t) => {
     const lifePage = new LifePage();
     const args = {
-        'pause': true,
-        'step': true,
-        'reset': true,
-        'cellx': 5,
-        'celly': 7,
-        'clear': false,
-        'save': true,
+        'cmd': {'step': {}},
         'period': 0.125,
         'width': 17,
         'height': 13,
@@ -183,30 +66,20 @@ test('LifePage.updateParams, bulk valid', (t) => {
         'lifeBorder': 0.2,
         'fill': '#808080',
         'stroke': '#000000',
-        'strokeWidth': '2',
+        'strokeWidth': 2,
         'bgFill': '#c0c0c0',
         'bgStroke': '#ffffff',
-        'bgStrokeWidth': '4'
+        'bgStrokeWidth': 4
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
-    t.deepEqual(
-        lifePage.linkParams,
-        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
-    );
-    t.deepEqual(lifePage.params, {...args, 'load': null});
+    t.deepEqual(lifePage.params, args);
+    t.deepEqual(lifePage.config, args);
 });
 
 test('LifePage.updateParams, bulk invalid', (t) => {
     const lifePage = new LifePage();
     const args = {
-        'pause': 'asdf',
-        'step': 'asdf',
-        'reset': 'asdf',
-        'cellx': 'asdf',
-        'celly': 'asdf',
-        'clear': 'asdf',
-        'save': 'asdf',
         'period': 'asdf',
         'width': 'asdf',
         'height': 'asdf',
@@ -223,39 +96,18 @@ test('LifePage.updateParams, bulk invalid', (t) => {
         'bgStrokeWidth': 'asdf'
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
-    lifePage.updateParams();
-    t.deepEqual(lifePage.linkParams, args);
-    t.deepEqual(lifePage.params, {
-        'bgFill': 'asdf',
-        'bgStroke': 'asdf',
-        'bgStrokeWidth': 'asdf',
-        'cellx': 0,
-        'celly': 0,
-        'clear': false,
-        'depth': 0,
-        'fill': 'asdf',
-        'gap': 0,
-        'height': 5,
-        'lifeBorder': 0,
-        'lifeRatio': 0,
-        'load': null,
-        'pause': false,
-        'period': 0.0001,
-        'reset': false,
-        'save': false,
-        'size': 2,
-        'step': false,
-        'stroke': 'asdf',
-        'strokeWidth': 'asdf',
-        'width': 5
-    });
+    let errorMessage = null;
+    try {
+        lifePage.updateParams();
+    } catch ({message}) {
+        errorMessage = message;
+    }
+    t.is(errorMessage, "Invalid value \"asdf\" (type 'string') for member 'width', expected type 'int'");
 });
 
 test('LifePage.updateParams, bulk too-small', (t) => {
     const lifePage = new LifePage();
     const args = {
-        'cellx': -1,
-        'celly': -1,
         'period': -1,
         'width': -1,
         'height': -1,
@@ -266,42 +118,18 @@ test('LifePage.updateParams, bulk too-small', (t) => {
         'lifeBorder': -1
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
-    lifePage.updateParams();
-    t.deepEqual(
-        lifePage.linkParams,
-        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
-    );
-    t.deepEqual(lifePage.params, {
-        'bgFill': '#ffffff',
-        'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': 0,
-        'celly': 0,
-        'clear': false,
-        'depth': 0,
-        'fill': '#2a803b',
-        'gap': 0,
-        'height': 5,
-        'lifeBorder': 0,
-        'lifeRatio': 0,
-        'load': null,
-        'pause': false,
-        'period': 0.0001,
-        'reset': false,
-        'save': false,
-        'size': 2,
-        'step': false,
-        'stroke': 'none',
-        'strokeWidth': '1',
-        'width': 5
-    });
+    let errorMessage = null;
+    try {
+        lifePage.updateParams();
+    } catch ({message}) {
+        errorMessage = message;
+    }
+    t.is(errorMessage, "Invalid value -1 (type 'number') for member 'width', expected type 'int' [>= 5]");
 });
 
 test('LifePage.updateParams, bulk too-large', (t) => {
     const lifePage = new LifePage();
     const args = {
-        'cellx': 10000,
-        'celly': 10000,
         'period': 10000,
         'width': 10000,
         'height': 10000,
@@ -312,35 +140,13 @@ test('LifePage.updateParams, bulk too-large', (t) => {
         'lifeBorder': 10000
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
-    lifePage.updateParams();
-    t.deepEqual(
-        lifePage.linkParams,
-        Object.fromEntries(Object.entries(args).map(([key, value]) => [key, String(value)]))
-    );
-    t.deepEqual(lifePage.params, {
-        'bgFill': '#ffffff',
-        'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': 999,
-        'celly': 999,
-        'clear': false,
-        'depth': 1000,
-        'fill': '#2a803b',
-        'gap': 10,
-        'height': 1000,
-        'lifeBorder': 0.45,
-        'lifeRatio': 1,
-        'load': null,
-        'pause': false,
-        'period': 60,
-        'reset': false,
-        'save': false,
-        'size': 100,
-        'step': false,
-        'stroke': 'none',
-        'strokeWidth': '1',
-        'width': 1000
-    });
+    let errorMessage = null;
+    try {
+        lifePage.updateParams();
+    } catch ({message}) {
+        errorMessage = message;
+    }
+    t.is(errorMessage, "Invalid value 10000 (type 'number') for member 'width', expected type 'int' [<= 1000]");
 });
 
 test('LifePage.next', (t) => {
@@ -439,15 +245,11 @@ test('LifePage.pageElements', (t) => {
                 [
                     [
                         null,
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&pause=1&width=5'}, 'elems': {'text': 'Pause'}}
+                        {'tag': 'a', 'attrs': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elems': {'text': 'Pause'}}
                     ],
                     null,
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&reset=1&width=5'}, 'elems': {'text': 'Random'}}
-                    ],
-                    [
-                        {'text': chisel.nbsp},
                         {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Border'}}
                     ],
                     [
@@ -460,7 +262,7 @@ test('LifePage.pageElements', (t) => {
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=0'}, 'elems': {'text': '<<Width'}}
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=5'}, 'elems': {'text': '<<Width'}}
                     ],
                     [
                         {'text': chisel.nbsp},
@@ -468,7 +270,7 @@ test('LifePage.pageElements', (t) => {
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=0&width=5'}, 'elems': {'text': '<<Height'}}
+                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=5'}, 'elems': {'text': '<<Height'}}
                     ],
                     [
                         {'text': chisel.nbsp},
@@ -528,7 +330,7 @@ test('LifePage.pageElements, pause', (t) => {
         false, true,
         true, false
     ]);
-    window.location.hash = '#width=5&height=5&pause=1&bgStroke=black';
+    window.location.hash = '#cmd.play.pause=true&width=5&height=5&bgStroke=black';
     lifePage.updateParams();
     lifePage.generations = [life];
 
@@ -550,8 +352,8 @@ test('LifePage.pageElements, pause', (t) => {
         for (let ix = 0; ix < lifePageWidth; ix++) {
             const clickEvent = {
                 'target': rectElement,
-                'clientX': svgBoundingRect.left + (ix + 1) * (lifePage.params.size + lifePage.params.gap),
-                'clientY': svgBoundingRect.top + (iy + 1) * (lifePage.params.size + lifePage.params.gap)
+                'clientX': svgBoundingRect.left + (ix + 1) * (lifePage.config.size + lifePage.config.gap),
+                'clientY': svgBoundingRect.top + (iy + 1) * (lifePage.config.size + lifePage.config.gap)
             };
             callback({
                 'addEventListener': (event, onclick) => {
@@ -563,10 +365,10 @@ test('LifePage.pageElements, pause', (t) => {
         }
     }
     t.deepEqual(assignLocations, [
-        'blank#bgStroke=black&cellx=0&celly=0&height=5&pause=1&width=5',
-        'blank#bgStroke=black&cellx=1&celly=0&height=5&pause=1&width=5',
-        'blank#bgStroke=black&cellx=0&celly=1&height=5&pause=1&width=5',
-        'blank#bgStroke=black&cellx=1&celly=1&height=5&pause=1&width=5'
+        'blank#bgStroke=black&cmd.toggle.x=0&cmd.toggle.y=0&height=5&width=5',
+        'blank#bgStroke=black&cmd.toggle.x=1&cmd.toggle.y=0&height=5&width=5',
+        'blank#bgStroke=black&cmd.toggle.x=0&cmd.toggle.y=1&height=5&width=5',
+        'blank#bgStroke=black&cmd.toggle.x=1&cmd.toggle.y=1&height=5&width=5'
     ]);
     delete rectElement.ownerSVGElement;
     delete svgElement.getBoundingClientRect;
@@ -595,7 +397,7 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': `${chisel.nbsp}| `},
                             {
                                 'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&step=1&width=5'},
+                                'attrs': {'href': 'blank#bgStroke=black&cmd.step=&height=5&width=5'},
                                 'elems': {'text': 'Step'}
                             }
                         ],
@@ -603,7 +405,7 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp},
                             {
                                 'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&clear=1&height=5&pause=1&width=5'},
+                                'attrs': {'href': 'blank#bgStroke=black&cmd.clear=&height=5&width=5'},
                                 'elems': {'text': 'Clear'}
                             }
                         ],
@@ -611,28 +413,28 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp},
                             {
                                 'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&height=5&load=2-2-1210&pause=1&save=1&width=5'},
+                                'attrs': {'href': 'blank#bgStroke=black&cmd.reset=&height=5&width=5'},
+                                'elems': {'text': 'Random'}
+                            }
+                        ],
+                        [
+                            {'text': chisel.nbsp},
+                            {
+                                'tag': 'a',
+                                'attrs': {'href': 'blank#bgStroke=black&cmd.load.data=2-2-1210&cmd.load.save=true&height=5&width=5'},
                                 'elems': {'text': 'Save'}
                             }
                         ]
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&reset=1&width=5'},
-                            'elems': {'text': 'Random'}
-                        }
-                    ],
-                    [
-                        {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&pause=1&width=5'}, 'elems': {'text': 'Border'}}
+                        {'tag': 'a', 'attrs': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elems': {'text': 'Border'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
                             'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=1&width=5'},
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=1&width=5'},
                             'elems': {'text': '<<Speed'}
                         }
                     ],
@@ -640,35 +442,55 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': chisel.nbsp},
                         {
                             'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&period=0.25&width=5'},
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=0.25&width=5'},
                             'elems': {'text': 'Speed>>'}
                         }
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=0'}, 'elems': {'text': '<<Width'}}
-                    ],
-                    [
-                        {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&width=10'}, 'elems': {'text': 'Width>>'}}
-                    ],
-                    [
-                        {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=0&pause=1&width=5'}, 'elems': {'text': '<<Height'}}
-                    ],
-                    [
-                        {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=10&pause=1&width=5'}, 'elems': {'text': 'Height>>'}}
-                    ],
-                    [
-                        {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=8&width=5'}, 'elems': {'text': '<<Size'}}
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'elems': {'text': '<<Width'}
+                        }
                     ],
                     [
                         {'text': chisel.nbsp},
                         {
                             'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&height=5&pause=1&size=12&width=5'},
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=10'},
+                            'elems': {'text': 'Width>>'}
+                        }
+                    ],
+                    [
+                        {'text': `${chisel.nbsp}| `},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'elems': {'text': '<<Height'}
+                        }
+                    ],
+                    [
+                        {'text': chisel.nbsp},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=10&width=5'},
+                            'elems': {'text': 'Height>>'}
+                        }
+                    ],
+                    [
+                        {'text': `${chisel.nbsp}| `},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=8&width=5'},
+                            'elems': {'text': '<<Size'}
+                        }
+                    ],
+                    [
+                        {'text': chisel.nbsp},
+                        {
+                            'tag': 'a',
+                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=12&width=5'},
                             'elems': {'text': 'Size>>'}
                         }
                     ]
@@ -715,7 +537,7 @@ test('LifePage.render', (t) => {
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Validate initial render
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.play.pause=true';
     lifePage.render();
     t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current, new Life(5, 5, [
@@ -726,35 +548,28 @@ test('LifePage.render', (t) => {
         false, false, false, false, false
     ]));
     t.is(lifePage.generationInterval, null);
-    t.deepEqual(lifePage.linkParams, {
-        'height': '5',
-        'lifeBorder': '0.2',
-        'lifeRatio': '1',
-        'pause': '1',
-        'width': '5'
-    });
     t.deepEqual(lifePage.params, {
+        'cmd': {'play': {'pause': true}},
+        'height': 5,
+        'lifeBorder': 0.2,
+        'lifeRatio': 1,
+        'width': 5
+    });
+    t.deepEqual(lifePage.config, {
+        'cmd': {'play': {'pause': true}},
         'bgFill': '#ffffff',
         'bgStroke': 'none',
-        'bgStrokeWidth': '1',
-        'cellx': null,
-        'celly': null,
-        'clear': false,
+        'bgStrokeWidth': 1,
         'depth': 6,
         'fill': '#2a803b',
         'gap': 1,
         'height': 5,
         'lifeBorder': 0.2,
         'lifeRatio': 1,
-        'load': null,
-        'pause': true,
         'period': 0.5,
-        'reset': false,
-        'save': false,
         'size': 10,
-        'step': false,
         'stroke': 'none',
-        'strokeWidth': '1',
+        'strokeWidth': 1,
         'width': 5
     });
     t.is(
@@ -766,22 +581,25 @@ test('LifePage.render', (t) => {
             '</p>' +
             '<p>' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a>&nbsp;| ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;step=1&amp;width=5">Step</a>&nbsp;' +
-            '<a href="blank#clear=1&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Clear</a>&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;load=5-5-63232360&amp;pause=1&amp;save=1&amp;width=5">' +
-            'Save</a>&nbsp;| ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;reset=1&amp;width=5">Random</a>&nbsp;' +
-            '<a href="blank#bgStroke=black&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Border</a>&nbsp;| ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=1&amp;width=5">&lt;&lt;Speed</a>&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;period=0.25&amp;width=5">' +
+            '<a href="blank#cmd.step=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Step</a>&nbsp;' +
+            '<a href="blank#cmd.clear=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Clear</a>&nbsp;' +
+            '<a href="blank#cmd.reset=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Random</a>&nbsp;' +
+            '<a href="blank#cmd.load.data=5-5-63232360&amp;cmd.load.save=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;' +
+            'width=5">Save</a>&nbsp;| ' +
+            '<a href="blank#bgStroke=black&amp;cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">' +
+            'Border</a>&nbsp;| ' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;period=1&amp;width=5">' +
+            '&lt;&lt;Speed</a>&nbsp;' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;period=0.25&amp;width=5">' +
             'Speed&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=0">&lt;&lt;Width</a>&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=10">Width&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#height=0&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">&lt;&lt;Height</a>&nbsp;' +
-            '<a href="blank#height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;width=5">Height&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=8&amp;width=5">&lt;&lt;Size</a>&nbsp;' +
-            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=1&amp;size=12&amp;width=5">Size&gt;&gt;</a>' +
-            '</p>' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">&lt;&lt;Width</a>&nbsp;' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=10">Width&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">&lt;&lt;Height</a>&nbsp;' +
+            '<a href="blank#cmd.play.pause=true&amp;height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Height&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;size=8&amp;width=5">' +
+            '&lt;&lt;Size</a>&nbsp;' +
+            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;size=12&amp;width=5">' +
+            'Size&gt;&gt;</a></p>' +
             '<p id="lifeSvg">' +
             '<svg width="56" height="56">' +
             '<rect x="0" y="0" width="56" height="56" style="fill: #ffffff; stroke: none; stroke-width: 1;"></rect>' +
@@ -799,15 +617,29 @@ test('LifePage.render', (t) => {
     );
 });
 
+test('LifePage.render, error', (t) => {
+    const lifePage = new LifePage();
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    // Clear
+    window.location.hash = '#cmd.unknown=';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocations, []);
+    t.deepEqual(lifePage.current.values, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, "Error: Unknown member 'cmd.unknown'");
+});
+
 test('LifePage.render, step', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Step
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&step=1';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.step=';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
         false, true, false, true, false,
@@ -824,10 +656,10 @@ test('LifePage.render, clear', (t) => {
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Clear
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&clear=1';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.clear=';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, false, false, false, false,
@@ -844,10 +676,10 @@ test('LifePage.render, reset', (t) => {
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Reset
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&reset=1';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.reset=';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -859,14 +691,14 @@ test('LifePage.render, reset', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
-test('LifePage.render, toggle cell', (t) => {
+test('LifePage.render, toggle', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=2&celly=1';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.toggle.x=2&cmd.toggle.y=1';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, false, true, false,
@@ -882,10 +714,10 @@ test('LifePage.render, invalid toggle cell', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1&cellx=99&celly=99';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.toggle.x=99&cmd.toggle.y=99';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&lifeBorder=0.2&lifeRatio=1&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -901,10 +733,10 @@ test('LifePage.render, load', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#load=5-5-555550';
+    window.location.hash = '#cmd.load.data=5-5-555550';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#height=5&pause=1&width=5']);
+    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         true, true, true, true, true,
@@ -920,7 +752,7 @@ test('LifePage.render, save', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#load=5-5-555550&save=1';
+    window.location.hash = '#cmd.load.data=5-5-555550&cmd.load.save=true';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, []);
@@ -967,7 +799,7 @@ test('LifePage.render, play', (t) => {
     t.not(document.body.innerHTML, loadInnerHTML);
 
     // Pause
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=1';
+    window.location.hash = '#cmd.play.pause=true&width=5&height=5&lifeRatio=1&lifeBorder=0.2';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, []);
@@ -1159,6 +991,7 @@ test('Life.decode', (t) => {
 });
 
 test('Life.decode, invalid', (t) => {
+    t.is(Life.decode('3-2-70'), null);
     t.is(Life.decode('3-2'), null);
     t.is(Life.decode('3'), null);
     t.is(Life.decode(''), null);

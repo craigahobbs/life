@@ -16,8 +16,34 @@ NYC_ARGS := --exclude src/chisel.js
 
 JSDOC_ARGS := -c jsdoc.json
 
+PYTHON_IMAGE := python:3.8
+
+build/env.build:
+	docker pull -q $(PYTHON_IMAGE)
+	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) python3 -m venv build/env
+	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/pip install -U pip setuptools wheel chisel
+	touch $@
+
+src/lifeTypes.js: src/lifeTypes.chsl | build/env.build
+	echo '/* eslint-disable quotes */' > $@
+	echo 'export const lifeTypes =' >> $@
+	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/python3 -m chisel compile $< >> $@
+	echo ';' >> $@
+
+_test: src/lifeTypes.js
+
+_lint: src/lifeTypes.js
+
+_doc: src/lifeTypes.js
+
+help:
+	@echo '            [gh-pages]'
+
 clean:
 	rm -f .makefile package.json .eslintrc.js
+
+superclean:
+	docker rmi -f $(PYTHON_IMAGE)
 
 .PHONY: gh-pages
 gh-pages: _clean commit

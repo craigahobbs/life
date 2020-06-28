@@ -2,15 +2,16 @@
 // https://github.com/craigahobbs/life/blob/master/LICENSE
 
 import * as chisel from './chisel.js';
+import {lifeTypes} from './lifeTypes.js';
 
 
 /**
  * The life simulation application class.
  *
  * @property {Life[]} generations - The array of life board generations. The current state is the last array element.
- * @property {?Interval} generationInterval - The interval (timer) for the running simulation or null if not running.
- * @property {Object} linkParams - The decoded, unparsed hash parameters object for use in link creation.
- * @property {Object} params - The parsed and validated hash parameters object.
+ * @property {?Interval} generationInterval - The interval (timer) for the running simulation or null if not running
+ * @property {Object} params - The validated hash parameters object
+ * @property {Object} config - The validated, fully-populated (with defaults) hash parameters object
  */
 export class LifePage {
     /**
@@ -34,56 +35,35 @@ export class LifePage {
 
     /**
      * Parse the window location's hash parameters. This method sets two class members:
-     * this.linkParams and this.params.  this.linkParams is the decoded hash parameters object for
-     * use with creating links to the application.  this.params is object containing all known hash
+     * this.params and this.config.  this.params is the decoded hash parameters object for
+     * use with creating links to the application.  this.config is object containing all known hash
      * parameters parsed and validated.
      */
     updateParams() {
-        const params = chisel.decodeParams();
-
-        // Load?
-        let width, height;
-        const minWH = 5;
-        const maxWH = 1000;
-        let life = 'load' in params && Life.decode(params.load);
-        if (life !== null && life.width >= minWH && life.width < maxWH && life.height >= minWH && life.height < maxWH) {
-            [width, height] = [life.width, life.height];
-        } else {
-            life = null;
-            width = 'width' in params ? Math.max(minWH, Math.min(maxWH, parseInt(params.width, 10) || 0)) : 50;
-            height = 'height' in params ? Math.max(minWH, Math.min(maxWH, parseInt(params.height, 10) || 0)) : 50;
-        }
-
-        // Update params
-        this.linkParams = params;
-        this.params = {
-            'pause': !!life || params.pause === 'true' || params.pause === '1',
-            'step': params.step === 'true' || params.step === '1',
-            'reset': params.reset === 'true' || params.reset === '1',
-            'clear': params.clear === 'true' || params.clear === '1',
-            'cellx': 'cellx' in params ? Math.max(0, Math.min(maxWH - 1, parseInt(params.cellx, 10) || 0)) : null,
-            'celly': 'celly' in params ? Math.max(0, Math.min(maxWH - 1, parseInt(params.celly, 10) || 0)) : null,
-            'load': life,
-            'save': params.save === 'true' || params.save === '1',
-            'period': 'period' in params ? Math.max(0.0001, Math.min(60, parseFloat(params.period) || 0)) : 0.5,
-            'width': width,
-            'height': height,
-            'size': 'size' in params ? Math.max(2, Math.min(100, parseInt(params.size, 10) || 0)) : 10,
-            'gap': 'gap' in params ? Math.max(0, Math.min(10, parseInt(params.gap, 10) || 0)) : 1,
-            'depth': 'depth' in params ? Math.max(0, Math.min(1000, parseInt(params.depth, 10) || 0)) : 6,
-            'lifeRatio': 'lifeRatio' in params ? Math.max(0, Math.min(1, parseFloat(params.lifeRatio) || 0)) : 0.25,
-            'lifeBorder': 'lifeBorder' in params ? Math.max(0, Math.min(0.45, parseFloat(params.lifeBorder) || 0)) : 0.1,
-            'fill': params.fill || '#2a803b',
-            'stroke': params.stroke || 'none',
-            'strokeWidth': params.strokeWidth || '1',
-            'bgFill': params.bgFill || '#ffffff',
-            'bgStroke': params.bgStroke || 'none',
-            'bgStrokeWidth': params.bgStrokeWidth || '1'
+        this.params = null;
+        this.config = null;
+        this.params = chisel.validateType(lifeTypes, 'LifeParams', chisel.decodeParams());
+        this.config = {
+            'width': 50,
+            'height': 50,
+            'period': 0.5,
+            'size': 10,
+            'gap': 1,
+            'depth': 6,
+            'lifeRatio': 0.25,
+            'lifeBorder': 0.1,
+            'fill': '#2a803b',
+            'stroke': 'none',
+            'strokeWidth': 1,
+            'bgFill': '#ffffff',
+            'bgStroke': 'none',
+            'bgStrokeWidth': 1,
+            ...this.params
         };
     }
 
     /**
-     * Get the current life board object.
+     * Get the current life board object
      *
      * @returns {Life}
      */
@@ -100,16 +80,16 @@ export class LifePage {
         const foundIndex = this.generations.findIndex((life) => next.isEqual(life));
         if (foundIndex !== -1) {
             const foundDepth = this.generations.length - foundIndex;
-            if (foundDepth <= this.params.depth) {
-                next = new Life(0, 0).resize(this.current.width, this.current.height, this.params.lifeRatio, this.params.lifeBorder);
+            if (foundDepth <= this.config.depth) {
+                next = new Life(0, 0).resize(this.current.width, this.current.height, this.config.lifeRatio, this.config.lifeBorder);
                 this.generations = [];
             }
         }
 
         // Limit generations array size
         this.generations.push(next);
-        if (this.generations.length > this.params.depth * 2) {
-            this.generations = this.generations.slice(this.generations.length - Math.max(1, this.params.depth));
+        if (this.generations.length > this.config.depth * 2) {
+            this.generations = this.generations.slice(this.generations.length - Math.max(1, this.config.depth));
         }
     }
 
@@ -118,67 +98,104 @@ export class LifePage {
      * simulation page within the document.body element.
      */
     render() {
-        this.updateParams();
+        // Decode and validate hash parameters
+        try {
+            this.updateParams();
+        } catch ({message}) {
+            LifePage.renderError(message);
+            return;
+        }
 
-        // Clear/set the generation interval
+        // Clear the generation interval
         if (this.generationInterval !== null) {
             clearInterval(this.generationInterval);
             this.generationInterval = null;
         }
-        if (!this.params.pause && !this.params.step) {
-            this.generationInterval = window.setInterval(
-                // istanbul ignore next
-                () => this.onIntervalTimeout(),
-                this.params.period * 1000
-            );
+
+        // Resize?
+        if (this.config.width !== this.current.width || this.config.height !== this.current.height) {
+            this.generations =
+                [this.current.resize(this.config.width, this.config.height, this.config.lifeRatio, this.config.lifeBorder)];
         }
 
-        // Load?
-        if (this.params.load !== null) {
-            this.generations = [this.params.load];
-            if (!this.params.save) {
-                this.assignLocation(chisel.href({
-                    ...this.linkParams,
-                    'load': null,
-                    'width': this.params.width,
-                    'height': this.params.height,
-                    'pause': '1'
-                }));
-                return;
-            }
-        } else {
-            // Resize?
-            if (this.params.width !== this.current.width || this.params.height !== this.current.height) {
-                this.generations =
-                    [this.current.resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
+        // Play?
+        // istanbul ignore else
+        if (!('cmd' in this.config) || 'play' in this.config.cmd) {
+            // Set the generation interval, unless paused
+            if (!('cmd' in this.config) || !this.config.cmd.play.pause) {
+                this.generationInterval = window.setInterval(
+                    // istanbul ignore next
+                    () => this.onIntervalTimeout(),
+                    this.config.period * 1000
+                );
             }
 
-            // Execute command, if any
-            if (this.params.reset) {
-                this.generations =
-                    [new Life(0, 0).resize(this.params.width, this.params.height, this.params.lifeRatio, this.params.lifeBorder)];
-                this.assignLocation(chisel.href({...this.linkParams, 'reset': null}));
-                return;
-            } else if (this.params.clear) {
-                this.generations = [new Life(0, 0).resize(this.params.width, this.params.height, 0, 0)];
-                this.assignLocation(chisel.href({...this.linkParams, 'clear': null}));
-                return;
-            } else if (this.params.step) {
-                this.next();
-                this.assignLocation(chisel.href({...this.linkParams, 'step': null, 'pause': '1'}));
-                return;
-            } else if (this.params.cellx !== null || this.params.celly !== null) {
-                if (this.params.cellx !== null && this.params.cellx >= 0 && this.params.cellx < this.params.width &&
-                    this.params.cellx !== null && this.params.celly >= 0 && this.params.celly < this.params.height) {
-                    this.current.setCell(this.params.cellx, this.params.celly, !this.current.cell(this.params.cellx, this.params.celly));
-                }
-                this.assignLocation(chisel.href({...this.linkParams, 'cellx': null, 'celly': null}));
+        // Load?
+        } else if ('load' in this.config.cmd) {
+            // Set the new life simulation state
+            const life = Life.decode(this.config.cmd.load.data);
+            if (life === null) {
+                LifePage.renderError('Invalid load data');
                 return;
             }
+            this.generations = [life];
+
+            // Navigate to the play/paused command (unless saving)
+            if (!this.config.cmd.load.save) {
+                this.assignLocation(chisel.href(
+                    {...this.params, 'cmd': {'play': {'pause': true}}, 'width': life.width, 'height': life.height}
+                ));
+                return;
+            }
+
+        // Step?
+        } else if ('step' in this.config.cmd) {
+            // Update the life simulation state
+            this.next();
+
+            // Navigate to the play/paused command (unless saving)
+            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
+            return;
+
+        // Reset?
+        } else if ('reset' in this.config.cmd) {
+            // Randomize the life simulation state
+            this.generations =
+                [new Life(0, 0).resize(this.config.width, this.config.height, this.config.lifeRatio, this.config.lifeBorder)];
+
+            // Navigate to the play/paused command
+            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
+            return;
+
+        // Clear?
+        } else if ('clear' in this.config.cmd) {
+            // Clear the life simulation state
+            this.generations = [new Life(0, 0).resize(this.config.width, this.config.height, 0, 0)];
+
+            // Navigate to the play/paused command
+            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
+            return;
+
+        // Toggle?
+        } else if ('toggle' in this.config.cmd) {
+            // Toggle the cell
+            const setX = this.config.cmd.toggle.x;
+            const setY = this.config.cmd.toggle.y;
+            if (setX < this.config.width && setY < this.config.height) {
+                this.current.setCell(setX, setY, !this.current.cell(setX, setY));
+            }
+
+            // Navigate to the play/paused command
+            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
+            return;
         }
 
         // Render
         chisel.render(document.body, this.pageElements());
+    }
+
+    static renderError(message) {
+        chisel.render(document.body, chisel.text(`Error: ${message}`));
     }
 
     /**
@@ -195,10 +212,22 @@ export class LifePage {
      * @returns {Array}
      */
     pageElements() {
+        // Command state
+        const paused = 'cmd' in this.config && 'play' in this.config.cmd && this.config.cmd.play.pause;
+        const saving = 'cmd' in this.config && 'load' in this.config.cmd && this.config.cmd.load.save;
+
+        // Get the period, width, height, and size attributes
+        const periodAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'period').attr;
+        const widthAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'width').attr;
+        const heightAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'height').attr;
+        const sizeAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'size').attr;
+
+        // Helper function for creating a simple menu
         const button = (text, params, isSection, isFirst) => [
             isFirst ? null : chisel.text(isSection ? `${chisel.nbsp}| ` : chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...this.linkParams, ...params})}, chisel.text(text))
+            chisel.elem('a', {'href': chisel.href({...this.params, ...params})}, chisel.text(text))
         ];
+
         return [
             // Title
             chisel.elem('p', null, [
@@ -209,27 +238,27 @@ export class LifePage {
                 chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, chisel.text('Wikipedia'))
             ]),
             chisel.elem('p', null, [
-                this.params.save ? [
-                    button('Load', {'save': null}, false, true),
+                saving ? [
+                    button('Load', {'cmd': {'load': {'data': this.config.cmd.load.data}}}, false, true),
                     chisel.text(`${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}
                                 Bookmark this link or the page link to save.`)
                 ] : [
-                    button(this.params.pause ? 'Play' : 'Pause', {'pause': this.params.pause ? null : '1'}, false, true),
-                    !this.params.pause ? null : [
-                        button('Step', {'step': '1'}, true),
-                        button('Clear', {'clear': '1'}),
-                        button('Save', {'load': this.current.encode(), 'save': '1'})
+                    button(paused ? 'Play' : 'Pause', {'cmd': paused ? null : {'play': {'pause': true}}}, false, true),
+                    !paused ? null : [
+                        button('Step', {'cmd': {'step': ''}}, true),
+                        button('Clear', {'cmd': {'clear': ''}}),
+                        button('Random', {'cmd': {'reset': ''}}),
+                        button('Save', {'cmd': {'load': {'data': this.current.encode(), 'save': true}}})
                     ],
-                    button('Random', {'reset': '1'}, true),
-                    button('Border', {'bgStroke': this.params.bgStroke === 'none' ? 'black' : null}),
-                    button('<<Speed', {'period': this.params.period * 2}, true),
-                    button('Speed>>', {'period': this.params.period / 2}),
-                    button('<<Width', {'width': this.params.width - 5}, true),
-                    button('Width>>', {'width': this.params.width + 5}),
-                    button('<<Height', {'height': this.params.height - 5}, true),
-                    button('Height>>', {'height': this.params.height + 5}),
-                    button('<<Size', {'size': this.params.size - 2}, true),
-                    button('Size>>', {'size': this.params.size + 2})
+                    button('Border', {'bgStroke': this.config.bgStroke === 'none' ? 'black' : null}, true),
+                    button('<<Speed', {'period': Math.min(periodAttr.lte, this.config.period * 2)}, true),
+                    button('Speed>>', {'period': Math.max(periodAttr.gte, this.config.period / 2)}),
+                    button('<<Width', {'width': Math.max(widthAttr.gte, this.config.width - 5)}, true),
+                    button('Width>>', {'width': Math.min(widthAttr.lte, this.config.width + 5)}),
+                    button('<<Height', {'height': Math.max(heightAttr.gte, this.config.height - 5)}, true),
+                    button('Height>>', {'height': Math.min(heightAttr.lte, this.config.height + 5)}),
+                    button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, true),
+                    button('Size>>', {'size': Math.min(sizeAttr.lte, this.config.size + 2)})
                 ]
             ]),
 
@@ -244,19 +273,20 @@ export class LifePage {
      * @returns {Object}
      */
     svgElements() {
-        const svgWidth = this.params.gap + this.params.width * (this.params.size + this.params.gap);
-        const svgHeight = this.params.gap + this.params.height * (this.params.size + this.params.gap);
+        const paused = 'cmd' in this.config && 'play' in this.config.cmd && this.config.cmd.play.pause;
+        const svgWidth = this.config.gap + this.config.width * (this.config.size + this.config.gap);
+        const svgHeight = this.config.gap + this.config.height * (this.config.size + this.config.gap);
         const cellElems = [];
         const svgElems = chisel.svg('svg', {
             'width': svgWidth,
             'height': svgHeight,
-            '_callback': this.params.load !== null || !this.params.pause ? null : (element) => {
+            '_callback': !('cmd' in this.config) || !paused ? null : (element) => {
                 element.addEventListener('click', (event) => {
                     const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
-                    const clickSize = this.params.size + this.params.gap;
-                    const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.params.gap) / clickSize);
-                    const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.params.gap) / clickSize);
-                    this.assignLocation(chisel.href({...this.linkParams, 'cellx': ix, 'celly': iy}));
+                    const clickSize = this.config.size + this.config.gap;
+                    const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize);
+                    const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize);
+                    this.assignLocation(chisel.href({...this.params, 'cmd': {'toggle': {'x': ix, 'y': iy}}}));
                 });
             }
         }, cellElems);
@@ -267,7 +297,7 @@ export class LifePage {
             'y': '0',
             'width': svgWidth,
             'height': svgHeight,
-            'style': `fill: ${this.params.bgFill}; stroke: ${this.params.bgStroke}; stroke-width: ${this.params.bgStrokeWidth};`
+            'style': `fill: ${this.config.bgFill}; stroke: ${this.config.bgStroke}; stroke-width: ${this.config.bgStrokeWidth};`
         }));
 
         // Life cells
@@ -275,11 +305,11 @@ export class LifePage {
             for (let ix = 0; ix < this.current.width; ix++) {
                 if (this.current.cell(ix, iy)) {
                     cellElems.push(chisel.svg('rect', {
-                        'x': this.params.gap + ix * (this.params.size + this.params.gap),
-                        'y': this.params.gap + iy * (this.params.size + this.params.gap),
-                        'width': this.params.size,
-                        'height': this.params.size,
-                        'style': `fill: ${this.params.fill}; stroke: ${this.params.stroke}; stroke-width: ${this.params.strokeWidth};`
+                        'x': this.config.gap + ix * (this.config.size + this.config.gap),
+                        'y': this.config.gap + iy * (this.config.size + this.config.gap),
+                        'width': this.config.size,
+                        'height': this.config.size,
+                        'style': `fill: ${this.config.fill}; stroke: ${this.config.stroke}; stroke-width: ${this.config.strokeWidth};`
                     }));
                 }
             }

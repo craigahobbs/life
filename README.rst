@@ -42,37 +42,6 @@ Examples
 * `Crocodiles 2 <https://craigahobbs.github.io/life/#depth=0&period=0.1&size=8&load=65-65-02z0q4z0q2z0z0z0z0z0z0z0z08333z0k1213121z0j2211122z0h2321232z0e1219121z0d1f1z0d1219121z0e2321232z0h2211122z0j1213121z0k333z0z0z0z0z0z0z0z0z0z0z0z0z0z0o3z0q131z0p131z0n2111112z0k1115111z0j191z0j2113112z0l232z0z0z0i232z0l2113112z0j191z0j1115111z0k2111112z0n131z0p131z0q3z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0z0q2z0q4z0q2>`_
 
 
-Page Arguments
-==============
-
-=============  ===========
-Argument       Description
-=============  ===========
-pause          If "true" or "1" the simulation is paused (default is "false").
-step           If "true" or "1" the simulation is stepped and paused (default is "false").
-reset          If "true" or "1" the simulation state is randomized (default is "false").
-clear          If "true" or "1" the simulation state is cleared (default is "false").
-cellx          If "true" or "1" in conjunction with "celly" toggles the cell at the x, y coordinate.
-celly          If "true" or "1" in conjunction with "cellx" toggles the cell at the x, y coordinate.
-load           Load a life board from the string format "<width>-<height>-<[01]{width * height}>".
-save           If "true" or "1" the load agument is not cleared.
-period         The simulation iteration period (default is 0.5 seconds).
-width          The horizontal width of the cell grid (default is 50).
-height         The vertical height of the cell grid (default is 50).
-size           The size, in pixels, of a cell (default is 10).
-gap            The gap, in pixels, between cells (default is 1).
-depth          The generation depth used to check for cycles (default is 6).
-lifeRatio      The probability, from zero to one, that a cell will be living at startup (default is 0.25).
-lifeBorder     The size ratio of the lifeless border around the life board at startup (default is 0.1).
-fill           The cell fill color (default is "#2a803b").
-stroke         The cell stroke color (default is "none").
-strokeWidth    The cell stroke width (default is 1).
-bgFill         The board fill color (default is "#ffffff").
-bgStroke       The board stroke color (default is "none").
-bgStrokeWidth  The board stroke width (default is 1).
-=============  ===========
-
-
 Development
 ===========
 
@@ -126,11 +95,3 @@ To deploy your changes to GitHub Pages run:
 
 This command creates a "../life.gh-pages" directory with the "gh-pages" branch checked out. To
 deploy, commit the changes and push.
-
-Keeping Current
----------------
-
-It's a good idea to update development dependency versions periodically. To do this, compare the
-versions in the generated "package-lock.json" file with the versions in the "package.json"
-file. Update any dependency version in the "package.json" file for which a new major version is
-available.
