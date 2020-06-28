@@ -1,0 +1,112 @@
+# The Life application hash parameters struct
+struct LifeParams
+
+    # The Life application command
+    optional LifeCommand cmd
+
+    # The horizontal width of the cell grid (default is 50)
+    optional int(>= 5, <= 1000) width
+
+    # The vertical height of the cell grid (default is 50)
+    optional int(>= 5, <= 1000) height
+
+    # The size, in pixels, of a cell (default is 10)
+    optional int(>= 2, <= 100) size
+
+    # The gap, in pixels, between cells (default is 1)
+    optional int(>= 0, <= 10) gap
+
+    # The simulation iteration period, in seconds (default is 0.5 seconds)
+    optional float(>= 0.0001, <= 60) period
+
+    # The generation depth used to check for cycles (default is 6)
+    optional int(>= 0, <= 1000) depth
+
+    # The probability, from zero to one, that a cell will be living at startup (default is 0.25)
+    optional float (>= 0, <= 1) lifeRatio
+
+    # The size ratio of the lifeless border around the life board at startup (default is 0.1)
+    optional float (>= 0, <= 0.45) lifeBorder
+
+    # The cell fill color (default is "#2a803b")
+    optional Color fill
+
+    # The cell stroke color (default is "none")
+    optional Stroke stroke
+
+    # The cell stroke width (default is 1)
+    optional StrokeWidth strokeWidth
+
+    # The board fill color (default is "#ffffff")
+    optional Color bgFill
+
+    # The board stroke color (default is "none")
+    optional Stroke bgStroke
+
+    # The board stroke width (default is 1)
+    optional StrokeWidth bgStrokeWidth
+
+
+# The Life application command union
+union LifeCommand
+
+    # The life board state is loaded
+    CommandLoad load
+
+    # The simulation is run (default)
+    CommandPlay play
+
+    # The simulation is stepped and paused
+    CommandEmpty step
+
+    # The simulation state is randomized
+    CommandEmpty reset
+
+    # The simulation state is cleared
+    CommandEmpty clear
+
+    # Toggle a cell
+    CommandToggle toggle
+
+
+# An empty command struct
+struct CommandEmpty
+
+
+# Load command struct
+struct CommandLoad
+
+    # The serialized life board in the format "<width>-<height>-<[01]{width * height}>"
+    string data
+
+    # If true, the load agument is not cleared (default is "false")
+    optional bool save
+
+
+# Play command struct
+struct CommandPlay
+
+    # If true, the simulation is paused (default is "false")
+    optional bool pause
+
+
+# Cell toggle command struct
+struct CommandToggle
+
+    # The cell's X coordinate
+    int(>= 0) x
+
+    # The cell's Y coordinate
+    int(>= 0) y
+
+
+# A CSS color string
+typedef string(len > 0) Color
+
+
+# A CSS stroke string
+typedef string(len > 0) Stroke
+
+
+# A CSS stroke width
+typedef int(>= 0, <= 10) StrokeWidth
