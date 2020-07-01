@@ -52,10 +52,10 @@ export class LifePage {
             'depth': 6,
             'lifeRatio': 0.25,
             'lifeBorder': 0.1,
-            'fill': '#2a803b',
+            'fill': 'forestgreen',
             'stroke': 'none',
             'strokeWidth': 1,
-            'bgFill': '#ffffff',
+            'bgFill': 'white',
             'bgStroke': 'none',
             'bgStrokeWidth': 1,
             ...this.params
