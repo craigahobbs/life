@@ -23,6 +23,9 @@ You can increase or decrease the speed of the simulation by clicking the "Speed"
 the size of the life board by clicking the "Width" and "Height" controls. Increase or decrease the
 size of the life board cells by clicking the "Size" controls.
 
+To customize the simulation, such as changing the cell color, refer to the `configuration options
+<https://craigahobbs.github.io/chisel/doc/#name=Life&title=Life&types=https%3A%2F%2Fcraigahobbs.github.io%2Flife%2FlifeTypes.json>`__.
+
 
 Examples
 ========

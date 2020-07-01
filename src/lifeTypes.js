@@ -86,58 +86,7 @@ export const lifeTypes =
             "name": "CommandToggle"
         }
     },
-    "LifeCommand": {
-        "struct": {
-            "doc": " The Life application command union",
-            "members": [
-                {
-                    "doc": " The life board state is loaded",
-                    "name": "load",
-                    "type": {
-                        "user": "CommandLoad"
-                    }
-                },
-                {
-                    "doc": " The simulation is run (default)",
-                    "name": "play",
-                    "type": {
-                        "user": "CommandPlay"
-                    }
-                },
-                {
-                    "doc": " The simulation is stepped and paused",
-                    "name": "step",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " The simulation state is randomized",
-                    "name": "reset",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " The simulation state is cleared",
-                    "name": "clear",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " Toggle a cell",
-                    "name": "toggle",
-                    "type": {
-                        "user": "CommandToggle"
-                    }
-                }
-            ],
-            "name": "LifeCommand",
-            "union": true
-        }
-    },
-    "LifeParams": {
+    "Life": {
         "struct": {
             "doc": " The Life application hash parameters struct",
             "members": [
@@ -294,7 +243,58 @@ export const lifeTypes =
                     }
                 }
             ],
-            "name": "LifeParams"
+            "name": "Life"
+        }
+    },
+    "LifeCommand": {
+        "struct": {
+            "doc": " The Life application command union",
+            "members": [
+                {
+                    "doc": " The life board state is loaded",
+                    "name": "load",
+                    "type": {
+                        "user": "CommandLoad"
+                    }
+                },
+                {
+                    "doc": " The simulation is run (default)",
+                    "name": "play",
+                    "type": {
+                        "user": "CommandPlay"
+                    }
+                },
+                {
+                    "doc": " The simulation is stepped and paused",
+                    "name": "step",
+                    "type": {
+                        "user": "CommandEmpty"
+                    }
+                },
+                {
+                    "doc": " The simulation state is randomized",
+                    "name": "reset",
+                    "type": {
+                        "user": "CommandEmpty"
+                    }
+                },
+                {
+                    "doc": " The simulation state is cleared",
+                    "name": "clear",
+                    "type": {
+                        "user": "CommandEmpty"
+                    }
+                },
+                {
+                    "doc": " Toggle a cell",
+                    "name": "toggle",
+                    "type": {
+                        "user": "CommandToggle"
+                    }
+                }
+            ],
+            "name": "LifeCommand",
+            "union": true
         }
     },
     "Stroke": {

@@ -25,7 +25,7 @@ build/env.build:
 	touch $@
 
 src/lifeTypes.json: src/lifeTypes.chsl | build/env.build
-	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/python3 -m chisel compile $< >> $@
+	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/python3 -m chisel compile $< > $@
 
 src/lifeTypes.js: src/lifeTypes.json
 	echo '/* eslint-disable quotes */' > $@
