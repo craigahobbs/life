@@ -23,6 +23,35 @@ export class LifePage {
     }
 
     /**
+     * Run the application
+     *
+     * @returns {Object} Object meant to be passed to "runCleanup" for application shutdown
+     */
+    static run() {
+        // Create the applicaton object and render
+        const lifePage = new LifePage();
+        lifePage.render();
+
+        // Add the hash parameters listener
+        const addEventListenerArgs = ['hashchange', () => lifePage.render(), false];
+        window.addEventListener(...addEventListenerArgs);
+
+        // Return the cleanup object
+        return {
+            'windowRemoveEventListener': addEventListenerArgs
+        };
+    }
+
+    /*
+     * Cleanup global state created by "run"
+     *
+     * @param {Object} runResult - The return value of "run"
+     */
+    static runCleanup(runResult) {
+        window.removeEventListener(...runResult.windowRemoveEventListener);
+    }
+
+    /**
      * Navigate to a new location. This method is non-static so that it can easily be overwritten in unit tests.
      *
      * @param {string} location - The location to navigate to.
