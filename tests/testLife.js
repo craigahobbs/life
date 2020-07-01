@@ -35,11 +35,11 @@ test('LifePage.updateParams', (t) => {
     lifePage.updateParams();
     t.deepEqual(lifePage.params, {});
     t.deepEqual(lifePage.config, {
-        'bgFill': '#ffffff',
+        'bgFill': 'white',
         'bgStroke': 'none',
         'bgStrokeWidth': 1,
         'depth': 6,
-        'fill': '#2a803b',
+        'fill': 'forestgreen',
         'gap': 1,
         'height': 50,
         'lifeBorder': 0.1,
@@ -64,11 +64,11 @@ test('LifePage.updateParams, bulk valid', (t) => {
         'depth': 5,
         'lifeRatio': 0.33,
         'lifeBorder': 0.2,
-        'fill': '#808080',
-        'stroke': '#000000',
+        'fill': 'gray',
+        'stroke': 'black',
         'strokeWidth': 2,
-        'bgFill': '#c0c0c0',
-        'bgStroke': '#ffffff',
+        'bgFill': 'silver',
+        'bgStroke': 'white',
         'bgStrokeWidth': 4
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
@@ -296,14 +296,14 @@ test('LifePage.pageElements', (t) => {
                 'elems': [
                     {
                         'tag': 'rect',
-                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: none; stroke-width: 1;'},
+                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: none; stroke-width: 1;'},
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
                         'tag': 'rect',
                         'attrs': {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
-                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                            'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
                     },
@@ -311,7 +311,7 @@ test('LifePage.pageElements', (t) => {
                         'tag': 'rect',
                         'attrs': {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
-                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                            'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'}
                 ],
@@ -506,14 +506,14 @@ test('LifePage.pageElements, pause', (t) => {
                 'elems': [
                     {
                         'tag': 'rect',
-                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: #ffffff; stroke: black; stroke-width: 1;'},
+                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: black; stroke-width: 1;'},
                         'ns': 'http://www.w3.org/2000/svg'
                     },
                     {
                         'tag': 'rect',
                         'attrs': {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
-                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                            'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
                     },
@@ -521,7 +521,7 @@ test('LifePage.pageElements, pause', (t) => {
                         'tag': 'rect',
                         'attrs': {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
-                            'style': 'fill: #2a803b; stroke: none; stroke-width: 1;'
+                            'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         },
                         'ns': 'http://www.w3.org/2000/svg'
                     }
@@ -557,11 +557,11 @@ test('LifePage.render', (t) => {
     });
     t.deepEqual(lifePage.config, {
         'cmd': {'play': {'pause': true}},
-        'bgFill': '#ffffff',
+        'bgFill': 'white',
         'bgStroke': 'none',
         'bgStrokeWidth': 1,
         'depth': 6,
-        'fill': '#2a803b',
+        'fill': 'forestgreen',
         'gap': 1,
         'height': 5,
         'lifeBorder': 0.2,
@@ -602,16 +602,16 @@ test('LifePage.render', (t) => {
             'Size&gt;&gt;</a></p>' +
             '<p id="lifeSvg">' +
             '<svg width="56" height="56">' +
-            '<rect x="0" y="0" width="56" height="56" style="fill: #ffffff; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="12" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="23" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="34" y="12" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="12" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="23" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="34" y="23" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="12" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="23" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
-            '<rect x="34" y="34" width="10" height="10" style="fill: #2a803b; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
             '</svg>' +
             '</p>'
     );
