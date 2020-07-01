@@ -42,7 +42,7 @@ export class LifePage {
     updateParams() {
         this.params = null;
         this.config = null;
-        this.params = chisel.validateType(lifeTypes, 'LifeParams', chisel.decodeParams());
+        this.params = chisel.validateType(lifeTypes, 'Life', chisel.decodeParams());
         this.config = {
             'width': 50,
             'height': 50,
@@ -217,10 +217,10 @@ export class LifePage {
         const saving = 'cmd' in this.config && 'load' in this.config.cmd && this.config.cmd.load.save;
 
         // Get the period, width, height, and size attributes
-        const periodAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'period').attr;
-        const widthAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'width').attr;
-        const heightAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'height').attr;
-        const sizeAttr = lifeTypes.LifeParams.struct.members.find((member) => member.name === 'size').attr;
+        const periodAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'period').attr;
+        const widthAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'width').attr;
+        const heightAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'height').attr;
+        const sizeAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'size').attr;
 
         // Helper function for creating a simple menu
         const button = (text, params, isSection, isFirst) => [

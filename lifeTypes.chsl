@@ -1,5 +1,5 @@
 # The Life application hash parameters struct
-struct LifeParams
+struct Life
 
     # The Life application command
     optional LifeCommand cmd
