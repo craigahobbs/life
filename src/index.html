@@ -12,8 +12,6 @@
     </body>
     <script type="module">
         import {LifePage} from './life.js';
-        const lifePage = new LifePage();
-        lifePage.render();
-        window.addEventListener('hashchange', () => lifePage.render(), false);
+        LifePage.run();
     </script>
 </html>

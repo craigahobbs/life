@@ -532,6 +532,25 @@ test('LifePage.pageElements, pause', (t) => {
     ]);
 });
 
+test('LifePage.run', (t) => {
+    window.location.hash = '#cmd.play.pause=true';
+    document.body.innerHTML = '';
+
+    // Run the application
+    const runCleanup = LifePage.run();
+    t.is(document.title, '');
+    t.true(document.body.innerHTML.startsWith('<p>'));
+
+    // Step
+    window.location.hash = '#cmd.play.pause=true&fill=chartreuse';
+    runCleanup.windowRemoveEventListener[1]();
+    t.is(document.title, '');
+    t.true(document.body.innerHTML.startsWith('<p>'));
+    t.not(document.body.innerHTML.search('fill: chartreuse'), -1);
+
+    LifePage.runCleanup(runCleanup);
+});
+
 test('LifePage.render', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
