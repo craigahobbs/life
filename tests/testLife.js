@@ -230,92 +230,89 @@ test('LifePage.pageElements', (t) => {
 
     t.deepEqual(lifePage.pageElements(), [
         {
-            'tag': 'p',
-            'elems': [
-                {'tag': 'span', 'attrs': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elems': {'text': "Conway's Game of Life"}},
+            'html': 'p',
+            'elem': [
+                {'html': 'span', 'attr': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elem': {'text': "Conway's Game of Life"}},
                 {'text': `${chisel.nbsp}${chisel.nbsp} `},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elems': {'text': 'GitHub'}},
+                {'html': 'a', 'attr': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elem': {'text': 'GitHub'}},
                 {'text': `${chisel.nbsp}${chisel.nbsp}`},
-                {'tag': 'a', 'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elems': {'text': 'Wikipedia'}}
+                {'html': 'a', 'attr': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elem': {'text': 'Wikipedia'}}
             ]
         },
         {
-            'tag': 'p',
-            'elems': [
+            'html': 'p',
+            'elem': [
                 [
                     [
                         null,
-                        {'tag': 'a', 'attrs': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elems': {'text': 'Pause'}}
+                        {'html': 'a', 'attr': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elem': {'text': 'Pause'}}
                     ],
                     null,
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Border'}}
+                        {'html': 'a', 'attr': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elem': {'text': 'Border'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=1&width=5'}, 'elems': {'text': '<<Speed'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&period=1&width=5'}, 'elem': {'text': '<<Speed'}}
                     ],
                     [
                         {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&period=0.25&width=5'}, 'elems': {'text': 'Speed>>'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&period=0.25&width=5'}, 'elem': {'text': 'Speed>>'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=5'}, 'elems': {'text': '<<Width'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&width=5'}, 'elem': {'text': '<<Width'}}
                     ],
                     [
                         {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=10'}, 'elems': {'text': 'Width>>'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&width=10'}, 'elem': {'text': 'Width>>'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&width=5'}, 'elems': {'text': '<<Height'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&width=5'}, 'elem': {'text': '<<Height'}}
                     ],
                     [
                         {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=10&width=5'}, 'elems': {'text': 'Height>>'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=10&width=5'}, 'elem': {'text': 'Height>>'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=8&width=5'}, 'elems': {'text': '<<Size'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&size=8&width=5'}, 'elem': {'text': '<<Size'}}
                     ],
                     [
                         {'text': chisel.nbsp},
-                        {'tag': 'a', 'attrs': {'href': 'blank#height=5&size=12&width=5'}, 'elems': {'text': 'Size>>'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&size=12&width=5'}, 'elem': {'text': 'Size>>'}}
                     ]
                 ]
             ]
         },
         {
-            'tag': 'p',
-            'attrs': {'id': 'lifeSvg'},
-            'elems': {
-                'tag': 'svg',
-                'attrs': {'_callback': null, 'width': 56, 'height': 56},
-                'elems': [
+            'html': 'p',
+            'attr': {'id': 'lifeSvg'},
+            'elem': {
+                'svg': 'svg',
+                'attr': {'_callback': null, 'width': 56, 'height': 56},
+                'elem': [
                     {
-                        'tag': 'rect',
-                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: none; stroke-width: 1;'},
-                        'ns': 'http://www.w3.org/2000/svg'
+                        'svg': 'rect',
+                        'attr': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: none; stroke-width: 1;'}
                     },
                     {
-                        'tag': 'rect',
-                        'attrs': {
+                        'svg': 'rect',
+                        'attr': {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'
+                        }
                     },
                     {
-                        'tag': 'rect',
-                        'attrs': {
+                        'svg': 'rect',
+                        'attr': {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'}
-                ],
-                'ns': 'http://www.w3.org/2000/svg'
+                        }
+                    }
+                ]
             }
         }
     ]);
@@ -336,14 +333,14 @@ test('LifePage.pageElements, pause', (t) => {
 
     // Check the SVG element callback functions
     const pageElements = lifePage.pageElements();
-    const svgElement = pageElements[2].elems;
-    const [rectElement] = svgElement.elems;
-    t.is(svgElement.tag, 'svg');
-    t.is(rectElement.tag, 'rect');
+    const svgElement = pageElements[2].elem;
+    const [rectElement] = svgElement.elem;
+    t.is(svgElement.svg, 'svg');
+    t.is(rectElement.svg, 'rect');
 
     // Call the chisel.js element creation callback
-    const callback = svgElement.attrs._callback;
-    delete svgElement.attrs._callback;
+    const callback = svgElement.attr._callback;
+    delete svgElement.attr._callback;
     t.true(typeof callback === 'function');
     rectElement.ownerSVGElement = svgElement;
     const svgBoundingRect = {'left': 10, 'top': 20};
@@ -375,158 +372,154 @@ test('LifePage.pageElements, pause', (t) => {
 
     t.deepEqual(pageElements, [
         {
-            'tag': 'p',
-            'elems': [
-                {'tag': 'span', 'attrs': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elems': {'text': "Conway's Game of Life"}},
+            'html': 'p',
+            'elem': [
+                {'html': 'span', 'attr': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elem': {'text': "Conway's Game of Life"}},
                 {'text': `${chisel.nbsp}${chisel.nbsp} `},
-                {'tag': 'a', 'attrs': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elems': {'text': 'GitHub'}},
+                {'html': 'a', 'attr': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elem': {'text': 'GitHub'}},
                 {'text': `${chisel.nbsp}${chisel.nbsp}`},
-                {'tag': 'a', 'attrs': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elems': {'text': 'Wikipedia'}}
+                {'html': 'a', 'attr': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elem': {'text': 'Wikipedia'}}
             ]
         },
         {
-            'tag': 'p',
-            'elems': [
+            'html': 'p',
+            'elem': [
                 [
                     [
                         null,
-                        {'tag': 'a', 'attrs': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elems': {'text': 'Play'}}
+                        {'html': 'a', 'attr': {'href': 'blank#bgStroke=black&height=5&width=5'}, 'elem': {'text': 'Play'}}
                     ],
                     [
                         [
                             {'text': `${chisel.nbsp}| `},
                             {
-                                'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&cmd.step=&height=5&width=5'},
-                                'elems': {'text': 'Step'}
+                                'html': 'a',
+                                'attr': {'href': 'blank#bgStroke=black&cmd.step=&height=5&width=5'},
+                                'elem': {'text': 'Step'}
                             }
                         ],
                         [
                             {'text': chisel.nbsp},
                             {
-                                'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&cmd.clear=&height=5&width=5'},
-                                'elems': {'text': 'Clear'}
+                                'html': 'a',
+                                'attr': {'href': 'blank#bgStroke=black&cmd.clear=&height=5&width=5'},
+                                'elem': {'text': 'Clear'}
                             }
                         ],
                         [
                             {'text': chisel.nbsp},
                             {
-                                'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&cmd.reset=&height=5&width=5'},
-                                'elems': {'text': 'Random'}
+                                'html': 'a',
+                                'attr': {'href': 'blank#bgStroke=black&cmd.reset=&height=5&width=5'},
+                                'elem': {'text': 'Random'}
                             }
                         ],
                         [
                             {'text': chisel.nbsp},
                             {
-                                'tag': 'a',
-                                'attrs': {'href': 'blank#bgStroke=black&cmd.load.data=2-2-1210&cmd.load.save=true&height=5&width=5'},
-                                'elems': {'text': 'Save'}
+                                'html': 'a',
+                                'attr': {'href': 'blank#bgStroke=black&cmd.load.data=2-2-1210&cmd.load.save=true&height=5&width=5'},
+                                'elem': {'text': 'Save'}
                             }
                         ]
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'tag': 'a', 'attrs': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elems': {'text': 'Border'}}
+                        {'html': 'a', 'attr': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elem': {'text': 'Border'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=1&width=5'},
-                            'elems': {'text': '<<Speed'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=1&width=5'},
+                            'elem': {'text': '<<Speed'}
                         }
                     ],
                     [
                         {'text': chisel.nbsp},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=0.25&width=5'},
-                            'elems': {'text': 'Speed>>'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=0.25&width=5'},
+                            'elem': {'text': 'Speed>>'}
                         }
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
-                            'elems': {'text': '<<Width'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'elem': {'text': '<<Width'}
                         }
                     ],
                     [
                         {'text': chisel.nbsp},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=10'},
-                            'elems': {'text': 'Width>>'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=10'},
+                            'elem': {'text': 'Width>>'}
                         }
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
-                            'elems': {'text': '<<Height'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'elem': {'text': '<<Height'}
                         }
                     ],
                     [
                         {'text': chisel.nbsp},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=10&width=5'},
-                            'elems': {'text': 'Height>>'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=10&width=5'},
+                            'elem': {'text': 'Height>>'}
                         }
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=8&width=5'},
-                            'elems': {'text': '<<Size'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=8&width=5'},
+                            'elem': {'text': '<<Size'}
                         }
                     ],
                     [
                         {'text': chisel.nbsp},
                         {
-                            'tag': 'a',
-                            'attrs': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=12&width=5'},
-                            'elems': {'text': 'Size>>'}
+                            'html': 'a',
+                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=12&width=5'},
+                            'elem': {'text': 'Size>>'}
                         }
                     ]
                 ]
             ]
         },
         {
-            'tag': 'p',
-            'attrs': {'id': 'lifeSvg'},
-            'elems': {
-                'tag': 'svg',
-                'attrs': {'width': 56, 'height': 56},
-                'elems': [
+            'html': 'p',
+            'attr': {'id': 'lifeSvg'},
+            'elem': {
+                'svg': 'svg',
+                'attr': {'width': 56, 'height': 56},
+                'elem': [
                     {
-                        'tag': 'rect',
-                        'attrs': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: black; stroke-width: 1;'},
-                        'ns': 'http://www.w3.org/2000/svg'
+                        'svg': 'rect',
+                        'attr': {'x': '0', 'y': '0', 'width': 56, 'height': 56, 'style': 'fill: white; stroke: black; stroke-width: 1;'}
                     },
                     {
-                        'tag': 'rect',
-                        'attrs': {
+                        'svg': 'rect',
+                        'attr': {
                             'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'
+                        }
                     },
                     {
-                        'tag': 'rect',
-                        'attrs': {
+                        'svg': 'rect',
+                        'attr': {
                             'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
-                        },
-                        'ns': 'http://www.w3.org/2000/svg'
+                        }
                     }
-                ],
-                'ns': 'http://www.w3.org/2000/svg'
+                ]
             }
         }
     ]);

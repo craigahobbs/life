@@ -224,7 +224,7 @@ export class LifePage {
     }
 
     static renderError(message) {
-        chisel.render(document.body, chisel.text(`Error: ${message}`));
+        chisel.render(document.body, {'text': `Error: ${message}`});
     }
 
     /**
@@ -253,24 +253,24 @@ export class LifePage {
 
         // Helper function for creating a simple menu
         const button = (text, params, isSection, isFirst) => [
-            isFirst ? null : chisel.text(isSection ? `${chisel.nbsp}| ` : chisel.nbsp),
-            chisel.elem('a', {'href': chisel.href({...this.params, ...params})}, chisel.text(text))
+            isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
+            {'html': 'a', 'attr': {'href': chisel.href({...this.params, ...params})}, 'elem': {'text': text}}
         ];
 
         return [
             // Title
-            chisel.elem('p', null, [
-                chisel.elem('span', {'style': 'font-weight: bold; white-space: nowrap;'}, chisel.text("Conway's Game of Life")),
-                chisel.text(`${chisel.nbsp}${chisel.nbsp} `),
-                chisel.elem('a', {'href': 'https://github.com/craigahobbs/life#readme'}, chisel.text('GitHub')),
-                chisel.text(`${chisel.nbsp}${chisel.nbsp}`),
-                chisel.elem('a', {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, chisel.text('Wikipedia'))
-            ]),
-            chisel.elem('p', null, [
+            {'html': 'p', 'elem': [
+                {'html': 'span', 'attr': {'style': 'font-weight: bold; white-space: nowrap;'}, 'elem': {'text': "Conway's Game of Life"}},
+                {'text': `${chisel.nbsp}${chisel.nbsp} `},
+                {'html': 'a', 'attr': {'href': 'https://github.com/craigahobbs/life#readme'}, 'elem': {'text': 'GitHub'}},
+                {'text': `${chisel.nbsp}${chisel.nbsp}`},
+                {'html': 'a', 'attr': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elem': {'text': 'Wikipedia'}}
+            ]},
+            {'html': 'p', 'elem': [
                 saving ? [
                     button('Load', {'cmd': {'load': {'data': this.config.cmd.load.data}}}, false, true),
-                    chisel.text(`${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}
-                                Bookmark this link or the page link to save.`)
+                    {'text': `${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}` +
+                     'Bookmark this link or the page link to save.'}
                 ] : [
                     button(paused ? 'Play' : 'Pause', {'cmd': paused ? null : {'play': {'pause': true}}}, false, true),
                     !paused ? null : [
@@ -289,10 +289,10 @@ export class LifePage {
                     button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, true),
                     button('Size>>', {'size': Math.min(sizeAttr.lte, this.config.size + 2)})
                 ]
-            ]),
+            ]},
 
             // Life SVG
-            chisel.elem('p', {'id': 'lifeSvg'}, this.svgElements())
+            {'html': 'p', 'attr': {'id': 'lifeSvg'}, 'elem': this.svgElements()}
         ];
     }
 
@@ -306,40 +306,44 @@ export class LifePage {
         const svgWidth = this.config.gap + this.config.width * (this.config.size + this.config.gap);
         const svgHeight = this.config.gap + this.config.height * (this.config.size + this.config.gap);
         const cellElems = [];
-        const svgElems = chisel.svg('svg', {
-            'width': svgWidth,
-            'height': svgHeight,
-            '_callback': !('cmd' in this.config) || !paused ? null : (element) => {
-                element.addEventListener('click', (event) => {
-                    const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
-                    const clickSize = this.config.size + this.config.gap;
-                    const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize);
-                    const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize);
-                    this.assignLocation(chisel.href({...this.params, 'cmd': {'toggle': {'x': ix, 'y': iy}}}));
-                });
-            }
-        }, cellElems);
+        const svgElems = {
+            'svg': 'svg',
+            'attr': {
+                'width': svgWidth,
+                'height': svgHeight,
+                '_callback': !('cmd' in this.config) || !paused ? null : (element) => {
+                    element.addEventListener('click', (event) => {
+                        const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
+                        const clickSize = this.config.size + this.config.gap;
+                        const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize);
+                        const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize);
+                        this.assignLocation(chisel.href({...this.params, 'cmd': {'toggle': {'x': ix, 'y': iy}}}));
+                    });
+                }
+            },
+            'elem': cellElems
+        };
 
         // Background
-        cellElems.push(chisel.svg('rect', {
+        cellElems.push({'svg': 'rect', 'attr': {
             'x': '0',
             'y': '0',
             'width': svgWidth,
             'height': svgHeight,
             'style': `fill: ${this.config.bgFill}; stroke: ${this.config.bgStroke}; stroke-width: ${this.config.bgStrokeWidth};`
-        }));
+        }});
 
         // Life cells
         for (let iy = 0; iy < this.current.height; iy++) {
             for (let ix = 0; ix < this.current.width; ix++) {
                 if (this.current.cell(ix, iy)) {
-                    cellElems.push(chisel.svg('rect', {
+                    cellElems.push({'svg': 'rect', 'attr': {
                         'x': this.config.gap + ix * (this.config.size + this.config.gap),
                         'y': this.config.gap + iy * (this.config.size + this.config.gap),
                         'width': this.config.size,
                         'height': this.config.size,
                         'style': `fill: ${this.config.fill}; stroke: ${this.config.stroke}; stroke-width: ${this.config.strokeWidth};`
-                    }));
+                    }});
                 }
             }
         }
