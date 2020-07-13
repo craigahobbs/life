@@ -760,6 +760,25 @@ test('LifePage.render, load', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
+test('LifePage.render, load play', (t) => {
+    const lifePage = new LifePage();
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    window.location.hash = '#cmd.load.data=5-5-555550&cmd.load.play=true';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocations, ['blank#height=5&width=5']);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '');
+});
+
 test('LifePage.render, save', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);

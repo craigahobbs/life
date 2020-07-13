@@ -171,8 +171,9 @@ export class LifePage {
 
             // Navigate to the play/paused command (unless saving)
             if (!this.config.cmd.load.save) {
+                const play = 'play' in this.config.cmd.load && this.config.cmd.load.play;
                 this.assignLocation(chisel.href(
-                    {...this.params, 'cmd': {'play': {'pause': true}}, 'width': life.width, 'height': life.height}
+                    {...this.params, 'cmd': play ? null : {'play': {'pause': true}}, 'width': life.width, 'height': life.height}
                 ));
                 return;
             }

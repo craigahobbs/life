@@ -477,6 +477,14 @@ export const lifeTypes =
                     "type": {
                         "builtin": "bool"
                     }
+                },
+                {
+                    "doc": " If true, the simulation plays after load (default is \"false\")",
+                    "name": "play",
+                    "optional": true,
+                    "type": {
+                        "builtin": "bool"
+                    }
                 }
             ],
             "name": "CommandLoad"

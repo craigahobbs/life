@@ -82,6 +82,9 @@ struct CommandLoad
     # If true, the load agument is not cleared (default is "false")
     optional bool save
 
+    # If true, the simulation plays after load (default is "false")
+    optional bool play
+
 
 # Play command struct
 struct CommandPlay
