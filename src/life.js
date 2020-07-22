@@ -310,8 +310,8 @@ export class LifePage {
         const svgElems = {
             'svg': 'svg',
             'attr': {
-                'width': svgWidth,
-                'height': svgHeight,
+                'width': `${svgWidth}`,
+                'height': `${svgHeight}`,
                 '_callback': !('cmd' in this.config) || !paused ? null : (element) => {
                     element.addEventListener('click', (event) => {
                         const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
@@ -329,8 +329,8 @@ export class LifePage {
         cellElems.push({'svg': 'rect', 'attr': {
             'x': '0',
             'y': '0',
-            'width': svgWidth,
-            'height': svgHeight,
+            'width': `${svgWidth}`,
+            'height': `${svgHeight}`,
             'style': `fill: ${this.config.bgFill}; stroke: ${this.config.bgStroke}; stroke-width: ${this.config.bgStrokeWidth};`
         }});
 
@@ -339,10 +339,10 @@ export class LifePage {
             for (let ix = 0; ix < this.current.width; ix++) {
                 if (this.current.cell(ix, iy)) {
                     cellElems.push({'svg': 'rect', 'attr': {
-                        'x': this.config.gap + ix * (this.config.size + this.config.gap),
-                        'y': this.config.gap + iy * (this.config.size + this.config.gap),
-                        'width': this.config.size,
-                        'height': this.config.size,
+                        'x': `${this.config.gap + ix * (this.config.size + this.config.gap)}`,
+                        'y': `${this.config.gap + iy * (this.config.size + this.config.gap)}`,
+                        'width': `${this.config.size}`,
+                        'height': `${this.config.size}`,
                         'style': `fill: ${this.config.fill}; stroke: ${this.config.stroke}; stroke-width: ${this.config.strokeWidth};`
                     }});
                 }
