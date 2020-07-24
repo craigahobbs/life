@@ -1,7 +1,7 @@
 {
     "Color": {
         "enum": {
-            "doc": " A CSS color string",
+            "doc": " CSS color string",
             "name": "Color",
             "values": [
                 {
@@ -451,97 +451,32 @@
             ]
         }
     },
-    "CommandEmpty": {
-        "struct": {
-            "doc": " An empty command struct",
-            "name": "CommandEmpty"
-        }
-    },
-    "CommandLoad": {
-        "struct": {
-            "doc": " Load command struct",
-            "members": [
-                {
-                    "doc": " The serialized life board in the format \"<width>-<height>-<[01]{width * height}>\"",
-                    "name": "data",
-                    "type": {
-                        "builtin": "string"
-                    }
-                },
-                {
-                    "doc": " If true, the load agument is not cleared (default is \"false\")",
-                    "name": "save",
-                    "optional": true,
-                    "type": {
-                        "builtin": "bool"
-                    }
-                },
-                {
-                    "doc": " If true, the simulation plays after load (default is \"false\")",
-                    "name": "play",
-                    "optional": true,
-                    "type": {
-                        "builtin": "bool"
-                    }
-                }
-            ],
-            "name": "CommandLoad"
-        }
-    },
-    "CommandPlay": {
-        "struct": {
-            "doc": " Play command struct",
-            "members": [
-                {
-                    "doc": " If true, the simulation is paused (default is \"false\")",
-                    "name": "pause",
-                    "optional": true,
-                    "type": {
-                        "builtin": "bool"
-                    }
-                }
-            ],
-            "name": "CommandPlay"
-        }
-    },
-    "CommandToggle": {
-        "struct": {
-            "doc": " Cell toggle command struct",
-            "members": [
-                {
-                    "attr": {
-                        "gte": 0.0
-                    },
-                    "doc": " The cell's X coordinate",
-                    "name": "x",
-                    "type": {
-                        "builtin": "int"
-                    }
-                },
-                {
-                    "attr": {
-                        "gte": 0.0
-                    },
-                    "doc": " The cell's Y coordinate",
-                    "name": "y",
-                    "type": {
-                        "builtin": "int"
-                    }
-                }
-            ],
-            "name": "CommandToggle"
-        }
-    },
     "Life": {
         "struct": {
             "doc": " The Life application hash parameters struct",
             "members": [
                 {
-                    "doc": " The Life application command",
-                    "name": "cmd",
+                    "doc": " If true, the life simulation is paused",
+                    "name": "pause",
                     "optional": true,
                     "type": {
-                        "user": "LifeCommand"
+                        "builtin": "bool"
+                    }
+                },
+                {
+                    "doc": " Load the life simulation state from a string of the format \"<width>-<height>-<[01]{width * height}>\"",
+                    "name": "load",
+                    "optional": true,
+                    "type": {
+                        "builtin": "string"
+                    }
+                },
+                {
+                    "doc": " Save the life simulation state",
+                    "name": "save",
+                    "optional": true,
+                    "type": {
+                        "builtin": "bool"
                     }
                 },
                 {
@@ -692,64 +627,13 @@
             "name": "Life"
         }
     },
-    "LifeCommand": {
-        "struct": {
-            "doc": " The Life application command union",
-            "members": [
-                {
-                    "doc": " The life board state is loaded",
-                    "name": "load",
-                    "type": {
-                        "user": "CommandLoad"
-                    }
-                },
-                {
-                    "doc": " The simulation is run (default)",
-                    "name": "play",
-                    "type": {
-                        "user": "CommandPlay"
-                    }
-                },
-                {
-                    "doc": " The simulation is stepped and paused",
-                    "name": "step",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " The simulation state is randomized",
-                    "name": "reset",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " The simulation state is cleared",
-                    "name": "clear",
-                    "type": {
-                        "user": "CommandEmpty"
-                    }
-                },
-                {
-                    "doc": " Toggle a cell",
-                    "name": "toggle",
-                    "type": {
-                        "user": "CommandToggle"
-                    }
-                }
-            ],
-            "name": "LifeCommand",
-            "union": true
-        }
-    },
     "StrokeWidth": {
         "typedef": {
             "attr": {
                 "gte": 0.0,
                 "lte": 10.0
             },
-            "doc": " A CSS stroke width",
+            "doc": " CSS stroke width",
             "name": "StrokeWidth",
             "type": {
                 "builtin": "int"

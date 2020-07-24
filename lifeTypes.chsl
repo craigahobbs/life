@@ -1,8 +1,14 @@
 # The Life application hash parameters struct
 struct Life
 
-    # The Life application command
-    optional LifeCommand cmd
+    # If true, the life simulation is paused
+    optional bool pause
+
+    # Load the life simulation state from a string of the format "<width>-<height>-<[01]{width * height}>"
+    optional string load
+
+    # Save the life simulation state
+    optional bool save
 
     # The horizontal width of the cell grid (default is 50)
     optional int(>= 5, <= 1000) width
@@ -47,63 +53,11 @@ struct Life
     optional StrokeWidth bgStrokeWidth
 
 
-# The Life application command union
-union LifeCommand
-
-    # The life board state is loaded
-    CommandLoad load
-
-    # The simulation is run (default)
-    CommandPlay play
-
-    # The simulation is stepped and paused
-    CommandEmpty step
-
-    # The simulation state is randomized
-    CommandEmpty reset
-
-    # The simulation state is cleared
-    CommandEmpty clear
-
-    # Toggle a cell
-    CommandToggle toggle
+# CSS stroke width
+typedef int(>= 0, <= 10) StrokeWidth
 
 
-# An empty command struct
-struct CommandEmpty
-
-
-# Load command struct
-struct CommandLoad
-
-    # The serialized life board in the format "<width>-<height>-<[01]{width * height}>"
-    string data
-
-    # If true, the load agument is not cleared (default is "false")
-    optional bool save
-
-    # If true, the simulation plays after load (default is "false")
-    optional bool play
-
-
-# Play command struct
-struct CommandPlay
-
-    # If true, the simulation is paused (default is "false")
-    optional bool pause
-
-
-# Cell toggle command struct
-struct CommandToggle
-
-    # The cell's X coordinate
-    int(>= 0) x
-
-    # The cell's Y coordinate
-    int(>= 0) y
-
-
-# A CSS color string
+# CSS color string
 enum Color
     "none"
     "aliceblue"
@@ -253,6 +207,3 @@ enum Color
     "whitesmoke"
     "yellow"
     "yellowgreen"
-
-# A CSS stroke width
-typedef int(>= 0, <= 10) StrokeWidth
