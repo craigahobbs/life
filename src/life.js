@@ -56,8 +56,8 @@ export class LifePage {
      *
      * @param {string} location - The location to navigate to.
      */
-    // istanbul ignore next
-    // eslint-disable-next-line class-methods-use-this
+    /* istanbul ignore next */
+    /* eslint-disable-next-line class-methods-use-this */
     assignLocation(location) {
         window.location.href = location;
     }
@@ -73,6 +73,7 @@ export class LifePage {
         this.config = null;
         this.params = chisel.validateType(lifeTypes, 'Life', chisel.decodeParams());
         this.config = {
+            'pause': false,
             'width': 50,
             'height': 50,
             'period': 0.5,
@@ -101,24 +102,74 @@ export class LifePage {
     }
 
     /**
-     * Advance to the next state in the life simulation.
+     * Returns true if the life simulation is paused
+     */
+    get paused() {
+        return 'pause' in this.config && this.config.pause || 'load' in this.config || 'save' in this.config && this.config.save;
+    }
+
+    /**
+     * Advance to the next state in the life simulation and render
      */
     next() {
-        // Cycle?  If yes and of insufficient depth, reset...
-        let next = this.current.next();
+        // Cycle?  If yes and of insufficient depth, randomize...
+        const next = this.current.next();
         const foundIndex = this.generations.findIndex((life) => next.isEqual(life));
         if (foundIndex !== -1) {
             const foundDepth = this.generations.length - foundIndex;
             if (foundDepth <= this.config.depth) {
-                next = new Life(0, 0).resize(this.current.width, this.current.height, this.config.lifeRatio, this.config.lifeBorder);
-                this.generations = [];
+                this.randomize();
+                return;
             }
         }
 
-        // Limit generations array size
+        // Add the generation and limit generations array size
         this.generations.push(next);
         if (this.generations.length > this.config.depth * 2) {
             this.generations = this.generations.slice(this.generations.length - Math.max(1, this.config.depth));
+        }
+
+        // Render the life board
+        this.renderSVG();
+    }
+
+    /**
+     * Randomize the life board and render
+     */
+    randomize() {
+        // Randomize the life board
+        this.generations =
+            [new Life(0, 0).resize(this.config.width, this.config.height, this.config.lifeRatio, this.config.lifeBorder)];
+
+        // Render the life board
+        this.renderSVG();
+    }
+
+    /**
+     * Clear the life board and render
+     */
+    clear() {
+        // Clear the life simulation state
+        this.generations = [new Life(0, 0).resize(this.config.width, this.config.height, 0, 0)];
+
+        // Render the life board
+        this.renderSVG();
+    }
+
+    /**
+     * Toggle a cell and render
+     *
+     * @param {number} ix - The life board X coordinate
+     * @param {number} iy - The life board Y coordinate
+     */
+    toggleCell(ix, iy) {
+        // Valid coordinates?
+        if (ix >= 0 && ix < this.current.width && iy >= 0 && iy < this.current.height) {
+            // Toggle the cell
+            this.current.setCell(ix, iy, !this.current.cell(ix, iy));
+
+            // Render the life board
+            this.renderSVG();
         }
     }
 
@@ -131,13 +182,13 @@ export class LifePage {
         try {
             this.updateParams();
         } catch ({message}) {
-            LifePage.renderError(message);
+            chisel.render(document.body, LifePage.errorElements(message));
             return;
         }
 
         // Clear the generation interval
         if (this.generationInterval !== null) {
-            clearInterval(this.generationInterval);
+            window.clearInterval(this.generationInterval);
             this.generationInterval = null;
         }
 
@@ -147,105 +198,56 @@ export class LifePage {
                 [this.current.resize(this.config.width, this.config.height, this.config.lifeRatio, this.config.lifeBorder)];
         }
 
-        // Play?
-        // istanbul ignore else
-        if (!('cmd' in this.config) || 'play' in this.config.cmd) {
-            // Set the generation interval, unless paused
-            if (!('cmd' in this.config) || !this.config.cmd.play.pause) {
-                this.generationInterval = window.setInterval(
-                    // istanbul ignore next
-                    () => this.onIntervalTimeout(),
-                    this.config.period * 1000
-                );
-            }
-
         // Load?
-        } else if ('load' in this.config.cmd) {
+        /* istanbul ignore else */
+        if ('load' in this.config) {
             // Set the new life simulation state
-            const life = Life.decode(this.config.cmd.load.data);
+            const life = Life.decode(this.config.load);
             if (life === null) {
-                LifePage.renderError('Invalid load data');
+                chisel.render(document.body, LifePage.errorElements('Invalid load data'));
                 return;
             }
             this.generations = [life];
 
-            // Navigate to the play/paused command (unless saving)
-            if (!this.config.cmd.load.save) {
-                const play = 'play' in this.config.cmd.load && this.config.cmd.load.play;
-                this.assignLocation(chisel.href(
-                    {...this.params, 'cmd': play ? null : {'play': {'pause': true}}, 'width': life.width, 'height': life.height}
-                ));
-                return;
-            }
-
-        // Step?
-        } else if ('step' in this.config.cmd) {
-            // Update the life simulation state
-            this.next();
-
-            // Navigate to the play/paused command (unless saving)
-            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
+            // Navigate to clear the "load" hash param
+            this.assignLocation(chisel.href({...this.params, 'load': null, 'save': null, 'width': life.width, 'height': life.height}));
             return;
 
-        // Reset?
-        } else if ('reset' in this.config.cmd) {
-            // Randomize the life simulation state
-            this.generations =
-                [new Life(0, 0).resize(this.config.width, this.config.height, this.config.lifeRatio, this.config.lifeBorder)];
-
-            // Navigate to the play/paused command
-            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
-            return;
-
-        // Clear?
-        } else if ('clear' in this.config.cmd) {
-            // Clear the life simulation state
-            this.generations = [new Life(0, 0).resize(this.config.width, this.config.height, 0, 0)];
-
-            // Navigate to the play/paused command
-            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
-            return;
-
-        // Toggle?
-        } else if ('toggle' in this.config.cmd) {
-            // Toggle the cell
-            const setX = this.config.cmd.toggle.x;
-            const setY = this.config.cmd.toggle.y;
-            if (setX < this.config.width && setY < this.config.height) {
-                this.current.setCell(setX, setY, !this.current.cell(setX, setY));
-            }
-
-            // Navigate to the play/paused command
-            this.assignLocation(chisel.href({...this.params, 'cmd': {'play': {'pause': true}}}));
-            return;
+        // Play, unless paused
+        } else if (!this.paused) {
+            // Set the generation interval
+            this.generationInterval = window.setInterval(/* istanbul ignore next */ () => this.next(), this.config.period * 1000);
         }
 
         // Render
         chisel.render(document.body, this.pageElements());
     }
 
-    static renderError(message) {
-        chisel.render(document.body, {'text': `Error: ${message}`});
-    }
-
     /**
-     * The life simulation interval callback. This advances to the next simlation state and re-renders the life board SVG.
+     * Render the life board SVG
      */
-    onIntervalTimeout() {
-        this.next();
-        chisel.render(document.getElementById('lifeSvg'), this.svgElements());
+    renderSVG(elementId = 'lifeSVG') {
+        const parentElement = document.getElementById(elementId);
+        if (parentElement !== null) {
+            chisel.render(parentElement, this.svgElements());
+        }
     }
 
     /**
-     * Generate the life simulation page elments for use with the chisel.render function.
+     * Generate the error page element model
+     *
+     * @param {string} message - The error message
+     */
+    static errorElements(message) {
+        return {'html': 'p', 'elem': {'text': `Error: ${message}`}};
+    }
+
+    /**
+     * Generate the life simulation page element model
      *
      * @returns {Array}
      */
     pageElements() {
-        // Command state
-        const paused = 'cmd' in this.config && 'play' in this.config.cmd && this.config.cmd.play.pause;
-        const saving = 'cmd' in this.config && 'load' in this.config.cmd && this.config.cmd.load.save;
-
         // Get the period, width, height, and size attributes
         const periodAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'period').attr;
         const widthAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'width').attr;
@@ -253,10 +255,20 @@ export class LifePage {
         const sizeAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'size').attr;
 
         // Helper function for creating a simple menu
-        const button = (text, params, isSection, isFirst) => [
-            isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
-            {'html': 'a', 'attr': {'href': chisel.href({...this.params, ...params})}, 'elem': {'text': text}}
-        ];
+        const button = (text, params, callback = null, isSection = false, isFirst = false) => {
+            const anchorAttr = {
+                'href': chisel.href({...this.params, ...params})
+            };
+            if (callback !== null) {
+                anchorAttr._callback = (element) => {
+                    element.addEventListener('click', callback);
+                };
+            }
+            return [
+                isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
+                {'html': 'a', 'elem': {'text': text}, 'attr': anchorAttr}
+            ];
+        };
 
         return [
             // Title
@@ -268,42 +280,41 @@ export class LifePage {
                 {'html': 'a', 'attr': {'href': 'https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'}, 'elem': {'text': 'Wikipedia'}}
             ]},
             {'html': 'p', 'elem': [
-                saving ? [
-                    button('Load', {'cmd': {'load': {'data': this.config.cmd.load.data}}}, false, true),
+                'save' in this.config && this.config.save ? [
+                    button('Load', {'load': this.current.encode(), 'save': null}, null, false, true),
                     {'text': `${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}` +
                      'Bookmark this link or the page link to save.'}
                 ] : [
-                    button(paused ? 'Play' : 'Pause', {'cmd': paused ? null : {'play': {'pause': true}}}, false, true),
-                    !paused ? null : [
-                        button('Step', {'cmd': {'step': ''}}, true),
-                        button('Clear', {'cmd': {'clear': ''}}),
-                        button('Random', {'cmd': {'reset': ''}}),
-                        button('Save', {'cmd': {'load': {'data': this.current.encode(), 'save': true}}})
+                    button(this.paused ? 'Play' : 'Pause', {'pause': this.paused ? null : true}, null, false, true),
+                    !this.paused ? null : [
+                        button('Step', {}, /* istanbul ignore next */ () => this.next(), true),
+                        button('Clear', {}, /* istanbul ignore next */ () => this.clear()),
+                        button('Random', {}, /* istanbul ignore next */ () => this.randomize()),
+                        button('Save', {'save': true})
                     ],
-                    button('Border', {'bgStroke': this.config.bgStroke === 'none' ? 'black' : null}, true),
-                    button('<<Speed', {'period': Math.min(periodAttr.lte, this.config.period * 2)}, true),
+                    button('Border', {'bgStroke': this.config.bgStroke === 'none' ? 'black' : null}, null, true),
+                    button('<<Speed', {'period': Math.min(periodAttr.lte, this.config.period * 2)}, null, true),
                     button('Speed>>', {'period': Math.max(periodAttr.gte, this.config.period / 2)}),
-                    button('<<Width', {'width': Math.max(widthAttr.gte, this.config.width - 5)}, true),
+                    button('<<Width', {'width': Math.max(widthAttr.gte, this.config.width - 5)}, null, true),
                     button('Width>>', {'width': Math.min(widthAttr.lte, this.config.width + 5)}),
-                    button('<<Height', {'height': Math.max(heightAttr.gte, this.config.height - 5)}, true),
+                    button('<<Height', {'height': Math.max(heightAttr.gte, this.config.height - 5)}, null, true),
                     button('Height>>', {'height': Math.min(heightAttr.lte, this.config.height + 5)}),
-                    button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, true),
+                    button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, null, true),
                     button('Size>>', {'size': Math.min(sizeAttr.lte, this.config.size + 2)})
                 ]
             ]},
 
             // Life SVG
-            {'html': 'p', 'attr': {'id': 'lifeSvg'}, 'elem': this.svgElements()}
+            {'html': 'p', 'attr': {'id': 'lifeSVG'}, 'elem': this.svgElements()}
         ];
     }
 
     /**
-     * Generate the life board SVG elments for use with the chisel.render function.
+     * Generate the life board SVG element model
      *
      * @returns {Object}
      */
     svgElements() {
-        const paused = 'cmd' in this.config && 'play' in this.config.cmd && this.config.cmd.play.pause;
         const svgWidth = this.config.gap + this.config.width * (this.config.size + this.config.gap);
         const svgHeight = this.config.gap + this.config.height * (this.config.size + this.config.gap);
         const cellElems = [];
@@ -312,13 +323,14 @@ export class LifePage {
             'attr': {
                 'width': `${svgWidth}`,
                 'height': `${svgHeight}`,
-                '_callback': !('cmd' in this.config) || !paused ? null : (element) => {
+                '_callback': !this.paused || 'save' in this.config ? null : (element) => {
                     element.addEventListener('click', (event) => {
                         const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
                         const clickSize = this.config.size + this.config.gap;
-                        const ix = Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize);
-                        const iy = Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize);
-                        this.assignLocation(chisel.href({...this.params, 'cmd': {'toggle': {'x': ix, 'y': iy}}}));
+                        this.toggleCell(
+                            Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize),
+                            Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize)
+                        );
                     });
                 }
             },

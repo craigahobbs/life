@@ -6,6 +6,10 @@ import test from 'ava';
 /* eslint-disable id-length */
 
 
+// Add browser globals
+browserEnv(['document', 'window']);
+
+
 // Test helper function to mock a LifePage instance's assignLocation method
 function mockLifePageAssignLocation(lifePage) {
     const locations = [];
@@ -16,8 +20,26 @@ function mockLifePageAssignLocation(lifePage) {
 }
 
 
-// Add browser globals
-browserEnv(['document', 'window']);
+// Helper function to count and delete "_callback" attributes from an element model
+function countAndDeleteCallbackAttributes(elements) {
+    let count = 0;
+    if (elements !== null) {
+        if (Array.isArray(elements)) {
+            for (const element of elements) {
+                count += countAndDeleteCallbackAttributes(element);
+            }
+        } else {
+            if ('attr' in elements && '_callback' in elements.attr) {
+                count += 1;
+                delete elements.attr._callback;
+            }
+            if ('elem' in elements) {
+                count += countAndDeleteCallbackAttributes(elements.elem);
+            }
+        }
+    }
+    return count;
+}
 
 
 // LifePage tests
@@ -44,6 +66,7 @@ test('LifePage.updateParams', (t) => {
         'height': 50,
         'lifeBorder': 0.1,
         'lifeRatio': 0.25,
+        'pause': false,
         'period': 0.5,
         'size': 10,
         'stroke': 'none',
@@ -55,21 +78,21 @@ test('LifePage.updateParams', (t) => {
 test('LifePage.updateParams, bulk valid', (t) => {
     const lifePage = new LifePage();
     const args = {
-        'cmd': {'step': {}},
-        'period': 0.125,
-        'width': 17,
-        'height': 13,
-        'size': 7,
-        'gap': 3,
-        'depth': 5,
-        'lifeRatio': 0.33,
-        'lifeBorder': 0.2,
-        'fill': 'gray',
-        'stroke': 'black',
-        'strokeWidth': 2,
         'bgFill': 'silver',
         'bgStroke': 'white',
-        'bgStrokeWidth': 4
+        'bgStrokeWidth': 4,
+        'depth': 5,
+        'fill': 'gray',
+        'gap': 3,
+        'height': 13,
+        'lifeBorder': 0.2,
+        'lifeRatio': 0.33,
+        'pause': false,
+        'period': 0.125,
+        'size': 7,
+        'stroke': 'black',
+        'strokeWidth': 2,
+        'width': 17
     };
     window.location.hash = `#${chisel.encodeParams(args)}`;
     lifePage.updateParams();
@@ -149,75 +172,6 @@ test('LifePage.updateParams, bulk too-large', (t) => {
     t.is(errorMessage, "Invalid value 10000 (type 'number') for member 'width', expected type 'int' [<= 1000]");
 });
 
-test('LifePage.next', (t) => {
-    const lifePage = new LifePage();
-    const life = new Life(3, 3, [
-        false, true, false,
-        false, true, false,
-        false, true, false
-    ]);
-    window.location.hash = '#depth=0';
-    lifePage.updateParams();
-    lifePage.generations = [life];
-    t.deepEqual(lifePage.current, life);
-    lifePage.next();
-    t.is(lifePage.generations.length, 1);
-    t.deepEqual(lifePage.current, new Life(3, 3, [
-        false, false, false,
-        true, true, true,
-        false, false, false
-    ]));
-    lifePage.next();
-    t.is(lifePage.generations.length, 1, '2');
-    t.deepEqual(lifePage.current, life);
-});
-
-test('LifePage.next, cycle', (t) => {
-    const lifePage = new LifePage();
-    const life = new Life(3, 3, [
-        false, true, false,
-        false, true, false,
-        false, true, false
-    ]);
-    window.location.hash = '#depth=2&lifeRatio=0&lifeBorder=0';
-    lifePage.updateParams();
-    lifePage.generations = [life];
-    t.deepEqual(lifePage.current, life);
-    lifePage.next();
-    t.is(lifePage.generations.length, 2);
-    t.deepEqual(lifePage.current, new Life(3, 3, [
-        false, false, false,
-        true, true, true,
-        false, false, false
-    ]));
-    lifePage.next();
-    t.is(lifePage.generations.length, 1);
-    t.deepEqual(lifePage.current, new Life(3, 3));
-});
-
-test('LifePage.next, cycle not found', (t) => {
-    const lifePage = new LifePage();
-    const life = new Life(3, 3, [
-        false, true, false,
-        false, true, false,
-        false, true, false
-    ]);
-    window.location.hash = '#depth=1';
-    lifePage.updateParams();
-    lifePage.generations = [life];
-    t.deepEqual(lifePage.current, life);
-    lifePage.next();
-    t.is(lifePage.generations.length, 2);
-    t.deepEqual(lifePage.current, new Life(3, 3, [
-        false, false, false,
-        true, true, true,
-        false, false, false
-    ]));
-    lifePage.next();
-    t.is(lifePage.generations.length, 1);
-    t.deepEqual(lifePage.current, life);
-});
-
 test('LifePage.pageElements', (t) => {
     const lifePage = new LifePage();
     const life = new Life(2, 2, [
@@ -245,7 +199,7 @@ test('LifePage.pageElements', (t) => {
                 [
                     [
                         null,
-                        {'html': 'a', 'attr': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elem': {'text': 'Pause'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&pause=true&width=5'}, 'elem': {'text': 'Pause'}}
                     ],
                     null,
                     [
@@ -289,7 +243,7 @@ test('LifePage.pageElements', (t) => {
         },
         {
             'html': 'p',
-            'attr': {'id': 'lifeSvg'},
+            'attr': {'id': 'lifeSVG'},
             'elem': {
                 'svg': 'svg',
                 'attr': {'_callback': null, 'width': '56', 'height': '56'},
@@ -327,7 +281,7 @@ test('LifePage.pageElements, pause', (t) => {
         false, true,
         true, false
     ]);
-    window.location.hash = '#cmd.play.pause=true&width=5&height=5&bgStroke=black';
+    window.location.hash = '#pause=true&width=5&height=5&bgStroke=black';
     lifePage.updateParams();
     lifePage.generations = [life];
 
@@ -338,7 +292,7 @@ test('LifePage.pageElements, pause', (t) => {
     t.is(svgElement.svg, 'svg');
     t.is(rectElement.svg, 'rect');
 
-    // Call the chisel.js element creation callback
+    // Call the element creation callback
     const callback = svgElement.attr._callback;
     delete svgElement.attr._callback;
     t.true(typeof callback === 'function');
@@ -361,15 +315,11 @@ test('LifePage.pageElements, pause', (t) => {
             });
         }
     }
-    t.deepEqual(assignLocations, [
-        'blank#bgStroke=black&cmd.toggle.x=0&cmd.toggle.y=0&height=5&width=5',
-        'blank#bgStroke=black&cmd.toggle.x=1&cmd.toggle.y=0&height=5&width=5',
-        'blank#bgStroke=black&cmd.toggle.x=0&cmd.toggle.y=1&height=5&width=5',
-        'blank#bgStroke=black&cmd.toggle.x=1&cmd.toggle.y=1&height=5&width=5'
-    ]);
+    t.deepEqual(assignLocations, []);
     delete rectElement.ownerSVGElement;
     delete svgElement.getBoundingClientRect;
 
+    t.is(countAndDeleteCallbackAttributes(pageElements), 3);
     t.deepEqual(pageElements, [
         {
             'html': 'p',
@@ -394,7 +344,7 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': `${chisel.nbsp}| `},
                             {
                                 'html': 'a',
-                                'attr': {'href': 'blank#bgStroke=black&cmd.step=&height=5&width=5'},
+                                'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=5'},
                                 'elem': {'text': 'Step'}
                             }
                         ],
@@ -402,7 +352,7 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp},
                             {
                                 'html': 'a',
-                                'attr': {'href': 'blank#bgStroke=black&cmd.clear=&height=5&width=5'},
+                                'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=5'},
                                 'elem': {'text': 'Clear'}
                             }
                         ],
@@ -410,7 +360,7 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp},
                             {
                                 'html': 'a',
-                                'attr': {'href': 'blank#bgStroke=black&cmd.reset=&height=5&width=5'},
+                                'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=5'},
                                 'elem': {'text': 'Random'}
                             }
                         ],
@@ -418,20 +368,20 @@ test('LifePage.pageElements, pause', (t) => {
                             {'text': chisel.nbsp},
                             {
                                 'html': 'a',
-                                'attr': {'href': 'blank#bgStroke=black&cmd.load.data=2-2-1210&cmd.load.save=true&height=5&width=5'},
+                                'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&save=true&width=5'},
                                 'elem': {'text': 'Save'}
                             }
                         ]
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
-                        {'html': 'a', 'attr': {'href': 'blank#cmd.play.pause=true&height=5&width=5'}, 'elem': {'text': 'Border'}}
+                        {'html': 'a', 'attr': {'href': 'blank#height=5&pause=true&width=5'}, 'elem': {'text': 'Border'}}
                     ],
                     [
                         {'text': `${chisel.nbsp}| `},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=1&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&period=1&width=5'},
                             'elem': {'text': '<<Speed'}
                         }
                     ],
@@ -439,7 +389,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': chisel.nbsp},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&period=0.25&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&period=0.25&width=5'},
                             'elem': {'text': 'Speed>>'}
                         }
                     ],
@@ -447,7 +397,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': `${chisel.nbsp}| `},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=5'},
                             'elem': {'text': '<<Width'}
                         }
                     ],
@@ -455,7 +405,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': chisel.nbsp},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=10'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=10'},
                             'elem': {'text': 'Width>>'}
                         }
                     ],
@@ -463,7 +413,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': `${chisel.nbsp}| `},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&width=5'},
                             'elem': {'text': '<<Height'}
                         }
                     ],
@@ -471,7 +421,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': chisel.nbsp},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=10&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=10&pause=true&width=5'},
                             'elem': {'text': 'Height>>'}
                         }
                     ],
@@ -479,7 +429,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': `${chisel.nbsp}| `},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=8&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&size=8&width=5'},
                             'elem': {'text': '<<Size'}
                         }
                     ],
@@ -487,7 +437,7 @@ test('LifePage.pageElements, pause', (t) => {
                         {'text': chisel.nbsp},
                         {
                             'html': 'a',
-                            'attr': {'href': 'blank#bgStroke=black&cmd.play.pause=true&height=5&size=12&width=5'},
+                            'attr': {'href': 'blank#bgStroke=black&height=5&pause=true&size=12&width=5'},
                             'elem': {'text': 'Size>>'}
                         }
                     ]
@@ -496,7 +446,7 @@ test('LifePage.pageElements, pause', (t) => {
         },
         {
             'html': 'p',
-            'attr': {'id': 'lifeSvg'},
+            'attr': {'id': 'lifeSVG'},
             'elem': {
                 'svg': 'svg',
                 'attr': {'width': '56', 'height': '56'},
@@ -526,7 +476,7 @@ test('LifePage.pageElements, pause', (t) => {
 });
 
 test('LifePage.run', (t) => {
-    window.location.hash = '#cmd.play.pause=true';
+    window.location.hash = '#pause=true';
     document.body.innerHTML = '';
 
     // Run the application
@@ -535,7 +485,7 @@ test('LifePage.run', (t) => {
     t.true(document.body.innerHTML.startsWith('<p>'));
 
     // Step
-    window.location.hash = '#cmd.play.pause=true&fill=chartreuse';
+    window.location.hash = '#pause=true&fill=chartreuse';
     runCleanup.windowRemoveEventListener[1]();
     t.is(document.title, '');
     t.true(document.body.innerHTML.startsWith('<p>'));
@@ -549,7 +499,7 @@ test('LifePage.render', (t) => {
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Validate initial render
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.play.pause=true';
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
     lifePage.render();
     t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current, new Life(5, 5, [
@@ -561,14 +511,14 @@ test('LifePage.render', (t) => {
     ]));
     t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.params, {
-        'cmd': {'play': {'pause': true}},
+        'pause': true,
         'height': 5,
         'lifeBorder': 0.2,
         'lifeRatio': 1,
         'width': 5
     });
     t.deepEqual(lifePage.config, {
-        'cmd': {'play': {'pause': true}},
+        'pause': true,
         'bgFill': 'white',
         'bgStroke': 'none',
         'bgStrokeWidth': 1,
@@ -593,26 +543,25 @@ test('LifePage.render', (t) => {
             '</p>' +
             '<p>' +
             '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Play</a>&nbsp;| ' +
-            '<a href="blank#cmd.step=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Step</a>&nbsp;' +
-            '<a href="blank#cmd.clear=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Clear</a>&nbsp;' +
-            '<a href="blank#cmd.reset=&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Random</a>&nbsp;' +
-            '<a href="blank#cmd.load.data=5-5-63232360&amp;cmd.load.save=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;' +
-            'width=5">Save</a>&nbsp;| ' +
-            '<a href="blank#bgStroke=black&amp;cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">Step</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">Clear</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">Random</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;save=true&amp;width=5">Save</a>&nbsp;| ' +
+            '<a href="blank#bgStroke=black&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">' +
             'Border</a>&nbsp;| ' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;period=1&amp;width=5">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;period=1&amp;width=5">' +
             '&lt;&lt;Speed</a>&nbsp;' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;period=0.25&amp;width=5">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;period=0.25&amp;width=5">' +
             'Speed&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">&lt;&lt;Width</a>&nbsp;' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=10">Width&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">&lt;&lt;Height</a>&nbsp;' +
-            '<a href="blank#cmd.play.pause=true&amp;height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;width=5">Height&gt;&gt;</a>&nbsp;| ' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;size=8&amp;width=5">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">&lt;&lt;Width</a>&nbsp;' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=10">Width&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">&lt;&lt;Height</a>&nbsp;' +
+            '<a href="blank#height=10&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;width=5">Height&gt;&gt;</a>&nbsp;| ' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;size=8&amp;width=5">' +
             '&lt;&lt;Size</a>&nbsp;' +
-            '<a href="blank#cmd.play.pause=true&amp;height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;size=12&amp;width=5">' +
+            '<a href="blank#height=5&amp;lifeBorder=0.2&amp;lifeRatio=1&amp;pause=true&amp;size=12&amp;width=5">' +
             'Size&gt;&gt;</a></p>' +
-            '<p id="lifeSvg">' +
+            '<p id="lifeSVG">' +
             '<svg width="56" height="56">' +
             '<rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
             '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
@@ -634,24 +583,62 @@ test('LifePage.render, error', (t) => {
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
     // Clear
-    window.location.hash = '#cmd.unknown=';
+    window.location.hash = '#unknown=';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, []);
     t.deepEqual(lifePage.current.values, []);
     t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, "Error: Unknown member 'cmd.unknown'");
+    t.is(document.body.innerHTML, "<p>Error: Unknown member 'unknown'</p>");
 });
 
-test('LifePage.render, step', (t) => {
+test('LifePage.next', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    // Step
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.step=';
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+
+    // Step
+    lifePage.next();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="1" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="1" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="45" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
         false, true, false, true, false,
@@ -659,19 +646,192 @@ test('LifePage.render, step', (t) => {
         false, true, false, true, false,
         false, false, true, false, false
     ]);
-    t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, '');
 });
 
-test('LifePage.render, clear', (t) => {
+test('LifePage.next, cycle', (t) => {
+    const lifePage = new LifePage();
+    lifePage.generations = [
+        new Life(5, 5, [
+            false, false, false, false, false,
+            false, false, true, false, false,
+            false, false, true, false, false,
+            false, false, true, false, false,
+            false, false, false, false, false
+        ])
+    ];
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 1);
+
+    // Step
+    lifePage.next();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 2);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, false, false, false, false,
+        false, false, false, false, false
+    ]);
+
+    // Step again
+    lifePage.next();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 1);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+});
+
+test('LifePage.next, cycle not found', (t) => {
+    const lifePage = new LifePage();
+    lifePage.generations = [
+        new Life(5, 5, [
+            false, false, false, false, false,
+            false, false, true, false, false,
+            false, false, true, false, false,
+            false, false, true, false, false,
+            false, false, false, false, false
+        ])
+    ];
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true&depth=1';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 1);
+
+    // Step
+    lifePage.next();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 2);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, false, false, false, false,
+        false, false, false, false, false
+    ]);
+
+    // Step again
+    lifePage.next();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.is(lifePage.generations.length, 1);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, false, true, false, false,
+        false, false, true, false, false,
+        false, false, true, false, false,
+        false, false, false, false, false
+    ]);
+});
+
+test('LifePage.clear', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
 
     // Clear
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.clear=';
-    document.body.innerHTML = '';
-    lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
+    lifePage.clear();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56">' +
+            '<rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, false, false, false, false,
@@ -679,19 +839,58 @@ test('LifePage.render, clear', (t) => {
         false, false, false, false, false,
         false, false, false, false, false
     ]);
-    t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, '');
 });
 
-test('LifePage.render, reset', (t) => {
+test('LifePage.randomize', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    // Reset
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.reset=';
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
     document.body.innerHTML = '';
+    lifePage.generations = [
+        new Life(5, 5, [
+            true, false, false, false, true,
+            false, true, false, true, false,
+            false, false, true, false, false,
+            false, true, false, true, false,
+            true, false, false, false, true
+        ])
+    ];
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="1" y="1" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="1" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="1" y="45" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="45" y="45" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+
+    // Randomize
+    lifePage.randomize();
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -699,18 +898,55 @@ test('LifePage.render, reset', (t) => {
         false, true, true, true, false,
         false, false, false, false, false
     ]);
-    t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, '');
 });
 
-test('LifePage.render, toggle', (t) => {
+test('LifePage.toggleCell', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.toggle.x=2&cmd.toggle.y=1';
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+
+    // Toggle a cell
+    lifePage.toggleCell(2, 1);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, false, true, false,
@@ -718,18 +954,31 @@ test('LifePage.render, toggle', (t) => {
         false, true, true, true, false,
         false, false, false, false, false
     ]);
-    t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, '');
 });
 
-test('LifePage.render, invalid toggle cell', (t) => {
+test('LifePage.toggleCell, invalid', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&cmd.toggle.x=99&cmd.toggle.y=99';
+    // Initial render
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&pause=true';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&lifeBorder=0.2&lifeRatio=1&width=5']);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
+    t.is(lifePage.generationInterval, null);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         false, true, true, true, false,
@@ -737,18 +986,41 @@ test('LifePage.render, invalid toggle cell', (t) => {
         false, true, true, true, false,
         false, false, false, false, false
     ]);
+
+    // Toggle a cell
+    lifePage.toggleCell(5, 5);
+    t.is(
+        document.body.innerHTML.slice(document.body.innerHTML.indexOf('<svg'), document.body.innerHTML.indexOf('</svg>') + 6),
+        '<svg width="56" height="56"><rect x="0" y="0" width="56" height="56" style="fill: white; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="12" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="23" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="12" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="23" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect>' +
+            '<rect x="34" y="34" width="10" height="10" style="fill: forestgreen; stroke: none; stroke-width: 1;"></rect></svg>'
+    );
+    t.deepEqual(assignLocations, []);
     t.is(lifePage.generationInterval, null);
-    t.is(document.body.innerHTML, '');
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
 });
 
 test('LifePage.render, load', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#cmd.load.data=5-5-555550';
+    window.location.hash = '#load=5-5-555550&pause=true';
     document.body.innerHTML = '';
     lifePage.render();
-    t.deepEqual(assignLocations, ['blank#cmd.play.pause=true&height=5&width=5']);
+    t.deepEqual(assignLocations, ['blank#height=5&pause=true&width=5']);
     t.deepEqual(lifePage.current.values, [
         false, false, false, false, false,
         true, true, true, true, true,
@@ -760,11 +1032,30 @@ test('LifePage.render, load', (t) => {
     t.is(document.body.innerHTML, '');
 });
 
+test('LifePage.render, load error', (t) => {
+    const lifePage = new LifePage();
+    const assignLocations = mockLifePageAssignLocation(lifePage);
+
+    window.location.hash = '#width=5&height=5&lifeRatio=1&lifeBorder=0.2&load=5-5-XXX&pause=true';
+    document.body.innerHTML = '';
+    lifePage.render();
+    t.deepEqual(assignLocations, []);
+    t.deepEqual(lifePage.current.values, [
+        false, false, false, false, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, true, true, true, false,
+        false, false, false, false, false
+    ]);
+    t.is(lifePage.generationInterval, null);
+    t.is(document.body.innerHTML, '<p>Error: Invalid load data</p>');
+});
+
 test('LifePage.render, load play', (t) => {
     const lifePage = new LifePage();
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#cmd.load.data=5-5-555550&cmd.load.play=true';
+    window.location.hash = '#load=5-5-555550';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, ['blank#height=5&width=5']);
@@ -781,9 +1072,17 @@ test('LifePage.render, load play', (t) => {
 
 test('LifePage.render, save', (t) => {
     const lifePage = new LifePage();
+    const life = new Life(5, 5, [
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false,
+        true, true, true, true, true,
+        false, false, false, false, false
+    ]);
+    lifePage.generations = [life];
     const assignLocations = mockLifePageAssignLocation(lifePage);
 
-    window.location.hash = '#cmd.load.data=5-5-555550&cmd.load.save=true';
+    window.location.hash = '#height=5&width=5&save=true';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, []);
@@ -819,7 +1118,7 @@ test('LifePage.render, play', (t) => {
 
     // Execute the generation interval
     const loadInnerHTML = document.body.innerHTML;
-    lifePage.onIntervalTimeout();
+    lifePage.next();
     t.deepEqual(lifePage.current.values, [
         false, false, true, false, false,
         false, true, false, true, false,
@@ -830,7 +1129,7 @@ test('LifePage.render, play', (t) => {
     t.not(document.body.innerHTML, loadInnerHTML);
 
     // Pause
-    window.location.hash = '#cmd.play.pause=true&width=5&height=5&lifeRatio=1&lifeBorder=0.2';
+    window.location.hash = '#pause=true&width=5&height=5&lifeRatio=1&lifeBorder=0.2';
     document.body.innerHTML = '';
     lifePage.render();
     t.deepEqual(assignLocations, []);
