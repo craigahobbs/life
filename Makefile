@@ -1,6 +1,6 @@
 ifeq '$(wildcard .makefile)' ''
     $(info Downloading base makefile...)
-    $(shell curl -s -o .makefile 'https://raw.githubusercontent.com/craigahobbs/chisel/master/static/Makefile')
+    $(shell curl -s -o .makefile 'https://raw.githubusercontent.com/craigahobbs/chisel/master/static/Makefile.base')
 endif
 ifeq '$(wildcard package.json)' ''
     $(info Downloading package.json...)
@@ -12,32 +12,11 @@ ifeq '$(wildcard .eslintrc.js)' ''
 endif
 include .makefile
 
-NYC_ARGS := --exclude src/chisel.js
+NYC_ARGS := --exclude src/chisel
 
 JSDOC_ARGS := -c jsdoc.json
 
-PYTHON_IMAGE := python:3.8
-
-build/env.build:
-	docker pull -q $(PYTHON_IMAGE)
-	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) python3 -m venv build/env
-	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/pip install -U pip setuptools wheel chisel
-	touch $@
-
-src/lifeTypes.json: src/lifeTypes.chsl | build/env.build
-	docker run --rm -u `id -g`:`id -g` -v `pwd`:`pwd` -w `pwd` $(PYTHON_IMAGE) build/env/bin/python3 -m chisel compile $< > $@
-
-src/lifeTypes.js: src/lifeTypes.json
-	echo '/* eslint-disable quotes */' > $@
-	echo 'export const lifeTypes =' >> $@
-	cat $< >> $@
-	echo ';' >> $@
-
-_test: src/lifeTypes.js
-
-_lint: src/lifeTypes.js
-
-_doc: src/lifeTypes.js
+$(eval $(call COMPILE_CHSL, lifeTypes))
 
 help:
 	@echo '            [gh-pages]'

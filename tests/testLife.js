@@ -1,4 +1,4 @@
-import * as chisel from '../src/chisel.js';
+import * as chisel from '../src/chisel/chisel.js';
 import {Life, LifePage} from '../src/life.js';
 import browserEnv from 'browser-env';
 import test from 'ava';
@@ -20,7 +20,7 @@ function mockLifePageAssignLocation(lifePage) {
 }
 
 
-// Helper function to count and delete "_callback" attributes from an element model
+// Helper function to count and delete "callback" members from an element model
 function countAndDeleteCallbackAttributes(elements) {
     let count = 0;
     if (elements !== null) {
@@ -29,9 +29,9 @@ function countAndDeleteCallbackAttributes(elements) {
                 count += countAndDeleteCallbackAttributes(element);
             }
         } else {
-            if ('attr' in elements && '_callback' in elements.attr) {
+            if ('callback' in elements) {
                 count += 1;
-                delete elements.attr._callback;
+                delete elements.callback;
             }
             if ('elem' in elements) {
                 count += countAndDeleteCallbackAttributes(elements.elem);
@@ -246,7 +246,7 @@ test('LifePage.pageElements', (t) => {
             'attr': {'id': 'lifeSVG'},
             'elem': {
                 'svg': 'svg',
-                'attr': {'_callback': null, 'width': '56', 'height': '56'},
+                'attr': {'width': '56', 'height': '56'},
                 'elem': [
                     {
                         'svg': 'rect',
@@ -293,8 +293,8 @@ test('LifePage.pageElements, pause', (t) => {
     t.is(rectElement.svg, 'rect');
 
     // Call the element creation callback
-    const callback = svgElement.attr._callback;
-    delete svgElement.attr._callback;
+    const {callback} = svgElement;
+    delete svgElement.callback;
     t.true(typeof callback === 'function');
     rectElement.ownerSVGElement = svgElement;
     const svgBoundingRect = {'left': 10, 'top': 20};
