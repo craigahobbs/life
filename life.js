@@ -1,7 +1,7 @@
 // Licensed under the MIT License
 // https://github.com/craigahobbs/life/blob/master/LICENSE
 
-import * as chisel from './chisel.js';
+import * as chisel from './chisel/chisel.js';
 import {lifeTypes} from './lifeTypes.js';
 
 
@@ -256,18 +256,20 @@ export class LifePage {
 
         // Helper function for creating a simple menu
         const button = (text, params, callback = null, isSection = false, isFirst = false) => {
-            const anchorAttr = {
-                'href': chisel.href({...this.params, ...params})
-            };
+            const buttonElements = [
+                isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
+                {
+                    'html': 'a',
+                    'attr': {'href': chisel.href({...this.params, ...params})},
+                    'elem': {'text': text}
+                }
+            ];
             if (callback !== null) {
-                anchorAttr._callback = (element) => {
+                buttonElements[1].callback = (element) => {
                     element.addEventListener('click', callback);
                 };
             }
-            return [
-                isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
-                {'html': 'a', 'elem': {'text': text}, 'attr': anchorAttr}
-            ];
+            return buttonElements;
         };
 
         return [
@@ -320,22 +322,21 @@ export class LifePage {
         const cellElems = [];
         const svgElems = {
             'svg': 'svg',
-            'attr': {
-                'width': `${svgWidth}`,
-                'height': `${svgHeight}`,
-                '_callback': !this.paused || 'save' in this.config ? null : (element) => {
-                    element.addEventListener('click', (event) => {
-                        const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
-                        const clickSize = this.config.size + this.config.gap;
-                        this.toggleCell(
-                            Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize),
-                            Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize)
-                        );
-                    });
-                }
-            },
+            'attr': {'width': `${svgWidth}`, 'height': `${svgHeight}`},
             'elem': cellElems
         };
+        if (this.paused && !('save' in this.config)) {
+            svgElems.callback = (element) => {
+                element.addEventListener('click', (event) => {
+                    const boundingRect = event.target.ownerSVGElement.getBoundingClientRect();
+                    const clickSize = this.config.size + this.config.gap;
+                    this.toggleCell(
+                        Math.floor((event.clientX - boundingRect.left - 0.5 * this.config.gap) / clickSize),
+                        Math.floor((event.clientY - boundingRect.top - 0.5 * this.config.gap) / clickSize)
+                    );
+                });
+            };
+        }
 
         // Background
         cellElems.push({'svg': 'rect', 'attr': {
