@@ -3,7 +3,9 @@ export const lifeTypes =
 {
     "Color": {
         "enum": {
-            "doc": " CSS color string",
+            "doc": [
+                "CSS color string"
+            ],
             "name": "Color",
             "values": [
                 {
@@ -455,10 +457,14 @@ export const lifeTypes =
     },
     "Life": {
         "struct": {
-            "doc": " The Life application hash parameters struct",
+            "doc": [
+                "The Life application hash parameters struct"
+            ],
             "members": [
                 {
-                    "doc": " If true, the life simulation is paused",
+                    "doc": [
+                        "If true, the life simulation is paused"
+                    ],
                     "name": "pause",
                     "optional": true,
                     "type": {
@@ -466,7 +472,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " Load the life simulation state from a string of the format \"<width>-<height>-<[01]{width * height}>\"",
+                    "doc": [
+                        "Load the life simulation state from a string of the format \"<width>-<height>-<[01]{width * height}>\""
+                    ],
                     "name": "load",
                     "optional": true,
                     "type": {
@@ -474,7 +482,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " Save the life simulation state",
+                    "doc": [
+                        "Save the life simulation state"
+                    ],
                     "name": "save",
                     "optional": true,
                     "type": {
@@ -486,7 +496,9 @@ export const lifeTypes =
                         "gte": 5.0,
                         "lte": 1000.0
                     },
-                    "doc": " The horizontal width of the cell grid (default is 50)",
+                    "doc": [
+                        "The horizontal width of the cell grid (default is 50)"
+                    ],
                     "name": "width",
                     "optional": true,
                     "type": {
@@ -498,7 +510,9 @@ export const lifeTypes =
                         "gte": 5.0,
                         "lte": 1000.0
                     },
-                    "doc": " The vertical height of the cell grid (default is 50)",
+                    "doc": [
+                        "The vertical height of the cell grid (default is 50)"
+                    ],
                     "name": "height",
                     "optional": true,
                     "type": {
@@ -510,7 +524,9 @@ export const lifeTypes =
                         "gte": 2.0,
                         "lte": 100.0
                     },
-                    "doc": " The size, in pixels, of a cell (default is 10)",
+                    "doc": [
+                        "The size, in pixels, of a cell (default is 10)"
+                    ],
                     "name": "size",
                     "optional": true,
                     "type": {
@@ -522,7 +538,9 @@ export const lifeTypes =
                         "gte": 0.0,
                         "lte": 10.0
                     },
-                    "doc": " The gap, in pixels, between cells (default is 1)",
+                    "doc": [
+                        "The gap, in pixels, between cells (default is 1)"
+                    ],
                     "name": "gap",
                     "optional": true,
                     "type": {
@@ -534,7 +552,9 @@ export const lifeTypes =
                         "gte": 0.0001,
                         "lte": 60.0
                     },
-                    "doc": " The simulation iteration period, in seconds (default is 0.5 seconds)",
+                    "doc": [
+                        "The simulation iteration period, in seconds (default is 0.5 seconds)"
+                    ],
                     "name": "period",
                     "optional": true,
                     "type": {
@@ -546,7 +566,9 @@ export const lifeTypes =
                         "gte": 0.0,
                         "lte": 1000.0
                     },
-                    "doc": " The generation depth used to check for cycles (default is 6)",
+                    "doc": [
+                        "The generation depth used to check for cycles (default is 6)"
+                    ],
                     "name": "depth",
                     "optional": true,
                     "type": {
@@ -558,7 +580,9 @@ export const lifeTypes =
                         "gte": 0.0,
                         "lte": 1.0
                     },
-                    "doc": " The probability, from zero to one, that a cell will be living at startup (default is 0.25)",
+                    "doc": [
+                        "The probability, from zero to one, that a cell will be living at startup (default is 0.25)"
+                    ],
                     "name": "lifeRatio",
                     "optional": true,
                     "type": {
@@ -570,7 +594,9 @@ export const lifeTypes =
                         "gte": 0.0,
                         "lte": 0.45
                     },
-                    "doc": " The size ratio of the lifeless border around the life board at startup (default is 0.1)",
+                    "doc": [
+                        "The size ratio of the lifeless border around the life board at startup (default is 0.1)"
+                    ],
                     "name": "lifeBorder",
                     "optional": true,
                     "type": {
@@ -578,7 +604,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The cell fill color (default is \"forestgreen\")",
+                    "doc": [
+                        "The cell fill color (default is \"forestgreen\")"
+                    ],
                     "name": "fill",
                     "optional": true,
                     "type": {
@@ -586,7 +614,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The cell stroke color (default is \"none\")",
+                    "doc": [
+                        "The cell stroke color (default is \"none\")"
+                    ],
                     "name": "stroke",
                     "optional": true,
                     "type": {
@@ -594,7 +624,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The cell stroke width (default is 1)",
+                    "doc": [
+                        "The cell stroke width (default is 1)"
+                    ],
                     "name": "strokeWidth",
                     "optional": true,
                     "type": {
@@ -602,7 +634,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The board fill color (default is \"white\")",
+                    "doc": [
+                        "The board fill color (default is \"white\")"
+                    ],
                     "name": "bgFill",
                     "optional": true,
                     "type": {
@@ -610,7 +644,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The board stroke color (default is \"none\")",
+                    "doc": [
+                        "The board stroke color (default is \"none\")"
+                    ],
                     "name": "bgStroke",
                     "optional": true,
                     "type": {
@@ -618,7 +654,9 @@ export const lifeTypes =
                     }
                 },
                 {
-                    "doc": " The board stroke width (default is 1)",
+                    "doc": [
+                        "The board stroke width (default is 1)"
+                    ],
                     "name": "bgStrokeWidth",
                     "optional": true,
                     "type": {
@@ -635,7 +673,9 @@ export const lifeTypes =
                 "gte": 0.0,
                 "lte": 10.0
             },
-            "doc": " CSS stroke width",
+            "doc": [
+                "CSS stroke width"
+            ],
             "name": "StrokeWidth",
             "type": {
                 "builtin": "int"
