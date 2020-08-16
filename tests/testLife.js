@@ -48,8 +48,8 @@ test('LifePage constructor', (t) => {
     const lifePage = new LifePage();
     t.deepEqual(lifePage.generations, [new Life(0, 0)]);
     t.is(lifePage.generationInterval, null);
-    t.is(typeof lifePage.params, 'undefined');
-    t.is(typeof lifePage.config, 'undefined');
+    t.is(lifePage.params, null);
+    t.is(lifePage.config, null);
 });
 
 test('LifePage.updateParams', (t) => {

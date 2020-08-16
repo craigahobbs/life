@@ -20,7 +20,10 @@ export class LifePage {
     constructor() {
         this.generations = [new Life(0, 0)];
         this.generationInterval = null;
+        this.params = null;
+        this.config = null;
     }
+
 
     /**
      * Run the application
@@ -42,6 +45,7 @@ export class LifePage {
         };
     }
 
+
     /*
      * Cleanup global state created by "run"
      *
@@ -50,6 +54,7 @@ export class LifePage {
     static runCleanup(runResult) {
         window.removeEventListener(...runResult.windowRemoveEventListener);
     }
+
 
     /**
      * Navigate to a new location. This method is non-static so that it can easily be overwritten in unit tests.
@@ -61,6 +66,7 @@ export class LifePage {
     assignLocation(location) {
         window.location.href = location;
     }
+
 
     /**
      * Parse the window location's hash parameters. This method sets two class members:
@@ -92,6 +98,7 @@ export class LifePage {
         };
     }
 
+
     /**
      * Get the current life board object
      *
@@ -101,12 +108,14 @@ export class LifePage {
         return this.generations[this.generations.length - 1];
     }
 
+
     /**
      * Returns true if the life simulation is paused
      */
     get paused() {
         return 'pause' in this.config && this.config.pause || 'load' in this.config || 'save' in this.config && this.config.save;
     }
+
 
     /**
      * Advance to the next state in the life simulation and render
@@ -133,6 +142,7 @@ export class LifePage {
         this.renderSVG();
     }
 
+
     /**
      * Randomize the life board and render
      */
@@ -145,6 +155,7 @@ export class LifePage {
         this.renderSVG();
     }
 
+
     /**
      * Clear the life board and render
      */
@@ -155,6 +166,7 @@ export class LifePage {
         // Render the life board
         this.renderSVG();
     }
+
 
     /**
      * Toggle a cell and render
@@ -172,6 +184,7 @@ export class LifePage {
             this.renderSVG();
         }
     }
+
 
     /**
      * The main entry point for the life simulation application. This method renders the life
@@ -223,6 +236,7 @@ export class LifePage {
         chisel.render(document.body, this.pageElements());
     }
 
+
     /**
      * Render the life board SVG
      */
@@ -233,6 +247,7 @@ export class LifePage {
         }
     }
 
+
     /**
      * Generate the error page element model
      *
@@ -241,6 +256,7 @@ export class LifePage {
     static errorElements(message) {
         return {'html': 'p', 'elem': {'text': `Error: ${message}`}};
     }
+
 
     /**
      * Generate the life simulation page element model
@@ -310,6 +326,7 @@ export class LifePage {
             {'html': 'p', 'attr': {'id': 'lifeSVG'}, 'elem': this.svgElements()}
         ];
     }
+
 
     /**
      * Generate the life board SVG element model
@@ -392,6 +409,7 @@ export class Life {
         }
     }
 
+
     /**
      * Get the living state of a cell of the life board.
      *
@@ -403,6 +421,7 @@ export class Life {
         return this.values[iy * this.width + ix];
     }
 
+
     /**
      * Set the living state of a cell of the life board.
      *
@@ -413,6 +432,7 @@ export class Life {
     setCell(ix, iy, value) {
         this.values[iy * this.width + ix] = value;
     }
+
 
     /**
      * Compare this life board with another.
@@ -431,6 +451,7 @@ export class Life {
         }
         return true;
     }
+
 
     /**
      * Resize the life board.
@@ -462,6 +483,7 @@ export class Life {
         return new Life(width, height, values);
     }
 
+
     /**
      * Compute the next life board state in the simulation.
      *
@@ -487,6 +509,7 @@ export class Life {
         }
         return new Life(this.width, this.height, values);
     }
+
 
     /**
      * Encode the life board as a string.
@@ -540,6 +563,7 @@ export class Life {
 
         return [this.width, this.height, values.join('')].join('-');
     }
+
 
     /**
      * Decode the life board from a string.
