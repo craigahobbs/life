@@ -246,23 +246,23 @@ test('LifePage.pageElements', (t) => {
             'attr': {'id': 'lifeSVG'},
             'elem': {
                 'svg': 'svg',
-                'attr': {'width': '56', 'height': '56'},
+                'attr': {'width': 56, 'height': 56},
                 'elem': [
                     {
                         'svg': 'rect',
-                        'attr': {'x': '0', 'y': '0', 'width': '56', 'height': '56', 'style': 'fill: white; stroke: none; stroke-width: 1;'}
+                        'attr': {'x': 0, 'y': 0, 'width': 56, 'height': 56, 'style': 'fill: white; stroke: none; stroke-width: 1;'}
                     },
                     {
                         'svg': 'rect',
                         'attr': {
-                            'x': '12', 'y': '1', 'width': '10', 'height': '10',
+                            'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         }
                     },
                     {
                         'svg': 'rect',
                         'attr': {
-                            'x': '1', 'y': '12', 'width': '10', 'height': '10',
+                            'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         }
                     }
@@ -449,23 +449,23 @@ test('LifePage.pageElements, pause', (t) => {
             'attr': {'id': 'lifeSVG'},
             'elem': {
                 'svg': 'svg',
-                'attr': {'width': '56', 'height': '56'},
+                'attr': {'width': 56, 'height': 56},
                 'elem': [
                     {
                         'svg': 'rect',
-                        'attr': {'x': '0', 'y': '0', 'width': '56', 'height': '56', 'style': 'fill: white; stroke: black; stroke-width: 1;'}
+                        'attr': {'x': 0, 'y': 0, 'width': 56, 'height': 56, 'style': 'fill: white; stroke: black; stroke-width: 1;'}
                     },
                     {
                         'svg': 'rect',
                         'attr': {
-                            'x': '12', 'y': '1', 'width': '10', 'height': '10',
+                            'x': 12, 'y': 1, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         }
                     },
                     {
                         'svg': 'rect',
                         'attr': {
-                            'x': '1', 'y': '12', 'width': '10', 'height': '10',
+                            'x': 1, 'y': 12, 'width': 10, 'height': 10,
                             'style': 'fill: forestgreen; stroke: none; stroke-width: 1;'
                         }
                     }
