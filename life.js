@@ -223,7 +223,10 @@ export class LifePage {
             this.generations = [life];
 
             // Navigate to clear the "load" hash param
-            this.assignLocation(chisel.href({...this.params, 'load': null, 'save': null, 'width': life.width, 'height': life.height}));
+            const loadParams = {...this.params, 'width': life.width, 'height': life.height};
+            delete loadParams.load;
+            delete loadParams.save;
+            this.assignLocation(chisel.href(loadParams));
             return;
 
         // Play, unless paused
@@ -271,12 +274,17 @@ export class LifePage {
         const sizeAttr = lifeTypes.Life.struct.members.find((member) => member.name === 'size').attr;
 
         // Helper function for creating a simple menu
-        const button = (text, params, callback = null, isSection = false, isFirst = false) => {
+        const button = (text, params, paramsDelete = [], callback = null, isSection = false, isFirst = false) => {
+            const buttonParams = {...this.params};
+            for (const param of paramsDelete) {
+                delete buttonParams[param];
+            }
+            Object.assign(buttonParams, params);
             const buttonElements = [
                 isFirst ? null : {'text': isSection ? `${chisel.nbsp}| ` : chisel.nbsp},
                 {
                     'html': 'a',
-                    'attr': {'href': chisel.href({...this.params, ...params})},
+                    'attr': {'href': chisel.href(buttonParams)},
                     'elem': {'text': text}
                 }
             ];
@@ -299,25 +307,25 @@ export class LifePage {
             ]},
             {'html': 'p', 'elem': [
                 'save' in this.config && this.config.save ? [
-                    button('Load', {'load': this.current.encode(), 'save': null}, null, false, true),
+                    button('Load', {'load': this.current.encode()}, ['save'], null, false, true),
                     {'text': `${chisel.nbsp}${chisel.nbsp}${chisel.nbsp}<--${chisel.nbsp}${chisel.nbsp}` +
                      'Bookmark this link or the page link to save.'}
                 ] : [
-                    button(this.paused ? 'Play' : 'Pause', {'pause': this.paused ? null : true}, null, false, true),
+                    button(this.paused ? 'Play' : 'Pause', this.paused ? {} : {'pause': true}, ['pause'], null, false, true),
                     !this.paused ? null : [
-                        button('Step', {}, /* istanbul ignore next */ () => this.next(), true),
-                        button('Clear', {}, /* istanbul ignore next */ () => this.clear()),
-                        button('Random', {}, /* istanbul ignore next */ () => this.randomize()),
+                        button('Step', {}, [], /* istanbul ignore next */ () => this.next(), true),
+                        button('Clear', {}, [], /* istanbul ignore next */ () => this.clear()),
+                        button('Random', {}, [], /* istanbul ignore next */ () => this.randomize()),
                         button('Save', {'save': true})
                     ],
-                    button('Border', {'bgStroke': this.config.bgStroke === 'none' ? 'black' : null}, null, true),
-                    button('<<Speed', {'period': Math.min(periodAttr.lte, this.config.period * 2)}, null, true),
+                    button('Border', this.config.bgStroke === 'none' ? {'bgStroke': 'black'} : {}, ['bgStroke'], null, true),
+                    button('<<Speed', {'period': Math.min(periodAttr.lte, this.config.period * 2)}, [], null, true),
                     button('Speed>>', {'period': Math.max(periodAttr.gte, this.config.period / 2)}),
-                    button('<<Width', {'width': Math.max(widthAttr.gte, this.config.width - 5)}, null, true),
+                    button('<<Width', {'width': Math.max(widthAttr.gte, this.config.width - 5)}, [], null, true),
                     button('Width>>', {'width': Math.min(widthAttr.lte, this.config.width + 5)}),
-                    button('<<Height', {'height': Math.max(heightAttr.gte, this.config.height - 5)}, null, true),
+                    button('<<Height', {'height': Math.max(heightAttr.gte, this.config.height - 5)}, [], null, true),
                     button('Height>>', {'height': Math.min(heightAttr.lte, this.config.height + 5)}),
-                    button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, null, true),
+                    button('<<Size', {'size': Math.max(sizeAttr.gte, this.config.size - 2)}, [], null, true),
                     button('Size>>', {'size': Math.min(sizeAttr.lte, this.config.size + 2)})
                 ]
             ]},
@@ -339,7 +347,7 @@ export class LifePage {
         const cellElems = [];
         const svgElems = {
             'svg': 'svg',
-            'attr': {'width': `${svgWidth}`, 'height': `${svgHeight}`},
+            'attr': {'width': svgWidth, 'height': svgHeight},
             'elem': cellElems
         };
         if (this.paused && !('save' in this.config)) {
@@ -357,10 +365,10 @@ export class LifePage {
 
         // Background
         cellElems.push({'svg': 'rect', 'attr': {
-            'x': '0',
-            'y': '0',
-            'width': `${svgWidth}`,
-            'height': `${svgHeight}`,
+            'x': 0,
+            'y': 0,
+            'width': svgWidth,
+            'height': svgHeight,
             'style': `fill: ${this.config.bgFill}; stroke: ${this.config.bgStroke}; stroke-width: ${this.config.bgStrokeWidth};`
         }});
 
@@ -369,10 +377,10 @@ export class LifePage {
             for (let ix = 0; ix < this.current.width; ix++) {
                 if (this.current.cell(ix, iy)) {
                     cellElems.push({'svg': 'rect', 'attr': {
-                        'x': `${this.config.gap + ix * (this.config.size + this.config.gap)}`,
-                        'y': `${this.config.gap + iy * (this.config.size + this.config.gap)}`,
-                        'width': `${this.config.size}`,
-                        'height': `${this.config.size}`,
+                        'x': this.config.gap + ix * (this.config.size + this.config.gap),
+                        'y': this.config.gap + iy * (this.config.size + this.config.gap),
+                        'width': this.config.size,
+                        'height': this.config.size,
                         'style': `fill: ${this.config.fill}; stroke: ${this.config.stroke}; stroke-width: ${this.config.strokeWidth};`
                     }});
                 }
