@@ -1,5 +1,4 @@
-Conway's Game of Life
-*********************
+# Conway's Game of Life
 
 This is a Javascript implementation of
 [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
@@ -7,8 +6,7 @@ This is a Javascript implementation of
 Click [here](https://craigahobbs.github.io/life/) to run the simulation.
 
 
-Instructions
-============
+## Instructions
 
 Click "Pause" to stop the simulation. Once paused, you can save the life board by clicking "Save"
 and copying the "Load" link. Also, in the paused state, you can toggle any cell of the life board by
@@ -25,8 +23,7 @@ To customize the simulation, such as changing the cell color, refer to the
 [configuration options](https://craigahobbs.github.io/chisel/doc/#name=Life&title=Life&types=https%3A%2F%2Fcraigahobbs.github.io%2Flife%2FlifeTypes.json).
 
 
-Examples
-========
+## Examples
 
 * [Pulsar](https://craigahobbs.github.io/life/#depth=0&size=32&load=17-17-z03333n141114141411141414111416333p333614111414141114141411141n333z030)
 
